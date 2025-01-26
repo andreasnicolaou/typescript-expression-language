@@ -296,5 +296,5 @@ This compatibility makes it easier to create unified and maintainable applicatio
 
 ## 📦 Contribution
 
-Contributions are welcome! If you encounter issues or have ideas to enhance the library, feel free to submit an **issue** or **pull request**. Here's how you can contribute:
+Contributions are welcome! If you encounter issues or have ideas to enhance the library, feel free to submit an **issue** or **pull request**.
 

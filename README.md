@@ -44,7 +44,7 @@ Basic Evaluation
 
 ```typescript
 const result = expressionLanguage.evaluate('1 + 2');
-result → `3`
+console.log(result)  // Outputs → `3`
 ```
 
 Multiple Clauses
@@ -58,7 +58,7 @@ const context = {
   },
 };
 const result = expressionLanguage.evaluate(expression, context);  → `true`
-result → `true`
+console.log(result)  // Outputs → `true`
 ```
 
 Custom Functions
@@ -68,7 +68,7 @@ expressionLanguage.registerFunction('toUpperCase', (str: string): string => str.
 
 const expression = 'toUpperCase("hello") === "HELLO"';
 const result = expressionLanguage.evaluate(expression);
-result → `true`
+console.log(result)  // Outputs → `true`
 ```
 
 ---

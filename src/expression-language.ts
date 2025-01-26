@@ -7,6 +7,7 @@ import { Expression } from './expression';
 import { ExpressionFunction } from './expression-function';
 import { LRUCache } from 'lru-cache';
 import asort from 'locutus/php/array/asort';
+import rawurlencode from 'locutus/php/url/rawurlencode';
 
 export interface ExpressionFunctionProvider {
   getFunctions(): ExpressionFunction[];
@@ -18,7 +19,7 @@ export interface ExpressionFunctionProvider {
  * @author Andreas Nicolaou <anicolaou66@gmail.com>
  */
 export class ExpressionLanguage {
-  private readonly cache!: LRUCache<string, ParsedExpression>;
+  public readonly cache!: LRUCache<string, ParsedExpression>;
   private lexer?: Lexer;
   private parser?: Parser;
   private compiler?: Compiler;
@@ -72,12 +73,7 @@ export class ExpressionLanguage {
       const value: string = typeof name === 'object' ? `${Object.keys(name)[0]}:${Object.values(name)[0]}` : name;
       cacheKeyItems.push(value);
     }
-    const cacheKey = encodeURIComponent(`${expression}//${cacheKeyItems.join('|')}`).replace(
-      /[!'()*]/g,
-      (c: string): string => {
-        return '%' + c.charCodeAt(0).toString(16);
-      }
-    );
+    const cacheKey = rawurlencode(`${expression}//${cacheKeyItems.join('|')}`);
     let parsedExpression = this.cache.get(cacheKey);
     if (!parsedExpression) {
       const nodes = this.getParser().parse(this.getLexer().tokenize(expression.toString()), names, flags);

@@ -1,9 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { LRUCache } from 'lru-cache';
 import { ExpressionFunctionProvider, ExpressionLanguage } from './expression-language';
-import { ParsedExpression } from './parsed-expression';
-import { BinaryNode } from './node/binary-node';
-import { NameNode } from './node/name-node';
 
 const getEvaluateData = (): (string | Record<string, any> | number | null | boolean)[][] => {
   return [
@@ -155,10 +151,7 @@ describe('ExpressionLanguage', () => {
   let expressionLanguage!: ExpressionLanguage;
 
   beforeEach(() => {
-    const mockCache = new LRUCache<string, ParsedExpression>({ max: 10 });
-    const node = new BinaryNode('+', new NameNode('a'), new NameNode('b'));
-    mockCache.set('a%20%2B%20b%2F%2Fa%7CB%3Ab', new ParsedExpression('a + b', node));
-    expressionLanguage = new ExpressionLanguage(mockCache);
+    expressionLanguage = new ExpressionLanguage();
   });
 
   test('should evaluate short-circuit expressions correctly', () => {
@@ -200,7 +193,27 @@ describe('ExpressionLanguage', () => {
     const expression = 'a + b';
     expressionLanguage.evaluate(expression, { a: 1, b: 1 });
     const result = expressionLanguage.compile(expression, ['a', { B: 'b' }] as any);
-    expect(result).toBe('(a + b)');
+    expect(result).toBe('(a + B)');
+  });
+
+  test('should use cache when parsing the same expression multiple times', () => {
+    const expression = 'min(a, b)';
+    const names = ['a', 'b'];
+    const firstParse = expressionLanguage.parse(expression, names);
+    expect(expressionLanguage.cache.size).toBe(1);
+    const secondParse = expressionLanguage.parse(expression, names);
+    expect(firstParse).toBe(secondParse);
+    expect(expressionLanguage.cache.size).toBe(1);
+  });
+
+  test('should not use cache for different expressions', () => {
+    const expression1 = 'min(a, b)';
+    const expression2 = 'max(a, b)';
+    const names = ['a', 'b'];
+    const firstParse = expressionLanguage.parse(expression1, names);
+    const secondParse = expressionLanguage.parse(expression2, names);
+    expect(firstParse).not.toBe(secondParse);
+    expect(expressionLanguage.cache.size).toBe(2);
   });
 
   test('should handle strict equality expressions', () => {

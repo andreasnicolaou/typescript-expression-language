@@ -1,7 +1,8 @@
-name: CI Workflow
-
+name: CI Workflow Build
 on:
   pull_request:
+    types:
+      - opened
     branches:
       - main
 jobs:

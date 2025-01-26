@@ -1,0 +1,16 @@
+# IDEs
+.vscode
+.idea
+
+###> Mac OS ###
+.DS_Store
+###< Mac OS ###
+
+/dist
+/node_modules
+npm-debug.log
+
+# Logs
+logs
+*.log
+

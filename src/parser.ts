@@ -174,15 +174,21 @@ export class Parser {
               return this.parsePostfixExpression(new FunctionNode(token.value, this.parseArguments()));
             } else {
               if (!(this.flags & Parser.IGNORE_UNKNOWN_VARIABLES) && token.value !== null) {
-                const names = this.names.reduce((out: any[], elem: string | number | Record<string, any>) => {
-                  if (typeof elem === 'object') {
-                    out.push(Object.keys(elem)[0], Object.values(elem)[0]);
-                  } else {
-                    out.push(elem);
-                  }
-                  return out;
-                }, []);
-                if (!names.includes(token.value)) {
+                const names = (Array.isArray(this.names) ? this.names : [this.names]).reduce(
+                  (out: { original: any; mapped: string | number }[], elem: string | number | Record<string, any>) => {
+                    if (typeof elem === 'object' && elem !== null) {
+                      for (const [key, value] of Object.entries(elem)) {
+                        out.push({ original: value, mapped: key }); // Store the mapping as {original, mapped}
+                      }
+                    } else {
+                      out.push({ original: elem, mapped: elem });
+                    }
+                    return out;
+                  },
+                  []
+                );
+                const validName = names.find((nameObj: any) => nameObj.original === token.value);
+                if (!validName) {
                   if (this.stream.current.test(Token.PUNCTUATION_TYPE, '??')) {
                     return new NullCoalescedNameNode(token.value);
                   }
@@ -191,15 +197,15 @@ export class Parser {
                     token.cursor,
                     this.stream.expression,
                     token.value,
-                    names
+                    names.map((nameObj: any) => nameObj.original)
                   );
                 }
 
                 // is the name used in the compiled code different
                 // from the name used in the expression?
-                const name = names.find((x) => x === token.value);
+                const name = names.find((x: any) => x.original === token.value);
                 if (name) {
-                  token.value = name;
+                  token.value = name.mapped;
                 }
               }
               return this.parsePostfixExpression(new NameNode(token.value));

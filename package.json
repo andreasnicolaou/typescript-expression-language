@@ -1,6 +1,6 @@
 {
     "name": "@andreasnicolaou/typescript-expression-language",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "TypeScript implementation of symfony/expression-language",
     "main": "dist/index.js",
     "private": false,
@@ -11,7 +11,6 @@
     ],
     "scripts": {
         "build": "tsc",
-        "start": "node dist/index.js",
         "test": "jest",
         "format": "prettier --write .",
         "lint": "eslint . --ext .ts --fix"

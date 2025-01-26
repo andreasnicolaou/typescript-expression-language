@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "TypeScript implementation of symfony/expression-language",
     "main": "dist/index.js",
+    "private": false,
     "types": "dist/types/index.d.ts",
     "files": [
         "dist",

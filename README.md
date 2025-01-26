@@ -4,6 +4,15 @@ A **TypeScript implementation** of the popular Symfony Expression Language! This
 
 Use it to create dynamic and flexible expression-based logic on the frontend, perfectly synchronized with the server-side implementation in Symfony/PHP.
 
+![Static Badge](https://img.shields.io/badge/TypeScript-blue)
+![GitHub contributors](https://img.shields.io/github/contributors/andreasnicolaou/typescript-expression-language)
+![GitHub License](https://img.shields.io/github/license/andreasnicolaou/typescript-expression-language)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/andreasnicolaou/typescript-expression-language/build.yaml)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/andreasnicolaou/typescript-expression-language)
+
+![NPM Downloads](https://img.shields.io/npm/dm/%40andreasnicolaou%2Ftypescript-expression-language)
+
+![GitHub Repo stars](https://img.shields.io/github/stars/andreasnicolaou/typescript-expression-language)
 ---
 
 ## ✨ Features

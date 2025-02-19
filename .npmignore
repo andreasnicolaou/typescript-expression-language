@@ -2,3 +2,5 @@
 /src
 .prettierrc
 .github
+.prettierignore
+eslint.config.mjs

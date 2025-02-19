@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "commonjs",
-    "lib": ["es2022", "dom"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["esnext", "dom"],
     "strict": true,
     "typeRoots": ["node_modules/@types", "./types"],
     "outDir": "./dist",
@@ -16,5 +16,5 @@
   },
   "include": ["src/**/*.ts", "**/*.spec.ts"],
   "exclude": ["node_modules", "dist"],
-  "lib": ["es2022", "dom"]
+  "lib": ["esnext", "dom"]
 }

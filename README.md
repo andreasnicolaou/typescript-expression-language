@@ -12,8 +12,7 @@ Use it to create dynamic and flexible expression-based logic on the frontend, pe
 
 ![NPM Downloads](https://img.shields.io/npm/dm/%40andreasnicolaou%2Ftypescript-expression-language)
 
-![GitHub Repo stars](https://img.shields.io/github/stars/andreasnicolaou/typescript-expression-language)
----
+## ![GitHub Repo stars](https://img.shields.io/github/stars/andreasnicolaou/typescript-expression-language)
 
 ## ✨ Features
 
@@ -53,7 +52,7 @@ Basic Evaluation
 
 ```typescript
 const result = expressionLanguage.evaluate('1 + 2');
-console.log(result)  // Outputs → `3`
+console.log(result); // Outputs → `3`
 ```
 
 Multiple Clauses
@@ -77,7 +76,7 @@ expressionLanguage.registerFunction('toUpperCase', (str: string): string => str.
 
 const expression = 'toUpperCase("hello") === "HELLO"';
 const result = expressionLanguage.evaluate(expression);
-console.log(result)  // Outputs → `true`
+console.log(result); // Outputs → `true`
 ```
 
 ---
@@ -244,6 +243,7 @@ The library is equipped with robust error detection to ensure smooth debugging o
 ### 🔄 Common Errors
 
 #### **1. Unmatched Brackets**
+
 - **Description**: The library throws a `SyntaxError` when brackets (`()`, `{}`, `[]`) are unmatched or unbalanced in an expression.
 - **Example**:
   ```text
@@ -251,6 +251,7 @@ The library is equipped with robust error detection to ensure smooth debugging o
   ```
 
 #### **2. Invalid Syntax**
+
 - **Description**: The library throws a `SyntaxError` when an expression contains invalid syntax.
 - **Example**:
   ```text
@@ -258,12 +259,13 @@ The library is equipped with robust error detection to ensure smooth debugging o
   ```
 
 #### **3. Undefined Variable**
+
 - **Description**: The library throws a `SyntaxError` when it detects an invalid or misplaced character that does not belong to the syntax.
 - **Example**:
   ```text
   a + 5 @
   ```
-  
+
 ---
 
 ## 🎯 Use Cases
@@ -271,18 +273,22 @@ The library is equipped with robust error detection to ensure smooth debugging o
 Here are some practical use cases where the TypeScript Symfony Expression Language can be applied:
 
 ### **1. Dynamic UI Logic**
+
 - **Description**: Evaluate conditions to dynamically show or hide components based on user input or other variables.
 - **Example**: Show a form field only if a certain checkbox is checked or display a message when specific conditions are met.
 
 ### **2. Custom Filters**
+
 - **Description**: Build advanced filtering systems for grids, tables, or reports, allowing users to filter data based on complex expressions.
 - **Example**: Create filters for product listings that use multiple criteria such as price range, availability, or category.
 
 ### **3. Formulas and Calculations**
+
 - **Description**: Compute user-defined formulas directly on the client-side, such as calculating discounts, tax rates, or other financial values.
 - **Example**: Allow users to input values in a form and instantly calculate the total cost or apply discounts.
 
 ### **4. Interactive Widgets**
+
 - **Description**: Power interactive components (such as sliders, charts, or dashboards) with user-defined expressions for maximum flexibility and real-time updates.
 - **Example**: Use a slider to dynamically adjust a value or a chart that updates based on user-selected filters or criteria.
 
@@ -295,6 +301,7 @@ These use cases demonstrate how the library can bring advanced, real-time logic 
 This library ensures that expressions written in PHP's **Symfony Expression Language** are fully compatible with the client-side implementation. This enables seamless integration between server-side logic (written in Symfony/PHP) and client-side expression evaluation.
 
 ### **Key Benefits:**
+
 - **Consistency**: Expressions behave the same way on both the client and the server.
 - **Synchronization**: Ensure business logic is applied consistently across both sides of the application without discrepancies.
 - **Easy Integration**: Easily synchronize the logic between your PHP backend and TypeScript frontend, without needing separate implementations.
@@ -306,4 +313,3 @@ This compatibility makes it easier to create unified and maintainable applicatio
 ## 📦 Contribution
 
 Contributions are welcome! If you encounter issues or have ideas to enhance the library, feel free to submit an **issue** or **pull request**.
-

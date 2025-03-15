@@ -187,7 +187,9 @@ export class Parser {
                   },
                   []
                 );
-                const validName = names.find((nameObj) => nameObj.original === token.value);
+                const validName = names.find(
+                  (nameObj: { original: any; mapped: string | number }) => nameObj.original === token.value
+                );
                 if (!validName) {
                   if (this.stream.current.test(Token.PUNCTUATION_TYPE, '??')) {
                     return new NullCoalescedNameNode(token.value);
@@ -197,7 +199,7 @@ export class Parser {
                     token.cursor,
                     this.stream.expression,
                     token.value,
-                    names.map((nameObj) => nameObj.original)
+                    names.map((nameObj: { original: any; mapped: string | number }) => nameObj.original)
                   );
                 }
 

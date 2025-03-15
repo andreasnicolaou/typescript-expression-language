@@ -21,6 +21,8 @@ export type Operators = Record<string, { precedence: number; associativity?: num
  * @class Parser
  * @author Andreas Nicolaou <anicolaou66@gmail.com>
  */
+
+type NameType = string | number | Record<string, any>;
 export class Parser {
   public static readonly OPERATOR_LEFT = 1;
   public static readonly OPERATOR_RIGHT = 2;
@@ -71,7 +73,7 @@ export class Parser {
   };
 
   private stream!: TokenStream;
-  private names!: (string | number | Record<string, any>)[];
+  private names!: NameType[];
   private flags = 0;
 
   constructor(private readonly functions: Record<string, any>) {}
@@ -85,7 +87,7 @@ export class Parser {
    * @throws SyntaxError
    * @memberof Parser
    */
-  public parse(stream: TokenStream, names: (string | number | Record<string, any>)[] = [], flags = 0): Node {
+  public parse(stream: TokenStream, names: NameType[] = [], flags = 0): Node {
     return this.doParse(stream, names, flags);
   }
 
@@ -177,9 +179,7 @@ export class Parser {
                 const names = (Array.isArray(this.names) ? this.names : [this.names]).reduce(
                   (out: { original: any; mapped: string | number }[], elem: string | number | Record<string, any>) => {
                     if (typeof elem === 'object' && elem !== null) {
-                      for (const [key, value] of Object.entries(elem)) {
-                        out.push({ original: value, mapped: key }); // Store the mapping as {original, mapped}
-                      }
+                      out.push(...Object.entries(elem).map(([key, value]) => ({ original: value, mapped: key }))); // Store the mapping as {original, mapped}
                     } else {
                       out.push({ original: elem, mapped: elem });
                     }
@@ -187,7 +187,7 @@ export class Parser {
                   },
                   []
                 );
-                const validName = names.find((nameObj: any) => nameObj.original === token.value);
+                const validName = names.find((nameObj) => nameObj.original === token.value);
                 if (!validName) {
                   if (this.stream.current.test(Token.PUNCTUATION_TYPE, '??')) {
                     return new NullCoalescedNameNode(token.value);
@@ -197,13 +197,13 @@ export class Parser {
                     token.cursor,
                     this.stream.expression,
                     token.value,
-                    names.map((nameObj: any) => nameObj.original)
+                    names.map((nameObj) => nameObj.original)
                   );
                 }
 
                 // is the name used in the compiled code different
                 // from the name used in the expression?
-                const name = names.find((x: any) => x.original === token.value);
+                const name = names.find((x) => x.original === token.value);
                 if (name) {
                   token.value = name.mapped;
                 }

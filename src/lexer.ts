@@ -148,7 +148,7 @@ export class Lexer {
       }
 
       // Match names
-      const nameMatch = expression.slice(cursor).match(/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/);
+      const nameMatch = /^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/.exec(expression.slice(cursor));
       if (nameMatch != null) {
         tokens.push(new Token(Token.NAME_TYPE, nameMatch[0], cursor + 1));
         cursor += nameMatch[0].length;

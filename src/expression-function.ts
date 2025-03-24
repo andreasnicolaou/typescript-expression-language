@@ -4,14 +4,17 @@
  * @class ExpressionFunction
  * @author Andreas Nicolaou <anicolaou66@gmail.com>
  */
+
+type Callable = (...args: any[]) => any;
+
 export class ExpressionFunction {
-  private readonly compiler: any;
-  private readonly evaluator: any;
+  private readonly compiler: Callable;
+  private readonly evaluator: Callable;
 
   constructor(
     private readonly name: string,
-    compiler: any,
-    evaluator: any
+    compiler: Callable,
+    evaluator: Callable
   ) {
     this.compiler = compiler;
     this.evaluator = evaluator;
@@ -26,14 +29,14 @@ export class ExpressionFunction {
    */
   public static fromJs(
     jsFunctionName: string,
-    customFunction?: (...args: any[]) => any,
+    customFunction?: Callable,
     expressionFunctionName?: string
   ): ExpressionFunction {
     const func = customFunction || ExpressionFunction.resolveJsFunction(jsFunctionName);
     if (typeof func !== 'function') {
       throw new Error(`JavaScript function "${jsFunctionName}" does not exist.`);
     }
-    const compiler = (...args: any[]): any => {
+    const compiler: Callable = (...args: any[]): any => {
       const formattedArgs = args.map((arg) => {
         if (typeof arg === 'object' && arg !== null) {
           return JSON.stringify(arg);
@@ -42,7 +45,7 @@ export class ExpressionFunction {
       });
       return `${expressionFunctionName ?? jsFunctionName}(${formattedArgs.join(', ')})`;
     };
-    const evaluator = (_context: any, ...args: any[]): any => func(...args);
+    const evaluator: Callable = (_context: any, ...args: any[]): any => func(...args);
     return new ExpressionFunction(expressionFunctionName ?? jsFunctionName, compiler, evaluator);
   }
 
@@ -60,7 +63,7 @@ export class ExpressionFunction {
    * @returns compiler
    * @memberof ExpressionFunction
    */
-  public getCompiler(): any {
+  public getCompiler(): Callable {
     return this.compiler;
   }
 
@@ -69,7 +72,7 @@ export class ExpressionFunction {
    * @returns evaluator
    * @memberof ExpressionFunction
    */
-  public getEvaluator(): any {
+  public getEvaluator(): Callable {
     return this.evaluator;
   }
 

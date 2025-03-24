@@ -183,7 +183,7 @@ describe('ExpressionLanguage', () => {
     ];
 
     shortCircuits.forEach(([expression, variables, expectedResult]) => {
-      const compiled = expressionLanguage.compile(expression as string, variables as any[]);
+      const compiled = expressionLanguage.compile(expression as string, variables as Record<string, string>[]);
       const result = eval(compiled);
       expect(result).toBe(expectedResult);
     });
@@ -192,7 +192,7 @@ describe('ExpressionLanguage', () => {
   test('should cache for overridden variable names', () => {
     const expression = 'a + b';
     expressionLanguage.evaluate(expression, { a: 1, b: 1 });
-    const result = expressionLanguage.compile(expression, ['a', { B: 'b' }] as any);
+    const result = expressionLanguage.compile(expression, ['a', { B: 'b' }]);
     expect(result).toBe('(a + B)');
   });
 
@@ -229,8 +229,7 @@ describe('ExpressionLanguage', () => {
   });
 
   test('should evaluate valid expressions', () => {
-    const evaluateData = getEvaluateData();
-    evaluateData.forEach(([expression, values, expectedOutcome, provider]) => {
+    getEvaluateData().forEach(([expression, values, expectedOutcome, provider]) => {
       if (provider) {
         expressionLanguage.registerProvider(provider as ExpressionFunctionProvider);
       }

@@ -1,26 +1,26 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/" 
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly" 
+      interval: 'weekly'
     open-pull-requests-limit: 5
     commit-message:
-      prefix: "chore(deps)"
+      prefix: 'chore(deps)'
     assignees:
-      - "andreasnicolaou"
+      - 'andreasnicolaou'
     reviewers:
-      - "andreasnicolaou"
+      - 'andreasnicolaou'
     versioning-strategy: increase
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 3
     commit-message:
-      prefix: "chore(actions)"
+      prefix: 'chore(actions)'
     assignees:
-      - "andreasnicolaou"
+      - 'andreasnicolaou'
     reviewers:
-      - "andreasnicolaou"
+      - 'andreasnicolaou'

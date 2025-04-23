@@ -8,7 +8,9 @@ updates:
     commit-message:
       prefix: "chore(deps)"
     assignees:
-      - "andreasnicolaou" 
+      - "andreasnicolaou"
+    reviewers:
+      - "andreasnicolaou"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -18,4 +20,6 @@ updates:
     commit-message:
       prefix: "chore(actions)"
     assignees:
+      - "andreasnicolaou"
+    reviewers:
       - "andreasnicolaou"

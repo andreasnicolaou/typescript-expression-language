@@ -23,7 +23,10 @@
   "bugs": {
     "url": "https://github.com/andreasnicolaou/typescript-expression-language/issues"
   },
-  "author": "Andreas Nicolaou",
+  "author": {
+    "name": "Andreas Nicolaou",
+    "email": "anicolaou66@gmail.com"
+  },
   "license": "MIT",
   "dependencies": {
     "locutus": "^2.0.32",

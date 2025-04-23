@@ -27,7 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "locutus": "^2.0.32",
-    "lru-cache": "^11.0.2"
+    "lru-cache": "^11.1.0"
   },
   "jest": {
     "transform": {

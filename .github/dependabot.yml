@@ -5,6 +5,7 @@ updates:
     schedule:
       interval: 'weekly'
     open-pull-requests-limit: 5
+    rebase-strategy: "auto"
     commit-message:
       prefix: 'chore(deps)'
     assignees:

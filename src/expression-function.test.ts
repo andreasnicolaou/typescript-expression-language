@@ -1,10 +1,95 @@
 import { ExpressionFunction } from './expression-function';
+import { ExpressionLanguage } from './expression-language';
 
 describe('ExpressionFunction', () => {
+  let expressionLanguage!: ExpressionLanguage;
+
+  beforeEach(() => {
+    expressionLanguage = new ExpressionLanguage();
+  });
+
   test('should throw error when function does not exist', () => {
     expect(() => {
       ExpressionFunction.fromJs('nonExistentFunction');
     }).toThrow('JavaScript function "nonExistentFunction" does not exist.');
+  });
+
+  test('should create an ExpressionFunction for squaring numbers and evaluate correctly', () => {
+    const squareFunction = (x: number): number => x * x;
+    const expressionFunction = ExpressionFunction.fromJs('squareFunction', squareFunction, 'square');
+
+    expect(expressionFunction.getName()).toBe('square');
+
+    expressionLanguage.addFunction(expressionFunction);
+    expect(expressionLanguage.evaluate('square(5)')).toBe(25);
+  });
+
+  test('should create an ExpressionFunction for adding two numbers and evaluate correctly', () => {
+    const addFunction = (x: number, y: number): number => x + y;
+    const expressionFunction = ExpressionFunction.fromJs('addFunction', addFunction, 'add');
+
+    expect(expressionFunction.getName()).toBe('add');
+
+    expressionLanguage.addFunction(expressionFunction);
+    expect(expressionLanguage.evaluate('add(3, 4)')).toBe(7);
+  });
+
+  test('should create an ExpressionFunction for concatenating strings and evaluate correctly', () => {
+    const concatFunction = (str1: string, str2: string): string => str1 + str2;
+    const expressionFunction = ExpressionFunction.fromJs('concatFunction', concatFunction, 'concat');
+
+    expect(expressionFunction.getName()).toBe('concat');
+
+    expressionLanguage.addFunction(expressionFunction);
+    expect(expressionLanguage.evaluate('concat("Hello", " World")')).toBe('Hello World');
+  });
+
+  test('should create an ExpressionFunction for checking if a number is even or odd and evaluate correctly', () => {
+    const isEvenFunction = (x: number): boolean => x % 2 === 0;
+    const expressionFunction = ExpressionFunction.fromJs('isEvenFunction', isEvenFunction, 'isEven');
+
+    expect(expressionFunction.getName()).toBe('isEven');
+
+    expressionLanguage.addFunction(expressionFunction);
+    expect(expressionLanguage.evaluate('isEven(10)')).toBe(true);
+    expect(expressionLanguage.evaluate('isEven(7)')).toBe(false);
+  });
+
+  test('should correctly evaluate the min function which is available by default', () => {
+    expect(expressionLanguage.evaluate('min(3, 5, 1, 7)', {})).toBe(1);
+    expect(expressionLanguage.evaluate('min(10, 15, 2, 8)', {})).toBe(2);
+    expect(expressionLanguage.evaluate('min(0, -5, 3, -2)', {})).toBe(-5);
+  });
+
+  test('should correctly evaluate the max function which is available by default', () => {
+    expect(expressionLanguage.evaluate('max(3, 5, 1, 7)', {})).toBe(7);
+    expect(expressionLanguage.evaluate('max(10, 15, 2, 8)', {})).toBe(15);
+    expect(expressionLanguage.evaluate('max(0, -5, 3, -2)', {})).toBe(3);
+  });
+
+  test('should correctly evaluate the now function which is available by default', () => {
+    const currentTime = Date.now();
+    const evaluatedNow = expressionLanguage.evaluate('now()', {});
+    expect(evaluatedNow).toBeGreaterThanOrEqual(currentTime);
+    expect(evaluatedNow).toBeLessThan(currentTime + 1000);
+  });
+
+  test('should correctly add the toUpperCase from the existing list and evaluate correctly', () => {
+    const toUpperCaseFunction = ExpressionFunction.fromJs('toUpperCase');
+    expressionLanguage.addFunction(toUpperCaseFunction);
+
+    const evaluatedUpper = expressionLanguage.evaluate('toUpperCase("hello")', {});
+    expect(evaluatedUpper).toBe('HELLO');
+  });
+
+  test('should create an ExpressionFunction and evaluate a manually created double function correctly', () => {
+    const name = 'double';
+    const compiler = (...args: unknown[]): unknown => `double(${args.join(', ')})`;
+    const evaluator = (_context: unknown, x: number): unknown => x * 2;
+    const doubleFunction = new ExpressionFunction(name, compiler, evaluator);
+
+    expressionLanguage.addFunction(doubleFunction);
+    expect(expressionLanguage.evaluate('double(4)', {})).toBe(8);
   });
 
   test('should creates an ExpressionFunction with a custom function', () => {

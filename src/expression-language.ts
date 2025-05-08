@@ -51,7 +51,10 @@ export class ExpressionLanguage {
    * @returns evaluate
    * @memberof ExpressionLanguage
    */
-  public evaluate(expression: Expression | string, values: Record<string, any>): ParsedExpression {
+  public evaluate(
+    expression: Expression | string,
+    values: Record<string, any> = Object.create(Object.prototype)
+  ): ParsedExpression {
     return this.parse(expression, Object.keys(values)).getNodes().evaluate(this.functions, values);
   }
 
@@ -105,14 +108,14 @@ export class ExpressionLanguage {
   /**
    * Registers a function.
    * @param name
-   * @param evaluator
+   * @param expressionFn
    * @memberof ExpressionLanguage
    */
-  public register(name: string, evaluator: any): void {
+  public register(name: string, expressionFn: ExpressionFunction): void {
     if (this.parser) {
       throw new Error('Registering functions after calling evaluate(), compile() or parse() is not supported.');
     }
-    this.functions[name] = evaluator;
+    this.functions[name] = expressionFn;
   }
 
   /**
@@ -121,7 +124,7 @@ export class ExpressionLanguage {
    * @memberof ExpressionLanguage
    */
   public addFunction(functionObj: ExpressionFunction): void {
-    this.register(functionObj.getName(), functionObj.getEvaluator());
+    this.register(functionObj.getName(), functionObj);
   }
 
   /**

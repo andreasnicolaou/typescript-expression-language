@@ -72,9 +72,10 @@ console.log(result)  // Outputs → `true`
 Custom Functions
 
 ```typescript
-expressionLanguage.registerFunction('toUpperCase', (str: string): string => str.toUpperCase());
+const expressionFunction = ExpressionFunction.fromJs('isEvenFunction', (x: number): boolean => x % 2 === 0, 'isEven');
+expressionLanguage.addFunction(expressionFunction);
 
-const expression = 'toUpperCase("hello") === "HELLO"';
+const expression = 'isEven(10)';
 const result = expressionLanguage.evaluate(expression);
 console.log(result); // Outputs → `true`
 ```

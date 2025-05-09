@@ -14,6 +14,14 @@ Use it to create dynamic and flexible expression-based logic on the frontend, pe
 
 ## ![GitHub Repo stars](https://img.shields.io/github/stars/andreasnicolaou/typescript-expression-language)
 
+## 🧪 Demo
+
+You can try this library live on StackBlitz:
+
+👉 <a href="https://stackblitz.com/edit/vitejs-vite-wzv1j5ar" target="_blank">Open in StackBlitz</a>
+
+---
+
 ## ✨ Features
 
 - **Full Symfony Compatibility**: Write expressions that work the same way on both client and server.

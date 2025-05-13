@@ -47,7 +47,7 @@ npm install @andreasnicolaou/typescript-expression-language
 To get started, initialize the library in your project:
 
 ```typescript
-import ExpressionLanguage from '@andreasnicolaou/typescript-expression-language';
+import { ExpressionLanguage } from '@andreasnicolaou/typescript-expression-language';
 
 const expressionLanguage = new ExpressionLanguage();
 ```

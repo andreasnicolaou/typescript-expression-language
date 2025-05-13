@@ -16,7 +16,7 @@ export { UnaryNode } from './node/unary-node';
 export { Parser } from './parser';
 export { Compiler } from './compiler';
 export { ExpressionFunction } from './expression-function';
-export { ExpressionLanguage } from './expression-language';
+export { ExpressionLanguage, type ExpressionFunctionProvider } from './expression-language';
 export { Expression } from './expression';
 export { ParsedExpression } from './parsed-expression';
 export { Lexer } from './lexer';

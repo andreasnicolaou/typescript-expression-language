@@ -65,12 +65,14 @@ export class Lexer {
       }
 
       // Match numbers
-      const numberMatch = /^(?:\.\d+|\d+(?:\.\d+)?)(?:[eE][+-]?\d+)?/.exec(expression.slice(cursor).replace(/_/g, ''));
+      const numberMatch = /^(?:\d[\d_]*(?:\.\d[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?\d[\d_]*)?/.exec(
+        expression.slice(cursor)
+      );
       if (numberMatch) {
-        const cleanedNumber = numberMatch[0];
-        const count = (expression.slice(cursor).match(/_/g) || []).length;
+        const rawMatch = numberMatch[0];
+        const cleanedNumber = rawMatch.replace(/_/g, '');
         tokens.push(new Token(Token.NUMBER_TYPE, +cleanedNumber, cursor + 1));
-        cursor += count + numberMatch[0].length;
+        cursor += rawMatch.length;
         continue;
       }
 

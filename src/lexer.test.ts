@@ -128,7 +128,7 @@ describe('Lexer Tests', () => {
       new Token(Token.NUMBER_TYPE, 65536, 189),
       new Token(Token.OPERATOR_TYPE, 'and', 195),
       new Token(Token.NUMBER_TYPE, 65535, 336),
-      new Token('end of expression', null, expression.length + 1),
+      new Token(Token.EOF_TYPE, null, expression.length + 1),
     ];
 
     const tokenStream = new TokenStream(tokens, expression.replace(/\n/g, ' '));
@@ -156,5 +156,53 @@ describe('Lexer Tests', () => {
     expect(() => lexer.tokenize(expression)).toThrow(
       new SyntaxError('Unexpected ")" around position 7 for expression `service)not.opened.expression.dummyMethod()`.')
     );
+  });
+
+  it('should tokenize integer with underscores', () => {
+    const expression = `1_000_000 and 2`;
+    const tokens = [
+      new Token(Token.NUMBER_TYPE, 1000000, 1),
+      new Token(Token.OPERATOR_TYPE, 'and', 11),
+      new Token(Token.NUMBER_TYPE, 2, 15),
+      new Token(Token.EOF_TYPE, null, expression.length + 1),
+    ];
+    const tokenStream = new TokenStream(tokens, expression);
+    expect(lexer.tokenize(expression)).toEqual(tokenStream);
+  });
+
+  it('should tokenize float with underscores', () => {
+    const expression = `3.14_15 or 1.0_0`;
+    const tokens = [
+      new Token(Token.NUMBER_TYPE, 3.1415, 1),
+      new Token(Token.OPERATOR_TYPE, 'or', 9),
+      new Token(Token.NUMBER_TYPE, 1.0, 12),
+      new Token(Token.EOF_TYPE, null, expression.length + 1),
+    ];
+    const tokenStream = new TokenStream(tokens, expression);
+    expect(lexer.tokenize(expression)).toEqual(tokenStream);
+  });
+
+  it('should tokenize an expression with arithmetic and comparison operators correctly', () => {
+    const expression = 'User.age + 5 > 21 and User.score * 2 <= 200';
+    const tokens = [
+      new Token(Token.NAME_TYPE, 'User', 1),
+      new Token(Token.PUNCTUATION_TYPE, '.', 5),
+      new Token(Token.NAME_TYPE, 'age', 6),
+      new Token(Token.OPERATOR_TYPE, '+', 10),
+      new Token(Token.NUMBER_TYPE, 5, 12),
+      new Token(Token.OPERATOR_TYPE, '>', 14),
+      new Token(Token.NUMBER_TYPE, 21, 16),
+      new Token(Token.OPERATOR_TYPE, 'and', 19),
+      new Token(Token.NAME_TYPE, 'User', 23),
+      new Token(Token.PUNCTUATION_TYPE, '.', 27),
+      new Token(Token.NAME_TYPE, 'score', 28),
+      new Token(Token.OPERATOR_TYPE, '*', 34),
+      new Token(Token.NUMBER_TYPE, 2, 36),
+      new Token(Token.OPERATOR_TYPE, '<=', 38),
+      new Token(Token.NUMBER_TYPE, 200, 41),
+      new Token(Token.EOF_TYPE, null, expression.length + 1),
+    ];
+    const tokenStream = new TokenStream(tokens, expression);
+    expect(lexer.tokenize(expression)).toEqual(tokenStream);
   });
 });

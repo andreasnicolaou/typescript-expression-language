@@ -11,6 +11,8 @@
 /coverage
 npm-debug.log
 
+junit.xml
+
 # Logs
 logs
 *.log

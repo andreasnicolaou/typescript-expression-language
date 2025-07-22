@@ -4,6 +4,7 @@ import { ArrayNode } from './array-node';
 import { ConstantNode } from './constant-node';
 import { GetAttrNode } from './get-attr-node';
 import { NameNode } from './name-node';
+import { ArgumentsNode } from './arguments-node';
 
 class Obj {
   foo = 'bar';
@@ -69,6 +70,15 @@ const getDumpData = (): (string | GetAttrNode | Record<string, any>)[][] => [
     { foo: new Obj() },
   ],
   ['foo[index]', new GetAttrNode(new NameNode('foo'), new NameNode('index'), generateNode(), GetAttrNode.ARRAY_CALL)],
+  [
+    'foo?.foo()',
+    new GetAttrNode(
+      new NameNode('foo'),
+      new ConstantNode('foo', true, true),
+      new ArgumentsNode(),
+      GetAttrNode.METHOD_CALL
+    ),
+  ],
 ];
 
 describe('GetAttrNode', () => {

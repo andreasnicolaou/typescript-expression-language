@@ -16,14 +16,14 @@ export class BinaryNode extends Node {
     or: '||',
   };
 
-  private static readonly FUNCTIONS: Record<string, any> = {
-    '**': (x: number, y: number) => Math.pow(x, y),
-    '..': (start: number, end: number) => Array.from({ length: end - start + 1 }, (_, i) => start + i),
-    in: (item: any, array: any[]) => array.indexOf(item) >= 0,
-    'not in': (item: any, array: any[]) => array.indexOf(item) === -1,
-    contains: (str: string, substr: string) => str?.includes(substr),
-    'starts with': (str: string, prefix: string) => str.startsWith(prefix),
-    'ends with': (str: string, suffix: string) => str.endsWith(suffix),
+  private static readonly FUNCTIONS: Record<string, string> = {
+    '**': 'pow',
+    '..': 'range',
+    in: 'inArray',
+    'not in': 'notInArray',
+    contains: 'strContains',
+    'starts with': 'strStartsWith',
+    'ends with': 'strEndsWith',
   };
 
   constructor(operator: string, left: Node, right: Node) {
@@ -53,13 +53,9 @@ export class BinaryNode extends Node {
         .raw(')');
       return;
     }
-    if (BinaryNode.FUNCTIONS[operator]) {
-      compiler
-        .raw(`${BinaryNode.FUNCTIONS[operator]}(`)
-        .compile(this.nodes.left)
-        .raw(', ')
-        .compile(this.nodes.right)
-        .raw(')');
+    if (operator in BinaryNode.FUNCTIONS) {
+      const funcName = BinaryNode.FUNCTIONS[operator];
+      compiler.raw(`${funcName}(`).compile(this.nodes.left).raw(', ').compile(this.nodes.right).raw(')');
       return;
     }
 
@@ -83,10 +79,26 @@ export class BinaryNode extends Node {
     const left = this.nodes.left?.evaluate(functions, values);
     let right = null;
 
-    if (BinaryNode.FUNCTIONS[operator]) {
-      const func = BinaryNode.FUNCTIONS[operator];
-      if (typeof func === 'function') {
-        return func(left, this.nodes.right.evaluate(functions, values));
+    if (operator in BinaryNode.FUNCTIONS) {
+      const right = this.nodes.right.evaluate(functions, values);
+      switch (operator) {
+        case 'in':
+          return this.inArray(left, right);
+        case 'not in':
+          return this.notInArray(left, right);
+        case '**':
+          return this.pow(left, right);
+        case '..':
+          return this.range(left, right);
+        case 'contains':
+          return this.strContains(left, right);
+        case 'starts with':
+          return this.strStartsWith(left, right);
+        case 'ends with':
+          return this.strEndsWith(left, right);
+        default:
+          // This should never happen unless FUNCTIONS is modified incorrectly
+          throw new Error(`Unsupported function operator: ${operator}`);
       }
     }
 
@@ -191,5 +203,33 @@ export class BinaryNode extends Node {
     } catch (error) {
       throw new SyntaxError(`Regexp "${regexp}" passed to "matches" is not valid.[${error}]`);
     }
+  }
+
+  private pow(x: number, y: number): number {
+    return Math.pow(x, y);
+  }
+
+  private range(start: number, end: number): number[] {
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }
+
+  private inArray(item: any, array: any[]): boolean {
+    return array.indexOf(item) >= 0;
+  }
+
+  private notInArray(item: any, array: any[]): boolean {
+    return array.indexOf(item) === -1;
+  }
+
+  private strContains(str: string, substr: string): boolean {
+    return str.includes(substr);
+  }
+
+  private strStartsWith(str: string, prefix: string): boolean {
+    return str.startsWith(prefix);
+  }
+
+  private strEndsWith(str: string, suffix: string): boolean {
+    return str.endsWith(suffix);
   }
 }

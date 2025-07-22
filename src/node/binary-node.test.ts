@@ -129,38 +129,20 @@ const getCompileData = (): (string | BinaryNode)[][] => {
     ['(2 * 2)', new BinaryNode('*', new ConstantNode(2), new ConstantNode(2))],
     ['(2 / 2)', new BinaryNode('/', new ConstantNode(2), new ConstantNode(2))],
     ['(5 % 2)', new BinaryNode('%', new ConstantNode(5), new ConstantNode(2))],
-    ['(x, y) => Math.pow(x, y)(5, 2)', new BinaryNode('**', new ConstantNode(5), new ConstantNode(2))],
+    ['pow(5, 2)', new BinaryNode('**', new ConstantNode(5), new ConstantNode(2))],
     ['("a" . "b")', new BinaryNode('~', new ConstantNode('a'), new ConstantNode('b'))],
-    ['(item, array) => array.indexOf(item) >= 0("a", ["a", "b"])', new BinaryNode('in', new ConstantNode('a'), array)],
-    ['(item, array) => array.indexOf(item) >= 0("c", ["a", "b"])', new BinaryNode('in', new ConstantNode('c'), array)],
-    [
-      '(item, array) => array.indexOf(item) === -1("c", ["a", "b"])',
-      new BinaryNode('not in', new ConstantNode('c'), array),
-    ],
-    [
-      '(item, array) => array.indexOf(item) === -1("a", ["a", "b"])',
-      new BinaryNode('not in', new ConstantNode('a'), array),
-    ],
-    [
-      '(start, end) => Array.from({ length: end - start + 1 }, (_, i) => start + i)(1, 3)',
-      new BinaryNode('..', new ConstantNode(1), new ConstantNode(3)),
-    ],
+    ['inArray("a", ["a", "b"])', new BinaryNode('in', new ConstantNode('a'), array)],
+    ['inArray("c", ["a", "b"])', new BinaryNode('in', new ConstantNode('c'), array)],
+    ['notInArray("c", ["a", "b"])', new BinaryNode('not in', new ConstantNode('c'), array)],
+    ['notInArray("a", ["a", "b"])', new BinaryNode('not in', new ConstantNode('a'), array)],
+    ['range(1, 3)', new BinaryNode('..', new ConstantNode(1), new ConstantNode(3))],
     [
       '(function (regexp, str) { try { if (regexp.startsWith("/") && regexp.endsWith("/")) { regexp = regexp.slice(1, -1); } return new RegExp(regexp).test(str ?? ""); } catch () { throw new SyntaxError(\'Invalid regex passed to "matches".\'); } })("/^[a-z]+$/", "abc")',
       new BinaryNode('matches', new ConstantNode('abc'), new ConstantNode('/^[a-z]+$/')),
     ],
-    [
-      '(str, prefix) => str.startsWith(prefix)("abc", "a")',
-      new BinaryNode('starts with', new ConstantNode('abc'), new ConstantNode('a')),
-    ],
-    [
-      '(str, suffix) => str.endsWith(suffix)("abc", "c")',
-      new BinaryNode('ends with', new ConstantNode('abc'), new ConstantNode('c')),
-    ],
-    [
-      '(str, substr) => str?.includes(substr)("a", "b")',
-      new BinaryNode('contains', new ConstantNode('a'), new ConstantNode('b')),
-    ],
+    ['strStartsWith("abc", "a")', new BinaryNode('starts with', new ConstantNode('abc'), new ConstantNode('a'))],
+    ['strEndsWith("abc", "c")', new BinaryNode('ends with', new ConstantNode('abc'), new ConstantNode('c'))],
+    ['strContains("a", "b")', new BinaryNode('contains', new ConstantNode('a'), new ConstantNode('b'))],
   ];
 };
 

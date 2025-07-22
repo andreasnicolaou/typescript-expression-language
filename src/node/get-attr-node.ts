@@ -116,11 +116,12 @@ export class GetAttrNode extends Node {
    * @memberof GetAttrNode
    */
   public toArray(): (string | Node)[] {
+    const nullSafe = this.nodes?.['attribute'] instanceof ConstantNode && this.nodes?.['attribute']?.isNullSafe;
     switch (this.attributes.type) {
       case GetAttrNode.PROPERTY_CALL:
-        return [this.nodes.node, '.', this.nodes.attribute];
+        return [this.nodes.node, nullSafe ? '?.' : '.', this.nodes.attribute];
       case GetAttrNode.METHOD_CALL:
-        return [this.nodes.node, '.', this.nodes.attribute, '(', this.nodes.arguments, ')'];
+        return [this.nodes.node, nullSafe ? '?.' : '.', this.nodes.attribute, '(', this.nodes.arguments, ')'];
       case GetAttrNode.ARRAY_CALL:
         return [this.nodes.node, '[', this.nodes.attribute, ']'];
       default:

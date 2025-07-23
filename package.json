@@ -38,7 +38,7 @@
     "lru-cache": "^11.1.0"
   },
   "sideEffects": false,
-   "bundlewatch": {
+  "bundlewatch": {
     "files": [
       {
         "path": "dist/**/*.js",

@@ -101,7 +101,7 @@ describe('Lexer Tests', () => {
     lexer = new Lexer();
   });
 
-  it('should tokenize the expression correctly', () => {
+  test('should tokenize the expression correctly', () => {
     getTokenizeData().forEach(([expectedTokens, expression]) => {
       const tokens = [...expectedTokens, new Token(Token.EOF_TYPE, null, expression.length + 1)];
       const tokenStream = new TokenStream(tokens as Token[], expression as string);
@@ -110,7 +110,7 @@ describe('Lexer Tests', () => {
     });
   });
 
-  it('should tokenize multiline comments correctly', () => {
+  test('should tokenize multiline comments correctly', () => {
     const expression = `
           /**
             * This is 2^16, even if we could have
@@ -135,7 +135,7 @@ describe('Lexer Tests', () => {
     expect(lexer.tokenize(expression)).toEqual(tokenStream);
   });
 
-  it('should throw a SyntaxError with a message when there is an unexpected character', () => {
+  test('should throw a SyntaxError with a message when there is an unexpected character', () => {
     const expression = "service(faulty.expression.example').dummyMethod()";
     expect(() => lexer.tokenize(expression)).toThrow(
       new SyntaxError(
@@ -144,21 +144,21 @@ describe('Lexer Tests', () => {
     );
   });
 
-  it('should throw a SyntaxError when there is an unclosed brace', () => {
+  test('should throw a SyntaxError when there is an unclosed brace', () => {
     const expression = 'service(unclosed.expression.dummyMethod()';
     expect(() => lexer.tokenize(expression)).toThrow(
       new SyntaxError('Unclosed "(" around position 7 for expression `service(unclosed.expression.dummyMethod()`.')
     );
   });
 
-  it('should throw a SyntaxError when there is an unexpected closing bracket', () => {
+  test('should throw a SyntaxError when there is an unexpected closing bracket', () => {
     const expression = 'service)not.opened.expression.dummyMethod()';
     expect(() => lexer.tokenize(expression)).toThrow(
       new SyntaxError('Unexpected ")" around position 7 for expression `service)not.opened.expression.dummyMethod()`.')
     );
   });
 
-  it('should tokenize integer with underscores', () => {
+  test('should tokenize integer with underscores', () => {
     const expression = `1_000_000 and 2`;
     const tokens = [
       new Token(Token.NUMBER_TYPE, 1000000, 1),
@@ -170,7 +170,7 @@ describe('Lexer Tests', () => {
     expect(lexer.tokenize(expression)).toEqual(tokenStream);
   });
 
-  it('should tokenize float with underscores', () => {
+  test('should tokenize float with underscores', () => {
     const expression = `3.14_15 or 1.0_0`;
     const tokens = [
       new Token(Token.NUMBER_TYPE, 3.1415, 1),
@@ -182,7 +182,7 @@ describe('Lexer Tests', () => {
     expect(lexer.tokenize(expression)).toEqual(tokenStream);
   });
 
-  it('should tokenize an expression with arithmetic and comparison operators correctly', () => {
+  test('should tokenize an expression with arithmetic and comparison operators correctly', () => {
     const expression = 'User.age + 5 > 21 and User.score * 2 <= 200';
     const tokens = [
       new Token(Token.NAME_TYPE, 'User', 1),
@@ -204,5 +204,11 @@ describe('Lexer Tests', () => {
     ];
     const tokenStream = new TokenStream(tokens, expression);
     expect(lexer.tokenize(expression)).toEqual(tokenStream);
+  });
+
+  test('should throw SyntaxError for unclosed bracket', () => {
+    const expression = '(]';
+    expect(() => lexer.tokenize(expression)).toThrow(SyntaxError);
+    expect(() => lexer.tokenize(expression)).toThrow('Unclosed "("');
   });
 });

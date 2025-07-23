@@ -120,12 +120,6 @@ export class BinaryNode extends Node {
     right = this.nodes.right.evaluate(functions, values);
 
     switch (operator) {
-      case 'or':
-      case '||':
-        return left || right;
-      case 'and':
-      case '&&':
-        return left && right;
       case '|':
         return left | right;
       case '^':

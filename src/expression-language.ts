@@ -152,9 +152,7 @@ export class ExpressionLanguage {
    * @memberof ExpressionLanguage
    */
   private getLexer(): Lexer {
-    if (!this.lexer) {
-      this.lexer = new Lexer();
-    }
+    this.lexer ??= new Lexer();
     return this.lexer;
   }
 
@@ -164,9 +162,7 @@ export class ExpressionLanguage {
    * @memberof ExpressionLanguage
    */
   private getParser(): Parser {
-    if (!this.parser) {
-      this.parser = new Parser(this.functions);
-    }
+    this.parser ??= new Parser(this.functions);
     return this.parser;
   }
 
@@ -176,9 +172,7 @@ export class ExpressionLanguage {
    * @memberof ExpressionLanguage
    */
   private getCompiler(): Compiler {
-    if (!this.compiler) {
-      this.compiler = new Compiler(this.functions);
-    }
+    this.compiler ??= new Compiler(this.functions);
     return this.compiler.reset();
   }
 }

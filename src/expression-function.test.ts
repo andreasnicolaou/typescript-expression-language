@@ -239,4 +239,98 @@ describe('ExpressionFunction', () => {
     expect(evaluatedUpper).toBe('HELLO');
     expect(evaluatedLower).toBe('world');
   });
+
+  test('should resolve methods in jsFunctionMap', () => {
+    const nowFn = ExpressionFunction.fromJs('now');
+    expect(typeof nowFn.getEvaluator()(null)).toBe('number');
+    expect(nowFn.getCompiler()()).toBe('now()');
+
+    const date = new Date('2020-01-01T12:34:56Z');
+    const toISOStringFn = ExpressionFunction.fromJs('toISOString');
+    expect(toISOStringFn.getEvaluator()(null, date)).toBe(date.toISOString());
+    expect(toISOStringFn.getCompiler()(date)).toBe('toISOString(' + JSON.stringify(date) + ')');
+
+    const toDateStringFn = ExpressionFunction.fromJs('toDateString');
+    expect(toDateStringFn.getEvaluator()(null, date)).toBe(date.toDateString());
+    expect(toDateStringFn.getCompiler()(date)).toBe('toDateString(' + JSON.stringify(date) + ')');
+
+    const getTimeFn = ExpressionFunction.fromJs('getTime');
+    expect(getTimeFn.getEvaluator()(null, date)).toBe(date.getTime());
+    expect(getTimeFn.getCompiler()(date)).toBe('getTime(' + JSON.stringify(date) + ')');
+
+    const getFullYearFn = ExpressionFunction.fromJs('getFullYear');
+    expect(getFullYearFn.getEvaluator()(null, date)).toBe(date.getFullYear());
+    expect(getFullYearFn.getCompiler()(date)).toBe('getFullYear(' + JSON.stringify(date) + ')');
+
+    const getMonthFn = ExpressionFunction.fromJs('getMonth');
+    expect(getMonthFn.getEvaluator()(null, date)).toBe(date.getMonth());
+    expect(getMonthFn.getCompiler()(date)).toBe('getMonth(' + JSON.stringify(date) + ')');
+
+    const getDayFn = ExpressionFunction.fromJs('getDay');
+    expect(getDayFn.getEvaluator()(null, date)).toBe(date.getDay());
+    expect(getDayFn.getCompiler()(date)).toBe('getDay(' + JSON.stringify(date) + ')');
+
+    const getMinutesFn = ExpressionFunction.fromJs('getMinutes');
+    expect(getMinutesFn.getEvaluator()(null, date)).toBe(date.getMinutes());
+    expect(getMinutesFn.getCompiler()(date)).toBe('getMinutes(' + JSON.stringify(date) + ')');
+
+    // RegExp methods
+    const testFn = ExpressionFunction.fromJs('test');
+    expect(testFn.getEvaluator()(null, /abc/, 'abc')).toBe(true);
+    expect(testFn.getCompiler()(/abc/, 'abc')).toBe('test(/abc/, abc)');
+
+    const execFn = ExpressionFunction.fromJs('exec');
+    expect(execFn.getEvaluator()(null, /abc/, 'abc')[0]).toBe('abc');
+    expect(execFn.getCompiler()(/abc/, 'abc')).toBe('exec(/abc/, abc)');
+
+    // Array methods
+    const concatFn = ExpressionFunction.fromJs('concat');
+    expect(concatFn.getEvaluator()(null, [1, 2], [3, 4])).toEqual([1, 2, 3, 4]);
+    expect(concatFn.getCompiler()([1, 2], [3, 4])).toBe('concat([1,2], [3,4])');
+
+    const fromFn = ExpressionFunction.fromJs('from');
+    expect(fromFn.getEvaluator()(null, [1, 2, 3])).toEqual([1, 2, 3]);
+    expect(fromFn.getCompiler()([1, 2, 3])).toBe('from([1,2,3])');
+
+    const ofFn = ExpressionFunction.fromJs('of');
+    expect(ofFn.getEvaluator()(null, 1, 2, 3)).toEqual([1, 2, 3]);
+    expect(ofFn.getCompiler()(1, 2, 3)).toBe('of(1, 2, 3)');
+
+    // String methods
+    const charAtFn = ExpressionFunction.fromJs('charAt');
+    expect(charAtFn.getEvaluator()(null, 'hello', 1)).toBe('e');
+    expect(charAtFn.getCompiler()('hello', 1)).toBe('charAt(hello, 1)');
+
+    const charCodeAtFn = ExpressionFunction.fromJs('charCodeAt');
+    expect(charCodeAtFn.getEvaluator()(null, 'hello', 1)).toBe('e'.charCodeAt(0));
+    expect(charCodeAtFn.getCompiler()('hello', 1)).toBe('charCodeAt(hello, 1)');
+
+    const includesFn = ExpressionFunction.fromJs('includes');
+    expect(includesFn.getEvaluator()(null, 'hello', 'ell')).toBe(true);
+    expect(includesFn.getCompiler()('hello', 'ell')).toBe('includes(hello, ell)');
+
+    const indexOfFn = ExpressionFunction.fromJs('indexOf');
+    expect(indexOfFn.getEvaluator()(null, 'hello', 'e')).toBe(1);
+    expect(indexOfFn.getCompiler()('hello', 'e')).toBe('indexOf(hello, e)');
+
+    const splitFn = ExpressionFunction.fromJs('split');
+    expect(splitFn.getEvaluator()(null, 'a,b,c', ',')).toEqual(['a', 'b', 'c']);
+    expect(splitFn.getCompiler()('a,b,c', ',')).toBe('split(a,b,c, ,)');
+
+    const trimFn = ExpressionFunction.fromJs('trim');
+    expect(trimFn.getEvaluator()(null, ' hello ')).toBe('hello');
+    expect(trimFn.getCompiler()(' hello ')).toBe('trim( hello )');
+
+    const toFixedFn = ExpressionFunction.fromJs('toFixed');
+    expect(toFixedFn.getEvaluator()(null, 3.14159, 2)).toBe('3.14');
+    expect(toFixedFn.getCompiler()(3.14159, 2)).toBe('toFixed(3.14159, 2)');
+
+    const absFn = ExpressionFunction.fromJs('abs');
+    expect(absFn.getEvaluator()(null, -5)).toBe(5);
+    expect(absFn.getCompiler()(-5)).toBe('abs(-5)');
+
+    const powFn = ExpressionFunction.fromJs('pow');
+    expect(powFn.getEvaluator()(null, 2, 3)).toBe(8);
+    expect(powFn.getCompiler()(2, 3)).toBe('pow(2, 3)');
+  });
 });

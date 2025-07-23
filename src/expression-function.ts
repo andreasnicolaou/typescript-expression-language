@@ -38,6 +38,9 @@ export class ExpressionFunction {
     }
     const compiler: Callable = (...args: any[]): any => {
       const formattedArgs = args.map((arg) => {
+        if (arg instanceof RegExp) {
+          return arg.toString();
+        }
         if (typeof arg === 'object' && arg !== null) {
           return JSON.stringify(arg);
         }

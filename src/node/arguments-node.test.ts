@@ -1,7 +1,6 @@
 import { Compiler } from '../compiler';
 import { ArgumentsNode } from './arguments-node';
 import { ConstantNode } from './constant-node';
-import { Node } from './node';
 
 const getCompileData = (): (string | ArgumentsNode)[][] => {
   return [['"a", "b"', getArrayNode()]];
@@ -21,21 +20,6 @@ const getArrayNode = (): ArgumentsNode => {
 const createArrayNode = (): ArgumentsNode => {
   return new ArgumentsNode();
 };
-
-class TestArgumentsNode extends ArgumentsNode {
-  constructor(private readonly pairs: { key: Node | null; value: Node }[] = []) {
-    super();
-  }
-  protected getKeyValuePairs(): { key: Node; value: Node }[] {
-    return this.pairs.map((pair) => {
-      let key = pair.key;
-      if (key === null) {
-        key = new ConstantNode('dummy'); // Replace null keys with a dummy ConstantNode
-      }
-      return { key, value: pair.value };
-    });
-  }
-}
 
 describe('ArgumentsNode', () => {
   test('should return expected compile data', () => {
@@ -57,25 +41,25 @@ describe('ArgumentsNode', () => {
   });
 
   test('should return an empty array for no arguments', () => {
-    const testArgumentsNode = new TestArgumentsNode([]);
-    expect(testArgumentsNode.toArray()).toEqual([]);
+    const node = new ArgumentsNode();
+    expect(node.toArray()).toEqual([]);
   });
 
   test('should return array with one argument and no comma', () => {
+    const node = new ArgumentsNode();
     const constantNode = new ConstantNode('a');
-    const testArgumentsNode = new TestArgumentsNode([{ key: null, value: constantNode }]);
-    expect(testArgumentsNode.toArray()).toEqual([constantNode]);
+    node.addElement(constantNode);
+    expect(node.toArray()).toEqual([constantNode]);
   });
 
   test('should return array with multiple arguments and commas', () => {
+    const node = new ArgumentsNode();
     const constantNode1 = new ConstantNode('a');
     const constantNode2 = new ConstantNode('b');
     const constantNode3 = new ConstantNode('c');
-    const node = new TestArgumentsNode([
-      { key: null, value: constantNode1 },
-      { key: null, value: constantNode2 },
-      { key: null, value: constantNode3 },
-    ]);
+    node.addElement(constantNode1);
+    node.addElement(constantNode2);
+    node.addElement(constantNode3);
     expect(node.toArray()).toEqual([constantNode1, ', ', constantNode2, ', ', constantNode3]);
   });
 

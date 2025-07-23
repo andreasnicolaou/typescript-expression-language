@@ -293,4 +293,14 @@ describe('ExpressionLanguage', () => {
   test('should register default functions', () => {
     expect(Object.keys(expressionLanguage['functions'])).toEqual(expect.arrayContaining(['min', 'max', 'now']));
   });
+
+  test('should return ParsedExpression instance directly from parse', () => {
+    const parsed = expressionLanguage.parse('1+1', []);
+    expect(expressionLanguage.parse(parsed, [])).toBe(parsed);
+  });
+
+  test('should return early from lint if expression is ParsedExpression', () => {
+    const parsed = expressionLanguage.parse('1+1', []);
+    expect(() => expressionLanguage.lint(parsed, ['a'])).not.toThrow();
+  });
 });

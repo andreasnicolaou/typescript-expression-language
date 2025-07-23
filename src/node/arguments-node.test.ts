@@ -27,10 +27,13 @@ class TestArgumentsNode extends ArgumentsNode {
     super();
   }
   protected getKeyValuePairs(): { key: Node; value: Node }[] {
-    return this.pairs.map((pair) => ({
-      key: pair.key ?? new ConstantNode('dummy'), // Replace null keys with a dummy ConstantNode
-      value: pair.value,
-    }));
+    return this.pairs.map((pair) => {
+      let key = pair.key;
+      if (key === null) {
+        key = new ConstantNode('dummy'); // Replace null keys with a dummy ConstantNode
+      }
+      return { key, value: pair.value };
+    });
   }
 }
 

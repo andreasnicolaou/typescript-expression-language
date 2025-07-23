@@ -3,7 +3,7 @@ import { ConstantNode } from './constant-node'; // Adjust import path as needed
 import { Compiler } from '../compiler';
 
 describe('NodeTest', () => {
-  test('shoue expect same toString', () => {
+  test('should expect same toString', () => {
     const node = new Node({ child: new ConstantNode('foo') });
 
     const expectedOutput = `Node(

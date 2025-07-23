@@ -12,12 +12,13 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest",
     "format": "prettier --write .",
     "lint": "eslint --fix",
+    "test": "jest",
     "test:ci": "cross-env JEST_JUNIT_CLASSNAME=\"{filepath}\" jest --reporters=default --reporters=jest-junit",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:bundle": "bundlewatch"
   },
   "homepage": "https://github.com/andreasnicolaou/typescript-expression-language#readme",
   "repository": {
@@ -37,6 +38,14 @@
     "lru-cache": "^11.1.0"
   },
   "sideEffects": false,
+   "bundlewatch": {
+    "files": [
+      {
+        "path": "dist/**/*.js",
+        "maxSize": "10kB"
+      }
+    ]
+  },
   "jest": {
     "transform": {
       "^.+\\.(ts)$": [

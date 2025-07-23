@@ -23,6 +23,10 @@ jobs:
         run: npm install
       - name: Run lint
         run: npm run lint
+      - name: Build project
+        run: npm run build
+      - name: Run bundle size check
+        run: npm run test:bundle
       - name: Run tests and generate JUnit XML
         run: npm run test:ci
       - name: Run tests with coverage

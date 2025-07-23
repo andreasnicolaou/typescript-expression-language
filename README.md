@@ -1,18 +1,24 @@
 # TypeScript Symfony Expression Language
 
-A **TypeScript implementation** of the popular Symfony Expression Language! This library allows you to evaluate complex expressions **client-side**, fully mirroring the functionality of the PHP version.
+A **TypeScript implementation** of the popular **Symfony Expression Language**! This library allows you to evaluate complex expressions **client-side**, fully mirroring the functionality of the PHP version.
 
 Use it to create dynamic and flexible expression-based logic on the frontend, perfectly synchronized with the server-side implementation in Symfony/PHP.
 
-![Static Badge](https://img.shields.io/badge/TypeScript-blue)
+![TypeScript](https://img.shields.io/badge/TS-TypeScript-3178c6?logo=typescript&logoColor=white)
 ![GitHub contributors](https://img.shields.io/github/contributors/andreasnicolaou/typescript-expression-language)
 ![GitHub License](https://img.shields.io/github/license/andreasnicolaou/typescript-expression-language)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/andreasnicolaou/typescript-expression-language/build.yaml)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/andreasnicolaou/typescript-expression-language)
+[![Known Vulnerabilities](https://snyk.io/test/github/andreasnicolaou/typescript-expression-language/badge.svg)](https://snyk.io/test/github/andreasnicolaou/typescript-expression-language)
+![Bundle Size](https://img.shields.io/bundlephobia/minzip/@andreasnicolaou/typescript-expression-language)
+
+![ESLint](https://img.shields.io/badge/linter-eslint-4B32C3.svg?logo=eslint)
+![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?logo=prettier)
+![Jest](https://img.shields.io/badge/tested_with-jest-99424f.svg?logo=jest)
+![Maintenance](https://img.shields.io/maintenance/yes/2025)
+[![codecov](https://codecov.io/gh/andreasnicolaou/typescript-expression-language/graph/badge.svg?token=ELH4YWG68O)](https://codecov.io/gh/andreasnicolaou/typescript-expression-language)
 
 ![NPM Downloads](https://img.shields.io/npm/dm/%40andreasnicolaou%2Ftypescript-expression-language)
-
-[![codecov](https://codecov.io/gh/andreasnicolaou/typescript-expression-language/graph/badge.svg?token=ELH4YWG68O)](https://codecov.io/gh/andreasnicolaou/typescript-expression-language)
 
 <details>
   <summary>📊 Code Coverage Visualizations</summary>

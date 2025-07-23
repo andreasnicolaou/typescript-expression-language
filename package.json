@@ -18,7 +18,7 @@
     "test:ci": "cross-env JEST_JUNIT_CLASSNAME=\"{filepath}\" jest --reporters=default --reporters=jest-junit",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:bundle": "bundlewatch"
+    "test:bundle": "npx bundlewatch"
   },
   "homepage": "https://github.com/andreasnicolaou/typescript-expression-language#readme",
   "repository": {

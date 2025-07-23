@@ -36,6 +36,7 @@
     "locutus": "^2.0.32",
     "lru-cache": "^11.1.0"
   },
+  "sideEffects": false,
   "jest": {
     "transform": {
       "^.+\\.(ts)$": [

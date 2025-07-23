@@ -1,6 +1,6 @@
 # TypeScript Symfony Expression Language
 
-A **TypeScript implementation** of the popular **Symfony Expression Language**! This library allows you to evaluate complex expressions **client-side**, fully mirroring the functionality of the PHP version.
+A **TypeScript implementation** of the popular **Symfony Expression Language**. This library allows you to evaluate complex expressions **client-side**, fully mirroring the functionality of the PHP version.
 
 Use it to create dynamic and flexible expression-based logic on the frontend, perfectly synchronized with the server-side implementation in Symfony/PHP.
 

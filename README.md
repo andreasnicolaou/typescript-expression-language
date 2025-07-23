@@ -14,6 +14,28 @@ Use it to create dynamic and flexible expression-based logic on the frontend, pe
 
 [![codecov](https://codecov.io/gh/andreasnicolaou/typescript-expression-language/graph/badge.svg?token=ELH4YWG68O)](https://codecov.io/gh/andreasnicolaou/typescript-expression-language)
 
+<details>
+  <summary>📊 Code Coverage Visualizations</summary>
+  <br/>
+
+### Tree View
+
+![Tree Coverage](https://codecov.io/gh/andreasnicolaou/typescript-expression-language/graphs/tree.svg?token=ELH4YWG68O)
+
+---
+
+### Sunburst View
+
+![Sunburst Coverage](https://codecov.io/gh/andreasnicolaou/typescript-expression-language/graphs/sunburst.svg?token=ELH4YWG68O)
+
+---
+
+### Icicle View
+
+![Icicle Coverage](https://codecov.io/gh/andreasnicolaou/typescript-expression-language/graphs/icicle.svg?token=ELH4YWG68O)
+
+</details>
+
 ## ![GitHub Repo stars](https://img.shields.io/github/stars/andreasnicolaou/typescript-expression-language)
 
 ## 🧪 Demo
@@ -75,8 +97,8 @@ const context = {
     method: (arg: string) => `value`,
   },
 };
-const result = expressionLanguage.evaluate(expression, context);  → `true`
-console.log(result)  // Outputs → `true`
+const result = expressionLanguage.evaluate(expression, context);
+console.log(result); // Outputs → `true`
 ```
 
 Custom Functions

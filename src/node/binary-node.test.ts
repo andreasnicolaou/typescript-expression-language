@@ -1,3 +1,4 @@
+import { SyntaxError } from '../syntax-error';
 import { Compiler } from '../compiler';
 import { ArrayNode } from './array-node';
 import { BinaryNode } from './binary-node';
@@ -165,5 +166,74 @@ describe('BinaryNode', () => {
     getDumpData().forEach(([expected, node]) => {
       expect((node as BinaryNode).dump()).toEqual(expected);
     });
+  });
+
+  test('should evaluate fallback or/and operator branches', () => {
+    // fallback 'or' branch: left is truthy, right should not be evaluated
+    const orNode = new BinaryNode('or', new ConstantNode(true), new ConstantNode(false));
+    expect(orNode.evaluate({}, {})).toBe(true);
+    // fallback 'or' branch: left is falsy, right should be evaluated
+    const orNode2 = new BinaryNode('or', new ConstantNode(false), new ConstantNode(true));
+    expect(orNode2.evaluate({}, {})).toBe(true);
+    // fallback 'and' branch: left is truthy, right should be evaluated
+    const andNode = new BinaryNode('and', new ConstantNode(true), new ConstantNode(true));
+    expect(andNode.evaluate({}, {})).toBe(true);
+    // fallback 'and' branch: left is falsy, right should not be evaluated
+    const andNode2 = new BinaryNode('and', new ConstantNode(false), new ConstantNode(true));
+    expect(andNode2.evaluate({}, {})).toBe(false);
+  });
+
+  test('should throw SyntaxError for matches with invalid regex', () => {
+    const node = new BinaryNode('matches', new ConstantNode('abc'), new ConstantNode('/[invalid['));
+    expect(() => node.evaluate({}, {})).toThrow(SyntaxError);
+  });
+
+  test('should throw SyntaxError for matches with wrong node type', () => {
+    const right = new BinaryNode('+', new ConstantNode(1), new ConstantNode(2));
+    const node = new BinaryNode('matches', new ConstantNode('abc'), right);
+    // right operator is not '~', should throw
+    expect(() => node.compile(new Compiler({}))).toThrow(SyntaxError);
+  });
+
+  test('should throw Error for division by zero', () => {
+    const node = new BinaryNode('/', new ConstantNode(1), new ConstantNode(0));
+    expect(() => node.evaluate({}, {})).toThrow('Division by zero.');
+  });
+
+  test('should throw Error for modulo by zero', () => {
+    const node = new BinaryNode('%', new ConstantNode(1), new ConstantNode(0));
+    expect(() => node.evaluate({}, {})).toThrow('Modulo by zero.');
+  });
+
+  test('should throw Error for unsupported operator', () => {
+    const node = new BinaryNode('unsupported', new ConstantNode(1), new ConstantNode(2));
+    expect(() => node.evaluate({}, {})).toThrow('Operator "unsupported" not supported.');
+  });
+
+  test('should evaluate logical or in fallback switch', () => {
+    const node = new BinaryNode('||', new ConstantNode(false), new ConstantNode(true));
+    expect(node.evaluate({}, {})).toBe(true);
+  });
+
+  test('should evaluate logical and in fallback switch', () => {
+    const node = new BinaryNode('&&', new ConstantNode(true), new ConstantNode(true));
+    expect(node.evaluate({}, {})).toBe(true);
+  });
+
+  test('should throw Error for unsupported function operator', () => {
+    // Patch FUNCTIONS to simulate bad operator
+    const node = new BinaryNode('placeholderFunc', new ConstantNode(1), new ConstantNode(2));
+    BinaryNode['FUNCTIONS']['placeholderFunc'] = 'notAFunction';
+    expect(() => node.evaluate({}, {})).toThrow('Unsupported function operator: placeholderFunc');
+    delete BinaryNode['FUNCTIONS']['placeholderFunc'];
+  });
+
+  test('should evaluate strContains, strStartsWith, strEndsWith', () => {
+    const contains = new BinaryNode('contains', new ConstantNode('hello world'), new ConstantNode('world'));
+    expect(contains.evaluate({}, {})).toBe(true);
+    const startsWith = new BinaryNode('starts with', new ConstantNode('hello world'), new ConstantNode('hello'));
+    expect(startsWith.evaluate({}, {})).toBe(true);
+    const endsWith = new BinaryNode('ends with', new ConstantNode('hello world'), new ConstantNode('world'));
+    expect(endsWith.evaluate({}, {})).toBe(true);
   });
 });

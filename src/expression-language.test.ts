@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Compiler } from './compiler';
+import { ExpressionFunction } from './expression-function';
 import { ExpressionFunctionProvider, ExpressionLanguage } from './expression-language';
+import { Lexer } from './lexer';
+import { Parser } from './parser';
 
 const getEvaluateData = (): (string | Record<string, any> | number | null | boolean)[][] => {
   return [
@@ -240,5 +244,63 @@ describe('ExpressionLanguage', () => {
         expect(result).toBe(expectedOutcome);
       }
     });
+  });
+
+  test('should initialize with providers and register their functions', () => {
+    const provider = {
+      getFunctions: (): ExpressionFunction[] => [
+        ExpressionFunction.fromJs(
+          'CUSTOM_FN',
+          (x: string) => {
+            return x;
+          },
+          'my_custom_fn'
+        ),
+      ],
+    };
+    const containedExpressionLanguage = new ExpressionLanguage(undefined, [provider]);
+    expect(Object.keys(containedExpressionLanguage['functions'])).toContain('my_custom_fn');
+  });
+
+  test('should call lint with null names and set flags', () => {
+    expect(() => expressionLanguage.lint('1+1', null)).not.toThrow();
+  });
+
+  test('should throw error when registering after parser is created', () => {
+    expressionLanguage.parse('1+1', ['a']);
+    expect(() =>
+      expressionLanguage.register(
+        'foo',
+        new ExpressionFunction(
+          'foo',
+          (y: string) => {
+            return y;
+          },
+          (w: string) => {
+            return w;
+          }
+        )
+      )
+    ).toThrow('Registering functions after calling evaluate(), compile() or parse() is not supported.');
+  });
+
+  test('should getLexer, getParser, getCompiler', () => {
+    expect(expressionLanguage['getLexer']()).toBeInstanceOf(Lexer);
+    expect(expressionLanguage['getParser']()).toBeInstanceOf(Parser);
+    expect(expressionLanguage['getCompiler']()).toBeInstanceOf(Compiler);
+  });
+
+  test('should register default functions', () => {
+    expect(Object.keys(expressionLanguage['functions'])).toEqual(expect.arrayContaining(['min', 'max', 'now']));
+  });
+
+  test('should return ParsedExpression instance directly from parse', () => {
+    const parsed = expressionLanguage.parse('1+1', []);
+    expect(expressionLanguage.parse(parsed, [])).toBe(parsed);
+  });
+
+  test('should return early from lint if expression is ParsedExpression', () => {
+    const parsed = expressionLanguage.parse('1+1', []);
+    expect(() => expressionLanguage.lint(parsed, ['a'])).not.toThrow();
   });
 });

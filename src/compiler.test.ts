@@ -1,23 +1,27 @@
 import { Compiler } from './compiler';
 
 describe('Compiler', () => {
+  let compiler!: Compiler;
+
+  beforeEach(() => {
+    compiler = new Compiler({});
+  });
+
   test('should retrieve the correct function', () => {
     const functions = {
       testFunction: (): string => 'test',
     };
-    const compiler = new Compiler(functions);
-    expect(compiler.getFunction('testFunction')).toBe(functions.testFunction);
+    const fnCompiler = new Compiler(functions);
+    expect(fnCompiler.getFunction('testFunction')).toBe(functions.testFunction);
   });
 
   test('should retrieve the current source code', () => {
-    const compiler = new Compiler({});
     expect(compiler.getSource()).toBe('');
     compiler.raw('some code');
     expect(compiler.getSource()).toBe('some code');
   });
 
   test('should reset the current source', () => {
-    const compiler = new Compiler({});
     compiler.raw('some code');
     expect(compiler.getSource()).toBe('some code');
     compiler.reset();
@@ -25,20 +29,16 @@ describe('Compiler', () => {
   });
 
   test('raw should append a raw string to the source', () => {
-    const compiler = new Compiler({});
     compiler.raw('code snippet');
     expect(compiler.getSource()).toBe('code snippet');
   });
 
   test('string should append a quoted string with escaped characters', () => {
-    const compiler = new Compiler({});
     compiler.string('example "text"');
     expect(compiler.getSource()).toBe('"example \\"text\\""');
   });
 
   test('repr should handle various value types correctly', () => {
-    const compiler = new Compiler({});
-
     compiler.repr(42);
     expect(compiler.getSource()).toBe('42');
 
@@ -56,5 +56,14 @@ describe('Compiler', () => {
 
     compiler.reset().repr({ key: 'value' });
     expect(compiler.getSource()).toBe('{"key":"value"}');
+  });
+
+  test('repr should output raw value when isIdentifier is true', () => {
+    compiler.repr('foo', true);
+    expect(compiler.getSource()).toBe('foo');
+    compiler.reset().repr('bar', true);
+    expect(compiler.getSource()).toBe('bar');
+    compiler.reset().repr(123, true);
+    expect(compiler.getSource()).toBe('123');
   });
 });

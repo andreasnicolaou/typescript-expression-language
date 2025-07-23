@@ -246,15 +246,15 @@ const getLintData = (): Array<{
 
 describe('Parser', () => {
   let lexer!: Lexer;
+  let parser!: Parser;
 
   beforeEach(() => {
     lexer = new Lexer();
+    parser = new Parser(Object.create(Object.prototype));
   });
 
   test('should suggest a name proposal for invalid expressions', () => {
-    const parser = new Parser(Object.create(Object.prototype));
     const invalidExpression = 'foo > bar';
-
     expect(() => {
       parser.parse(lexer.tokenize(invalidExpression), ['foo', 'baz']);
     }).toThrow(SyntaxError);
@@ -264,7 +264,6 @@ describe('Parser', () => {
   });
 
   test('should throw an error for invalid variable names', () => {
-    const parser = new Parser(Object.create(Object.prototype));
     expect(() => {
       parser.parse(lexer.tokenize('foo'));
     }).toThrow(SyntaxError);
@@ -275,36 +274,29 @@ describe('Parser', () => {
 
   test('should throw an error for unknown functions', () => {
     expect(() => {
-      new Parser(Object.create(Object.prototype)).parse(new Lexer().tokenize('foo()'));
+      parser.parse(new Lexer().tokenize('foo()'));
     }).toThrow(SyntaxError);
   });
 
   test('should parse valid expressions', () => {
     getParseData().forEach(([node, expression, names]) => {
-      expect(
-        new Parser(Object.create(Object.prototype))
-          .parse(new Lexer().tokenize(expression as string), names as string[])
-          .toString()
-      ).toBe(node.toString());
+      expect(parser.parse(new Lexer().tokenize(expression as string), names as string[]).toString()).toBe(
+        node.toString()
+      );
     });
   });
 
   test('should throw an error for invalid postfix expressions', () => {
     getInvalidPostfixData().forEach(([expression, names]) => {
       expect(() => {
-        new Parser(Object.create(Object.prototype)).parse(
-          new Lexer().tokenize(expression as string),
-          names as string[]
-        );
+        parser.parse(new Lexer().tokenize(expression as string), names as string[]);
       }).toThrow(SyntaxError);
     });
   });
 
   getLintData().forEach((testCase, index) => {
     test(`should handle lint case #${index + 1}: ${testCase.expression}`, () => {
-      const parser = new Parser(Object.create(Object.prototype));
       const { expression, names, checks = 0, exception } = testCase;
-
       if (exception) {
         expect(() => {
           parser.lint(lexer.tokenize(expression), names, checks);
@@ -318,5 +310,34 @@ describe('Parser', () => {
         }).not.toThrow();
       }
     });
+  });
+
+  test('should parse hash key as expression in parentheses', () => {
+    const stream = lexer.tokenize('{(1+1): 2}');
+    expect(() => {
+      parser.parse(stream, []);
+    }).not.toThrow();
+  });
+
+  test('should throw SyntaxError for invalid token type', () => {
+    const stream = lexer.tokenize('{[1]: 2}');
+    expect(() => {
+      parser.parse(stream, []);
+    }).toThrow(SyntaxError);
+    expect(() => {
+      parser.parse(stream, []);
+    }).toThrow('Unexpected token "punctuation" of value ":" around position 5 for expression `{[1]: 2}`.');
+  });
+
+  test('should warn when lint is called with names=null', () => {
+    const stream = lexer.tokenize('1+1');
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {
+      return null;
+    });
+    parser.lint(stream, null);
+    expect(spy).toHaveBeenCalledWith(
+      'Passing "null" as the second argument of "lint()" is deprecated. Use "Parser.IGNORE_UNKNOWN_VARIABLES" instead.'
+    );
+    spy.mockRestore();
   });
 });

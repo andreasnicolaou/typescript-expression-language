@@ -1,8 +1,9 @@
-import { Node } from './node'; // Adjust import path as needed
+import { Node } from './node';
 import { ConstantNode } from './constant-node'; // Adjust import path as needed
+import { Compiler } from '../compiler';
 
 describe('NodeTest', () => {
-  test('shoue expect same toString', () => {
+  test('should have the same toString output', () => {
     const node = new Node({ child: new ConstantNode('foo') });
 
     const expectedOutput = `Node(
@@ -11,7 +12,7 @@ describe('NodeTest', () => {
     expect(node.toString()).toBe(expectedOutput);
   });
 
-  test('shoudl serialize correctly', () => {
+  test('should serialize correctly', () => {
     const node = new Node({ foo: new ConstantNode('bar') }, { bar: 'foo' });
     const serializedNode = JSON.stringify(node);
     const unserializedNode = Object.assign(new Node(), JSON.parse(serializedNode));
@@ -33,5 +34,31 @@ describe('NodeTest', () => {
     for (const node of Object.values(nodes)) {
       expect(node.evaluate).toHaveBeenCalledWith({}, {});
     }
+  });
+
+  test('should throw error for toArray on base Node', () => {
+    const node = new Node();
+    expect(() => node.toArray()).toThrow('Dumping a "Node" instance is not supported yet.');
+  });
+
+  test('should detect hash and non-hash arrays with isHash', () => {
+    const node = new Node();
+    // Sequential keys (not a hash)
+    expect(node['isHash']({ 0: 'a', 1: 'b', 2: 'c' })).toBe(false);
+    // Non-sequential keys (is a hash)
+    expect(node['isHash']({ 0: 'a', 2: 'b' })).toBe(true);
+    // String keys (is a hash)
+    expect(node['isHash']({ foo: 'bar', 0: 'baz' })).toBe(true);
+    // Empty object (not a hash)
+    expect(node['isHash']({})).toBe(false);
+  });
+
+  test('should call compile on all child nodes', () => {
+    const child = new Node();
+    const parent = new Node({ child });
+    const spy = jest.spyOn(child, 'compile');
+    const compiler = new Compiler({});
+    parent.compile(compiler);
+    expect(spy).toHaveBeenCalledWith(compiler);
   });
 });

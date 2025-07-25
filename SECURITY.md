@@ -33,4 +33,4 @@ We will review and address all security reports promptly and confidentially. You
 ## Community Guidelines
 
 - Review and follow our [Code of Conduct](./CODE_OF_CONDUCT.md) and [Contributing Guidelines](./CONTRIBUTING.md).
-Thank you for helping keep this project and its users safe!
+  Thank you for helping keep this project and its users safe!

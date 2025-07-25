@@ -40,11 +40,13 @@ If you experience or witness unacceptable behavior, please report it to the proj
 ## Development Setup
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
 2. Build the project:
+
    ```bash
    npm run build
    ```
@@ -59,6 +61,7 @@ If you experience or witness unacceptable behavior, please report it to the proj
 ### Branch Naming
 
 Create a descriptive branch name:
+
 - `feature/add-new-operator` for new features
 - `fix/parser-error-handling` for bug fixes
 - `docs/update-readme` for documentation
@@ -67,11 +70,13 @@ Create a descriptive branch name:
 ### Commit Messages
 
 Use clear, descriptive commit messages:
+
 - Start with a verb in present tense (add, fix, update, remove)
 - Keep the first line under 50 characters
 - Add detailed description if needed
 
 Examples:
+
 ```
 Add support for null coalescing operator
 
@@ -106,15 +111,16 @@ npm run test:ci
 - Use descriptive test names that explain the behavior being tested
 
 Example test structure:
+
 ```typescript
 describe('FeatureName', () => {
   test('should handle basic case', () => {
     // Arrange
     const input = 'test input';
-    
+
     // Act
     const result = featureFunction(input);
-    
+
     // Assert
     expect(result).toBe('expected output');
   });
@@ -124,6 +130,7 @@ describe('FeatureName', () => {
 ### Test Coverage
 
 We aim for high test coverage. Before submitting:
+
 1. Run `npm run test:coverage`
 2. Ensure new code is covered by tests
 3. Check that overall coverage doesn't decrease
@@ -133,6 +140,7 @@ We aim for high test coverage. Before submitting:
 ### Formatting
 
 This project uses Prettier for code formatting with the following configuration:
+
 - Single quotes
 - Semicolons
 - 120 character line width
@@ -140,6 +148,7 @@ This project uses Prettier for code formatting with the following configuration:
 - Trailing commas (ES5)
 
 Run formatting:
+
 ```bash
 npm run format
 ```
@@ -147,6 +156,7 @@ npm run format
 ### Linting
 
 We use ESLint with TypeScript rules:
+
 ```bash
 npm run lint
 ```
@@ -160,6 +170,7 @@ npm run lint
 - Follow existing patterns in the codebase
 
 Example:
+
 ```typescript
 /**
  * Parses an expression string into an AST node.
@@ -190,20 +201,24 @@ public parse(expression: string, names: string[]): Node {
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 - [ ] Tests pass locally
 - [ ] New tests added for changes
 - [ ] Coverage maintained or improved
 
 ## Checklist
+
 - [ ] Code follows style guidelines
 - [ ] Self-review completed
 - [ ] Documentation updated
@@ -222,6 +237,7 @@ Brief description of changes
 ### Bug Reports
 
 When reporting bugs, include:
+
 - Clear, descriptive title
 - Steps to reproduce
 - Expected vs actual behavior
@@ -231,6 +247,7 @@ When reporting bugs, include:
 ### Feature Requests
 
 For feature requests, include:
+
 - Clear description of the proposed feature
 - Use cases and motivation
 - Examples of how it would work
@@ -269,6 +286,5 @@ src/
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
----
 
 Thank you for contributing! 🎉

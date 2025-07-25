@@ -269,19 +269,6 @@ src/
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
-## Contribution Recognition
-
-We value and appreciate all contributions to this project. Contributors are recognized in the following ways:
-
-- All merged pull requests are credited in the GitHub contributors list.
-- Major contributions and bug fixes are highlighted in release notes and changelogs.
-- Contributors may be acknowledged in documentation or project announcements.
-- If you wish to remain anonymous, please indicate this in your pull request or issue.
-
-Thank you for helping make this project better!
-
-By contributing, you agree that your contributions will be licensed under the MIT License.
-
 ---
 
 Thank you for contributing! 🎉

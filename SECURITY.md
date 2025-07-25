@@ -28,7 +28,9 @@ We will review and address all security reports promptly and confidentially. You
 ## Security Best Practices
 
 - Keep your dependencies up to date.
-- Review and follow our [Code of Conduct](./CODE_OF_CONDUCT.md) and [Contributing Guidelines](./CONTRIBUTING.md).
 - If you have questions about secure usage, contact the maintainer.
 
+## Community Guidelines
+
+- Review and follow our [Code of Conduct](./CODE_OF_CONDUCT.md) and [Contributing Guidelines](./CONTRIBUTING.md).
 Thank you for helping keep this project and its users safe!

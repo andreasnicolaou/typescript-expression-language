@@ -6,6 +6,8 @@ import { GetAttrNode } from './get-attr-node';
 import { NameNode } from './name-node';
 import { ArgumentsNode } from './arguments-node';
 
+type TestData = string | GetAttrNode | Record<string, any>;
+
 class Obj {
   foo = 'bar';
   fooMethod = (): string => {
@@ -20,7 +22,7 @@ const generateNode = (): ArrayNode => {
   return array;
 };
 
-const getEvaluateData = (): (string | GetAttrNode | Record<string, any>)[][] => [
+const getEvaluateData = (): TestData[][] => [
   [
     'b',
     new GetAttrNode(new NameNode('foo'), new ConstantNode(0), generateNode(), GetAttrNode.ARRAY_CALL),
@@ -48,7 +50,7 @@ const getEvaluateData = (): (string | GetAttrNode | Record<string, any>)[][] => 
   ],
 ];
 
-const getCompileData = (): (string | GetAttrNode | Record<string, any>)[][] => [
+const getCompileData = (): TestData[][] => [
   ['foo[0]', new GetAttrNode(new NameNode('foo'), new ConstantNode(0), generateNode(), GetAttrNode.ARRAY_CALL)],
   ['foo["b"]', new GetAttrNode(new NameNode('foo'), new ConstantNode('b'), generateNode(), GetAttrNode.ARRAY_CALL)],
   ['foo.foo', new GetAttrNode(new NameNode('foo'), new ConstantNode('foo'), generateNode(), GetAttrNode.PROPERTY_CALL)],
@@ -60,7 +62,7 @@ const getCompileData = (): (string | GetAttrNode | Record<string, any>)[][] => [
   ['foo[index]', new GetAttrNode(new NameNode('foo'), new NameNode('index'), generateNode(), GetAttrNode.ARRAY_CALL)],
 ];
 
-const getDumpData = (): (string | GetAttrNode | Record<string, any>)[][] => [
+const getDumpData = (): TestData[][] => [
   ['foo[0]', new GetAttrNode(new NameNode('foo'), new ConstantNode(0), generateNode(), GetAttrNode.ARRAY_CALL)],
   ['foo["b"]', new GetAttrNode(new NameNode('foo'), new ConstantNode('b'), generateNode(), GetAttrNode.ARRAY_CALL)],
   ['foo.foo', new GetAttrNode(new NameNode('foo'), new NameNode('foo'), generateNode(), GetAttrNode.PROPERTY_CALL)],

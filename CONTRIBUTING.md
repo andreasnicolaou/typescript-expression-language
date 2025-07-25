@@ -268,7 +268,7 @@ src/
 
 ## License
 
-
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
 ## Contribution Recognition
 
 We value and appreciate all contributions to this project. Contributors are recognized in the following ways:

@@ -81,7 +81,7 @@
             box-sizing: border-box;
         }
         textarea {
-            height: 100px;
+            min-height: 200px;
             resize: vertical;
         }
         button {
@@ -97,6 +97,15 @@
         button:hover {
             background-color: #2980b9;
         }
+
+        #evaluate-btn {
+            background-color: #27ae60;
+        }
+        
+        #evaluate-btn:hover {
+            background-color: #219653;
+        }
+
         #interactive-result {
             margin-top: 15px;
             padding: 15px;
@@ -164,20 +173,28 @@
 }</textarea>
             </div>
             
-            <button onclick="evaluateExpression()">Evaluate Expression</button>
+            
             <button onclick="loadExample(1)">Example 1: Basic Math</button>
             <button onclick="loadExample(2)">Example 2: String Concat</button>
             <button onclick="loadExample(3)">Example 3: Array Access</button>
             <button onclick="loadExample(4)">Example 4: Object Access</button>
+            <button onclick="evaluateExpression()" id="evaluate-btn">Evaluate Expression</button>
             
             <div id="interactive-result"></div>
         </div>
     </div>
 
-    <!-- Load the UMD build from the extracted tar file -->
-    <script src="package/dist/index.umd.js"></script>
+    <!-- Load the UMD build from unpkg CDN -->
+    <script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
     
     <script>
+        // HTML escaping function to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // Test cases to verify UMD functionality
         const testCases = [
             {
@@ -276,27 +293,27 @@
                     const result = testCase.test();
                     if (result) {
                         testDiv.innerHTML = `
-                            <strong>✅ Test ${index + 1}: ${testCase.name}</strong>
+                            <strong>✅ Test ${index + 1}: ${escapeHtml(testCase.name)}</strong>
                             <span class="badge success">PASS</span>
-                            <div class="result success">✓ ${testCase.description}</div>
+                            <div class="result success">✓ ${escapeHtml(testCase.description)}</div>
                         `;
                         passedTests++;
                     } else {
                         testDiv.className += ' error';
                         testDiv.innerHTML = `
-                            <strong>❌ Test ${index + 1}: ${testCase.name}</strong>
+                            <strong>❌ Test ${index + 1}: ${escapeHtml(testCase.name)}</strong>
                             <span class="badge error">FAIL</span>
-                            <div class="result error">✗ ${testCase.description}</div>
+                            <div class="result error">✗ ${escapeHtml(testCase.description)}</div>
                             <div class="error">Test returned false</div>
                         `;
                     }
                 } catch (error) {
                     testDiv.className += ' error';
                     testDiv.innerHTML = `
-                        <strong>❌ Test ${index + 1}: ${testCase.name}</strong>
+                        <strong>❌ Test ${index + 1}: ${escapeHtml(testCase.name)}</strong>
                         <span class="badge error">ERROR</span>
-                        <div class="result error">✗ ${testCase.description}</div>
-                        <div class="error">Error: ${error.message}</div>
+                        <div class="result error">✗ ${escapeHtml(testCase.description)}</div>
+                        <div class="error">Error: ${escapeHtml(error.message)}</div>
                     `;
                 }
                 
@@ -332,18 +349,18 @@
                 
                 resultDiv.className = 'success';
                 resultDiv.innerHTML = `
-                    <div class="expression">${expression}</div>
+                    <div class="expression">${escapeHtml(expression)}</div>
                     <div class="result success">
-                        <strong>Result:</strong> ${JSON.stringify(result)} 
-                        <em>(${typeof result})</em>
+                        <strong>Result:</strong> ${escapeHtml(JSON.stringify(result))} 
+                        <em>(${escapeHtml(typeof result)})</em>
                     </div>
                 `;
             } catch (error) {
                 resultDiv.className = 'error';
                 resultDiv.innerHTML = `
-                    <div class="expression">${expressionInput.value}</div>
+                    <div class="expression">${escapeHtml(expressionInput.value)}</div>
                     <div class="result error">
-                        <strong>Error:</strong> ${error.message}
+                        <strong>Error:</strong> ${escapeHtml(error.message)}
                     </div>
                 `;
             }

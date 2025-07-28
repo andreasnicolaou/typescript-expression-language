@@ -21,12 +21,13 @@
   ],
   "scripts": {
     "build": "rollup -c",
-    "test": "jest",
     "format": "prettier --write .",
     "lint": "eslint --fix",
+    "test": "jest",
     "test:ci": "cross-env JEST_JUNIT_CLASSNAME=\"{filepath}\" jest --reporters=default --reporters=jest-junit",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:bundle": "npx bundlewatch",
     "prepublishOnly": "npm run build"
   },
   "homepage": "https://andreasnicolaou.github.io/typescript-expression-language/",
@@ -45,6 +46,26 @@
   "dependencies": {
     "locutus": "^2.0.32",
     "lru-cache": "^11.1.0"
+  },
+  "sideEffects": false,
+  "bundlewatch": {
+    "files": [
+      {
+        "path": "dist/index.js",
+        "maxSize": "30kB",
+        "compression": "gzip"
+      },
+      {
+        "path": "dist/index.cjs",
+        "maxSize": "30kB",
+        "compression": "gzip"
+      },
+      {
+        "path": "dist/index.umd.js",
+        "maxSize": "20kB",
+        "compression": "gzip"
+      }
+    ]
   },
   "jest": {
     "transform": {
@@ -68,6 +89,7 @@
     "@types/node": "^24.1.0",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
+    "bundlewatch": "^0.4.1",
     "cross-env": "^7.0.3",
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.8",

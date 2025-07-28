@@ -1,166 +1,174 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TypeScript Expression Language - UMD Test</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-            background-color: #f8f9fa;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        h2 {
-            color: #3498db;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 5px;
-        }
-        .test-case {
-            margin: 15px 0;
-            padding: 15px;
-            border-left: 4px solid #27ae60;
-            background-color: #f8f9fa;
-            border-radius: 0 4px 4px 0;
-        }
-        .test-case.error {
-            border-left-color: #e74c3c;
-            background-color: #fdf2f2;
-        }
-        .expression {
-            font-family: 'Courier New', monospace;
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            padding: 10px;
-            border-radius: 4px;
-            margin: 10px 0;
-            overflow-x: auto;
-        }
-        .result {
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        .success {
-            color: #27ae60;
-        }
-        .error {
-            color: #e74c3c;
-        }
-        .interactive-section {
-            margin-top: 30px;
-        }
-        .input-group {
-            margin: 15px 0;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #bdc3c7;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            box-sizing: border-box;
-        }
-        textarea {
-            min-height: 200px;
-            resize: vertical;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 5px;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+        background-color: #f8f9fa;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      h1 {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      h2 {
+        color: #3498db;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 5px;
+      }
+      .test-case {
+        margin: 15px 0;
+        padding: 15px;
+        border-left: 4px solid #27ae60;
+        background-color: #f8f9fa;
+        border-radius: 0 4px 4px 0;
+      }
+      .test-case.error {
+        border-left-color: #e74c3c;
+        background-color: #fdf2f2;
+      }
+      .expression {
+        font-family: 'Courier New', monospace;
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+        overflow-x: auto;
+      }
+      .result {
+        font-weight: bold;
+        margin-top: 10px;
+      }
+      .success {
+        color: #27ae60;
+      }
+      .error {
+        color: #e74c3c;
+      }
+      .interactive-section {
+        margin-top: 30px;
+      }
+      .input-group {
+        margin: 15px 0;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #2c3e50;
+      }
+      input[type='text'],
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #bdc3c7;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        box-sizing: border-box;
+      }
+      textarea {
+        min-height: 200px;
+        resize: vertical;
+      }
+      button {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 5px;
+      }
+      button:hover {
+        background-color: #2980b9;
+      }
 
-        #evaluate-btn {
-            background-color: #27ae60;
-        }
-        
-        #evaluate-btn:hover {
-            background-color: #219653;
-        }
+      #evaluate-btn {
+        background-color: #27ae60;
+      }
 
-        #interactive-result {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 4px;
-            min-height: 50px;
-        }
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .badge.success {
-            background-color: #27ae60;
-            color: white;
-        }
-        .badge.error {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .info {
-            background-color: #e8f4f8;
-            border: 1px solid #3498db;
-            padding: 15px;
-            border-radius: 4px;
-            margin: 20px 0;
-        }
+      #evaluate-btn:hover {
+        background-color: #219653;
+      }
+
+      #interactive-result {
+        margin-top: 15px;
+        padding: 15px;
+        border-radius: 4px;
+        min-height: 50px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-left: 10px;
+      }
+      .badge.success {
+        background-color: #27ae60;
+        color: white;
+      }
+      .badge.error {
+        background-color: #e74c3c;
+        color: white;
+      }
+      .info {
+        background-color: #e8f4f8;
+        border: 1px solid #3498db;
+        padding: 15px;
+        border-radius: 4px;
+        margin: 20px 0;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>🚀 TypeScript Expression Language UMD Test</h1>
-        
-        <div class="info">
-            <strong>Testing UMD build from unpkg CDN:</strong> Live published package<br>
-            <strong>UMD file:</strong> <code>https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js</code><br>
-            <strong>Dependencies:</strong> All bundled (lru-cache, locutus)<br>
-            <strong>Global namespace:</strong> <code>TypescriptExpressionLanguage</code>
+      <h1>🚀 TypeScript Expression Language UMD Test</h1>
+
+      <div class="info">
+        <strong>Testing UMD build from unpkg CDN:</strong> Live published package<br />
+        <strong>UMD file:</strong>
+        <code>https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js</code><br />
+        <strong>Dependencies:</strong> All bundled (lru-cache, locutus)<br />
+        <strong>Global namespace:</strong> <code>TypescriptExpressionLanguage</code>
+      </div>
+
+      <h2>📋 Automated Test Cases</h2>
+      <div id="test-results"></div>
+
+      <h2>🎮 Interactive Test</h2>
+      <div class="interactive-section">
+        <div class="input-group">
+          <label for="expression-input">Expression:</label>
+          <input
+            type="text"
+            id="expression-input"
+            placeholder="Enter an expression (e.g., 1 + 2 * 3)"
+            value="1 + 2 * 3"
+          />
         </div>
 
-        <h2>📋 Automated Test Cases</h2>
-        <div id="test-results"></div>
-
-        <h2>🎮 Interactive Test</h2>
-        <div class="interactive-section">
-            <div class="input-group">
-                <label for="expression-input">Expression:</label>
-                <input type="text" id="expression-input" placeholder="Enter an expression (e.g., 1 + 2 * 3)" value="1 + 2 * 3">
-            </div>
-            
-            <div class="input-group">
-                <label for="values-input">Variables (JSON format):</label>
-                <textarea id="values-input" placeholder='{"x": 10, "y": 5, "name": "World"}'>{
+        <div class="input-group">
+          <label for="values-input">Variables (JSON format):</label>
+          <textarea id="values-input" placeholder='{"x": 10, "y": 5, "name": "World"}'>
+{
   "x": 10,
   "y": 5,
   "name": "World",
@@ -170,160 +178,162 @@
     "age": 30,
     "city": "New York"
   }
-}</textarea>
-            </div>
-            
-            
-            <button onclick="loadExample(1)">Example 1: Basic Math</button>
-            <button onclick="loadExample(2)">Example 2: String Concat</button>
-            <button onclick="loadExample(3)">Example 3: Array Access</button>
-            <button onclick="loadExample(4)">Example 4: Object Access</button>
-            <button onclick="evaluateExpression()" id="evaluate-btn">Evaluate Expression</button>
-            
-            <div id="interactive-result"></div>
+}</textarea
+          >
         </div>
+
+        <button onclick="loadExample(1)">Example 1: Basic Math</button>
+        <button onclick="loadExample(2)">Example 2: String Concat</button>
+        <button onclick="loadExample(3)">Example 3: Array Access</button>
+        <button onclick="loadExample(4)">Example 4: Object Access</button>
+        <button onclick="evaluateExpression()" id="evaluate-btn">Evaluate Expression</button>
+
+        <div id="interactive-result"></div>
+      </div>
     </div>
 
     <!-- Load the UMD build from unpkg CDN -->
     <script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
-    
+
     <script>
-        // HTML escaping function to prevent XSS
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+      // HTML escaping function to prevent XSS
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
 
-        // Test cases to verify UMD functionality
-        const testCases = [
-            {
-                name: "Basic Library Loading",
-                test: () => {
-                    return typeof TypescriptExpressionLanguage !== 'undefined' && 
-                           typeof TypescriptExpressionLanguage.ExpressionLanguage === 'function';
-                },
-                description: "Check if the library loads and ExpressionLanguage constructor is available"
-            },
-            {
-                name: "Simple Math Expression",
-                test: () => {
-                    const el = new TypescriptExpressionLanguage.ExpressionLanguage();
-                    return el.evaluate('1 + 2 * 3') === 7;
-                },
-                description: "Evaluate: 1 + 2 * 3 = 7"
-            },
-            {
-                name: "Expression with Variables",
-                test: () => {
-                    const el = new TypescriptExpressionLanguage.ExpressionLanguage();
-                    return el.evaluate('x + y', { x: 10, y: 5 }) === 15;
-                },
-                description: "Evaluate: x + y with x=10, y=5 = 15"
-            },
-            {
-                name: "String Concatenation",
-                test: () => {
-                    const el = new TypescriptExpressionLanguage.ExpressionLanguage();
-                    return el.evaluate('"Hello " + name', { name: 'World' }) === 'Hello World';
-                },
-                description: 'Evaluate: "Hello " + name with name="World" = "Hello World"'
-            },
-            {
-                name: "Boolean Logic",
-                test: () => {
-                    const el = new TypescriptExpressionLanguage.ExpressionLanguage();
-                    return el.evaluate('x > 5 and y < 10', { x: 8, y: 3 }) === true;
-                },
-                description: "Evaluate: x > 5 and y < 10 with x=8, y=3 = true"
-            },
-            {
-                name: "Array Access",
-                test: () => {
-                    const el = new TypescriptExpressionLanguage.ExpressionLanguage();
-                    return el.evaluate('items[2]', { items: [10, 20, 30, 40] }) === 30;
-                },
-                description: "Evaluate: items[2] with items=[10,20,30,40] = 30"
-            },
-            {
-                name: "Object Property Access",
-                test: () => {
-                    const el = new TypescriptExpressionLanguage.ExpressionLanguage();
-                    return el.evaluate('user.name', { user: { name: 'John', age: 30 } }) === 'John';
-                },
-                description: "Evaluate: user.name with user={name:'John', age:30} = 'John'"
-            },
-            {
-                name: "Complex Expression",
-                test: () => {
-                    const el = new TypescriptExpressionLanguage.ExpressionLanguage();
-                    const result = el.evaluate('(x + y) * 2 > threshold', { x: 10, y: 15, threshold: 40 });
-                    return result === true; // (10 + 15) * 2 = 50 > 40 = true
-                },
-                description: "Evaluate: (x + y) * 2 > threshold with x=10, y=15, threshold=40 = true"
-            },
-            {
-                name: "Conditional Expression",
-                test: () => {
-                    const el = new TypescriptExpressionLanguage.ExpressionLanguage();
-                    return el.evaluate('age >= 18 ? "adult" : "minor"', { age: 25 }) === 'adult';
-                },
-                description: "Evaluate: age >= 18 ? \"adult\" : \"minor\" with age=25 = \"adult\""
-            },
-            {
-                name: "String Methods",
-                test: () => {
-                    const el = new TypescriptExpressionLanguage.ExpressionLanguage();
-                    return el.evaluate('name starts with "Jo"', { name: 'John Doe' }) === true;
-                },
-                description: 'Evaluate: name starts with "Jo" with name="John Doe" = true'
-            }
-        ];
+      // Test cases to verify UMD functionality
+      const testCases = [
+        {
+          name: 'Basic Library Loading',
+          test: () => {
+            return (
+              typeof TypescriptExpressionLanguage !== 'undefined' &&
+              typeof TypescriptExpressionLanguage.ExpressionLanguage === 'function'
+            );
+          },
+          description: 'Check if the library loads and ExpressionLanguage constructor is available',
+        },
+        {
+          name: 'Simple Math Expression',
+          test: () => {
+            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            return el.evaluate('1 + 2 * 3') === 7;
+          },
+          description: 'Evaluate: 1 + 2 * 3 = 7',
+        },
+        {
+          name: 'Expression with Variables',
+          test: () => {
+            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            return el.evaluate('x + y', { x: 10, y: 5 }) === 15;
+          },
+          description: 'Evaluate: x + y with x=10, y=5 = 15',
+        },
+        {
+          name: 'String Concatenation',
+          test: () => {
+            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            return el.evaluate('"Hello " + name', { name: 'World' }) === 'Hello World';
+          },
+          description: 'Evaluate: "Hello " + name with name="World" = "Hello World"',
+        },
+        {
+          name: 'Boolean Logic',
+          test: () => {
+            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            return el.evaluate('x > 5 and y < 10', { x: 8, y: 3 }) === true;
+          },
+          description: 'Evaluate: x > 5 and y < 10 with x=8, y=3 = true',
+        },
+        {
+          name: 'Array Access',
+          test: () => {
+            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            return el.evaluate('items[2]', { items: [10, 20, 30, 40] }) === 30;
+          },
+          description: 'Evaluate: items[2] with items=[10,20,30,40] = 30',
+        },
+        {
+          name: 'Object Property Access',
+          test: () => {
+            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            return el.evaluate('user.name', { user: { name: 'John', age: 30 } }) === 'John';
+          },
+          description: "Evaluate: user.name with user={name:'John', age:30} = 'John'",
+        },
+        {
+          name: 'Complex Expression',
+          test: () => {
+            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            const result = el.evaluate('(x + y) * 2 > threshold', { x: 10, y: 15, threshold: 40 });
+            return result === true; // (10 + 15) * 2 = 50 > 40 = true
+          },
+          description: 'Evaluate: (x + y) * 2 > threshold with x=10, y=15, threshold=40 = true',
+        },
+        {
+          name: 'Conditional Expression',
+          test: () => {
+            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            return el.evaluate('age >= 18 ? "adult" : "minor"', { age: 25 }) === 'adult';
+          },
+          description: 'Evaluate: age >= 18 ? "adult" : "minor" with age=25 = "adult"',
+        },
+        {
+          name: 'String Methods',
+          test: () => {
+            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            return el.evaluate('name starts with "Jo"', { name: 'John Doe' }) === true;
+          },
+          description: 'Evaluate: name starts with "Jo" with name="John Doe" = true',
+        },
+      ];
 
-        // Run all test cases
-        function runTests() {
-            const resultsContainer = document.getElementById('test-results');
-            let passedTests = 0;
-            
-            testCases.forEach((testCase, index) => {
-                const testDiv = document.createElement('div');
-                testDiv.className = 'test-case';
-                
-                try {
-                    const result = testCase.test();
-                    if (result) {
-                        testDiv.innerHTML = `
+      // Run all test cases
+      function runTests() {
+        const resultsContainer = document.getElementById('test-results');
+        let passedTests = 0;
+
+        testCases.forEach((testCase, index) => {
+          const testDiv = document.createElement('div');
+          testDiv.className = 'test-case';
+
+          try {
+            const result = testCase.test();
+            if (result) {
+              testDiv.innerHTML = `
                             <strong>✅ Test ${index + 1}: ${escapeHtml(testCase.name)}</strong>
                             <span class="badge success">PASS</span>
                             <div class="result success">✓ ${escapeHtml(testCase.description)}</div>
                         `;
-                        passedTests++;
-                    } else {
-                        testDiv.className += ' error';
-                        testDiv.innerHTML = `
+              passedTests++;
+            } else {
+              testDiv.className += ' error';
+              testDiv.innerHTML = `
                             <strong>❌ Test ${index + 1}: ${escapeHtml(testCase.name)}</strong>
                             <span class="badge error">FAIL</span>
                             <div class="result error">✗ ${escapeHtml(testCase.description)}</div>
                             <div class="error">Test returned false</div>
                         `;
-                    }
-                } catch (error) {
-                    testDiv.className += ' error';
-                    testDiv.innerHTML = `
+            }
+          } catch (error) {
+            testDiv.className += ' error';
+            testDiv.innerHTML = `
                         <strong>❌ Test ${index + 1}: ${escapeHtml(testCase.name)}</strong>
                         <span class="badge error">ERROR</span>
                         <div class="result error">✗ ${escapeHtml(testCase.description)}</div>
                         <div class="error">Error: ${escapeHtml(error.message)}</div>
                     `;
-                }
-                
-                resultsContainer.appendChild(testDiv);
-            });
+          }
 
-            // Add summary
-            const summaryDiv = document.createElement('div');
-            summaryDiv.className = 'test-case';
-            summaryDiv.innerHTML = `
+          resultsContainer.appendChild(testDiv);
+        });
+
+        // Add summary
+        const summaryDiv = document.createElement('div');
+        summaryDiv.className = 'test-case';
+        summaryDiv.innerHTML = `
                 <strong>📊 Test Summary</strong>
                 <div class="result">
                     <span class="success">${passedTests} passed</span> / 
@@ -331,82 +341,82 @@
                     ${passedTests === testCases.length ? ' 🎉' : ' ⚠️'}
                 </div>
             `;
-            resultsContainer.appendChild(summaryDiv);
-        }
+        resultsContainer.appendChild(summaryDiv);
+      }
 
-        // Interactive expression evaluation
-        function evaluateExpression() {
-            const expressionInput = document.getElementById('expression-input');
-            const valuesInput = document.getElementById('values-input');
-            const resultDiv = document.getElementById('interactive-result');
-            
-            try {
-                const expression = expressionInput.value.trim();
-                const values = valuesInput.value.trim() ? JSON.parse(valuesInput.value) : {};
-                
-                const el = new TypescriptExpressionLanguage.ExpressionLanguage();
-                const result = el.evaluate(expression, values);
-                
-                resultDiv.className = 'success';
-                resultDiv.innerHTML = `
+      // Interactive expression evaluation
+      function evaluateExpression() {
+        const expressionInput = document.getElementById('expression-input');
+        const valuesInput = document.getElementById('values-input');
+        const resultDiv = document.getElementById('interactive-result');
+
+        try {
+          const expression = expressionInput.value.trim();
+          const values = valuesInput.value.trim() ? JSON.parse(valuesInput.value) : {};
+
+          const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+          const result = el.evaluate(expression, values);
+
+          resultDiv.className = 'success';
+          resultDiv.innerHTML = `
                     <div class="expression">${escapeHtml(expression)}</div>
                     <div class="result success">
                         <strong>Result:</strong> ${escapeHtml(JSON.stringify(result))} 
                         <em>(${escapeHtml(typeof result)})</em>
                     </div>
                 `;
-            } catch (error) {
-                resultDiv.className = 'error';
-                resultDiv.innerHTML = `
+        } catch (error) {
+          resultDiv.className = 'error';
+          resultDiv.innerHTML = `
                     <div class="expression">${escapeHtml(expressionInput.value)}</div>
                     <div class="result error">
                         <strong>Error:</strong> ${escapeHtml(error.message)}
                     </div>
                 `;
-            }
+        }
+      }
+
+      // Load example expressions
+      function loadExample(exampleNumber) {
+        const expressionInput = document.getElementById('expression-input');
+        const valuesInput = document.getElementById('values-input');
+
+        switch (exampleNumber) {
+          case 1:
+            expressionInput.value = '(x + y) * 2';
+            valuesInput.value = '{"x": 5, "y": 3}';
+            break;
+          case 2:
+            expressionInput.value = '"Hello " + user.name + "! You are " + user.age + " years old."';
+            valuesInput.value = '{"user": {"name": "Alice", "age": 28}}';
+            break;
+          case 3:
+            expressionInput.value = 'items[0] + items[2] + items[4]';
+            valuesInput.value = '{"items": [10, 20, 30, 40, 50]}';
+            break;
+          case 4:
+            expressionInput.value = 'user.city == "New York" ? "East Coast" : "Other"';
+            valuesInput.value = '{"user": {"name": "John", "age": 30, "city": "New York"}}';
+            break;
         }
 
-        // Load example expressions
-        function loadExample(exampleNumber) {
-            const expressionInput = document.getElementById('expression-input');
-            const valuesInput = document.getElementById('values-input');
-            
-            switch (exampleNumber) {
-                case 1:
-                    expressionInput.value = '(x + y) * 2';
-                    valuesInput.value = '{"x": 5, "y": 3}';
-                    break;
-                case 2:
-                    expressionInput.value = '"Hello " + user.name + "! You are " + user.age + " years old."';
-                    valuesInput.value = '{"user": {"name": "Alice", "age": 28}}';
-                    break;
-                case 3:
-                    expressionInput.value = 'items[0] + items[2] + items[4]';
-                    valuesInput.value = '{"items": [10, 20, 30, 40, 50]}';
-                    break;
-                case 4:
-                    expressionInput.value = 'user.city == "New York" ? "East Coast" : "Other"';
-                    valuesInput.value = '{"user": {"name": "John", "age": 30, "city": "New York"}}';
-                    break;
-            }
-            
-            evaluateExpression();
+        evaluateExpression();
+      }
+
+      // Allow Enter key to evaluate
+      document.getElementById('expression-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          evaluateExpression();
         }
+      });
 
-        // Allow Enter key to evaluate
-        document.getElementById('expression-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                evaluateExpression();
-            }
-        });
+      // Run tests when page loads
+      document.addEventListener('DOMContentLoaded', function () {
+        runTests();
 
-        // Run tests when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            runTests();
-            
-            // Show available globals for debugging
-            console.log('Available TypescriptExpressionLanguage exports:', Object.keys(TypescriptExpressionLanguage));
-        });
+        // Show available globals for debugging
+        console.log('Available TypescriptExpressionLanguage exports:', Object.keys(TypescriptExpressionLanguage));
+      });
     </script>
-</body>
+  </body>
 </html>

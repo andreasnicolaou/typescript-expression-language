@@ -3,7 +3,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import dts from 'rollup-plugin-dts';
 
-const external = ['lru-cache'];
+const external = ['lru-cache', 'locutus'];
 
 export default [
   // ESM build
@@ -47,7 +47,7 @@ export default [
       }),
     ],
   },
-  // UMD build (for browser)
+  // UMD build (for browser) - bundle all dependencies
   {
     input: 'src/index.ts',
     output: {
@@ -55,13 +55,12 @@ export default [
       format: 'umd',
       name: 'TypescriptExpressionLanguage',
       sourcemap: true,
-      globals: {
-        'lru-cache': 'LRUCache',
-      },
     },
-    external: ['lru-cache'],
     plugins: [
-      resolve({ preferBuiltins: false }),
+      resolve({
+        preferBuiltins: false,
+        browser: true,
+      }),
       commonjs(),
       typescript({
         tsconfig: './tsconfig.json',

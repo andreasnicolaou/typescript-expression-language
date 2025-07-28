@@ -4,3 +4,6 @@
 .github
 .prettierignore
 eslint.config.mjs
+/docs
+/coverage
+*.tgz

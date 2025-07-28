@@ -46,9 +46,11 @@ Use it to create dynamic and flexible expression-based logic on the frontend, pe
 
 ## 🧪 Demo
 
-You can try this library live on StackBlitz:
+You can try this library live:
 
-👉 <a href="https://stackblitz.com/edit/vitejs-vite-wzv1j5ar" target="_blank">Open in StackBlitz</a>
+👉 <a href="https://stackblitz.com/edit/vitejs-vite-wzv1j5ar" target="_blank">Interactive Demo on StackBlitz</a>
+
+🌐 <a href="https://andreasnicolaou.github.io/typescript-expression-language/" target="_blank">UMD Build Test on GitHub Pages</a>
 
 ---
 

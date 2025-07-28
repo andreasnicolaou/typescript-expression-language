@@ -29,7 +29,7 @@
     "test:coverage": "jest --coverage",
     "prepublishOnly": "npm run build"
   },
-  "homepage": "https://github.com/andreasnicolaou/typescript-expression-language#readme",
+  "homepage": "https://andreasnicolaou.github.io/typescript-expression-language/",
   "repository": {
     "type": "git",
     "url": "https://github.com/andreasnicolaou/typescript-expression-language.git"
@@ -90,6 +90,29 @@
     "language",
     "expression-language",
     "typescript",
-    "andreasnicolaou"
+    "andreasnicolaou",
+    "expression language",
+    "filter",
+    "rules",
+    "parser",
+    "ast",
+    "evaluator",
+    "custom functions",
+    "safe eval",
+    "formula",
+    "calculation",
+    "runtime",
+    "dynamic",
+    "condition",
+    "validation",
+    "lexer",
+    "compiler",
+    "syntax",
+    "esm",
+    "cjs",
+    "umd",
+    "mathematical",
+    "logical",
+    "operators"
   ]
 }

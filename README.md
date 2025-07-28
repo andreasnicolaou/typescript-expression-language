@@ -106,12 +106,13 @@ For direct browser usage without a build step:
 - ✅ Cached across websites for faster loading
 - ✅ Perfect for prototyping and demos
 - ✅ Works in any HTML page immediately
+- ✅ Minified for optimal performance
 
 ### Module Format Support
 
 - **🟢 ESM (ES Modules)**: For modern bundlers and Node.js
 - **🟢 CommonJS**: For traditional Node.js projects
-- **🟢 UMD**: For direct browser usage via CDN
+- **🟢 UMD (Minified)**: For direct browser usage via CDN - optimized and compressed
 - **🟢 TypeScript**: Complete type definitions included
 
 ### Usage Examples
@@ -504,7 +505,7 @@ The build process generates multiple optimized bundles:
 
 - `dist/index.js` - **ESM bundle** for modern environments
 - `dist/index.cjs` - **CommonJS bundle** for Node.js
-- `dist/index.umd.js` - **UMD bundle** for browsers
+- `dist/index.umd.js` - **UMD bundle (minified)** for browsers
 - `dist/index.d.ts` - **TypeScript declarations** for full type support
 
 ### Available Scripts

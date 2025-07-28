@@ -7,3 +7,11 @@ eslint.config.mjs
 /docs
 /coverage
 *.tgz
+
+# Build and development files
+rollup.config.js
+tsconfig.json
+temp/
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+SECURITY.md

@@ -13,6 +13,9 @@ npm-debug.log
 
 junit.xml
 
+# Package tarballs
+*.tgz
+
 # Logs
 logs
 *.log

@@ -14,22 +14,22 @@ export class Lexer {
     'contains',
     'matches',
     'not in',
-    'not',
-    'and',
     '===',
     '!==',
-    'or',
-    '||',
     '&&',
+    '||',
     '==',
     '!=',
     '>=',
     '<=',
-    'in',
-    '..',
-    '**',
     '<<',
     '>>',
+    '**',
+    '..',
+    'and',
+    'not',
+    'or',
+    'in',
     '!',
     '|',
     '^',
@@ -43,6 +43,11 @@ export class Lexer {
     '/',
     '%',
   ];
+
+  private static readonly NUMBER_REGEX = /^(?:\d[\d_]*(?:\.\d[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?\d[\d_]*)?/;
+  private static readonly STRING_REGEX = /^"([^"\\]*(?:\\.[^"\\]*)*)"|^'([^'\\]*(?:\\.[^'\\]*)*)'/s;
+  private static readonly COMMENT_REGEX = /^\/\*\*[\s\S]*?\*\/|^\/\*[\s\S]*?\*\//;
+  private static readonly NAME_REGEX = /^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/;
 
   /**
    * Tokenizes an expression.
@@ -65,9 +70,7 @@ export class Lexer {
       }
 
       // Match numbers
-      const numberMatch = /^(?:\d[\d_]*(?:\.\d[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?\d[\d_]*)?/.exec(
-        expression.slice(cursor)
-      );
+      const numberMatch = Lexer.NUMBER_REGEX.exec(expression.slice(cursor));
       if (numberMatch) {
         const rawMatch = numberMatch[0];
         const cleanedNumber = rawMatch.replace(/_/g, '');
@@ -104,8 +107,7 @@ export class Lexer {
       }
 
       // Match strings (double-quoted or single-quoted)
-      const stringRegex = /^"([^"\\]*(?:\\.[^"\\]*)*)"|^'([^'\\]*(?:\\.[^'\\]*)*)'/s;
-      const stringMatch = stringRegex.exec(expression.slice(cursor));
+      const stringMatch = Lexer.STRING_REGEX.exec(expression.slice(cursor));
       if (stringMatch != null) {
         tokens.push(new Token(Token.STRING_TYPE, stringMatch[1] || stringMatch[2], cursor + 1));
         cursor += stringMatch[0].length;
@@ -113,8 +115,7 @@ export class Lexer {
       }
 
       // Match comments
-      const commentRegex = /^\/\*\*[\s\S]*?\*\/|^\/\*[\s\S]*?\*\//;
-      const commentMatch = commentRegex.exec(expression.slice(cursor));
+      const commentMatch = Lexer.COMMENT_REGEX.exec(expression.slice(cursor));
       if (commentMatch != null) {
         cursor += commentMatch[0].length;
         continue;
@@ -150,7 +151,7 @@ export class Lexer {
       }
 
       // Match names
-      const nameMatch = /^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/.exec(expression.slice(cursor));
+      const nameMatch = Lexer.NAME_REGEX.exec(expression.slice(cursor));
       if (nameMatch != null) {
         tokens.push(new Token(Token.NAME_TYPE, nameMatch[0], cursor + 1));
         cursor += nameMatch[0].length;

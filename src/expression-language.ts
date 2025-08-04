@@ -69,7 +69,7 @@ export class ExpressionLanguage {
     if (expression instanceof ParsedExpression) {
       return expression;
     }
-    // Sort names for consistent cache keys (replaces PHP asort, no key-value associations needed)
+    // Sort names for consistent cache keys (supports both string names and objects with key-value pairs; replaces PHP asort)
     names.sort((a, b) => {
       const aVal = typeof a === 'object' && a !== null ? Object.values(a)[0] : a;
       const bVal = typeof b === 'object' && b !== null ? Object.values(b)[0] : b;

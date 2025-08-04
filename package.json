@@ -29,6 +29,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:bundle": "npx bundlewatch",
+    "prepare": "husky",
     "prepublishOnly": "npm run build"
   },
   "homepage": "https://andreasnicolaou.github.io/typescript-expression-language/",
@@ -96,6 +97,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",
     "globals": "^16.3.0",
+    "husky": "^9.1.7",
     "jest": "^30.0.5",
     "jest-junit": "^16.0.0",
     "prettier": "3.6.2",

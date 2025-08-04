@@ -13,7 +13,7 @@ export default [
     output: {
       file: 'dist/index.js',
       format: 'es',
-      sourcemap: true,
+      sourcemap: false,
     },
     external,
     plugins: [
@@ -33,7 +33,7 @@ export default [
     output: {
       file: 'dist/index.cjs',
       format: 'cjs',
-      sourcemap: true,
+      sourcemap: false,
       exports: 'named',
     },
     external,
@@ -55,7 +55,7 @@ export default [
       file: 'dist/index.umd.js',
       format: 'umd',
       name: 'TypescriptExpressionLanguage',
-      sourcemap: true,
+      sourcemap: false,
     },
     plugins: [
       resolve({

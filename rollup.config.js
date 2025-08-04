@@ -4,7 +4,7 @@ import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 
-const external = ['lru-cache', 'locutus'];
+const external = [];
 
 export default [
   // ESM build
@@ -79,7 +79,7 @@ export default [
       file: 'dist/index.d.ts',
       format: 'es',
     },
-    external: ['lru-cache'],
+    external: [],
     plugins: [dts()],
   },
 ];

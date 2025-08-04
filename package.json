@@ -46,7 +46,6 @@
     "email": "anicolaou66@gmail.com"
   },
   "license": "MIT",
-  "dependencies": {},
   "sideEffects": false,
   "bundlewatch": {
     "files": [

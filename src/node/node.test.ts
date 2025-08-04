@@ -1,6 +1,6 @@
-import { Node } from './node';
-import { ConstantNode } from './constant-node'; // Adjust import path as needed
 import { Compiler } from '../compiler';
+import { ConstantNode } from './constant-node'; // Adjust import path as needed
+import { Node } from './node';
 
 describe('NodeTest', () => {
   test('should have the same toString output', () => {

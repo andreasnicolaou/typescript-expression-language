@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import rawurlencode from 'locutus/php/url/rawurlencode';
+import { LRUCache } from 'lru-cache';
 import { Compiler } from './compiler';
-import { Lexer } from './lexer';
-import { Parser } from './parser';
-import { ParsedExpression } from './parsed-expression';
 import { Expression } from './expression';
 import { ExpressionFunction } from './expression-function';
-import { LRUCache } from 'lru-cache';
-import rawurlencode from 'locutus/php/url/rawurlencode';
+import { Lexer } from './lexer';
+import { ParsedExpression } from './parsed-expression';
+import { Parser } from './parser';
 
 export interface ExpressionFunctionProvider {
   getFunctions(): ExpressionFunction[];

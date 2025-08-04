@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NullCoalescedNameNode } from './null-coalesced-name-node';
 import { Compiler } from '../compiler';
+import { NullCoalescedNameNode } from './null-coalesced-name-node';
 
 const getEvaluateData = (): (null | NullCoalescedNameNode | Record<string, undefined | null | string>)[][] => [
   [null, new NullCoalescedNameNode('foo'), { foo: undefined }],

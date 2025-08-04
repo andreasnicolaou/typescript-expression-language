@@ -13,14 +13,14 @@ export { NullCoalescedNameNode } from './node/null-coalesced-name-node';
 export { UnaryNode } from './node/unary-node';
 
 // Expression Language src/*
-export { Parser } from './parser';
 export { Compiler } from './compiler';
+export { Expression } from './expression';
 export { ExpressionFunction } from './expression-function';
 export { ExpressionLanguage, type ExpressionFunctionProvider } from './expression-language';
-export { Expression } from './expression';
-export { ParsedExpression } from './parsed-expression';
 export { Lexer } from './lexer';
-export { Token } from './token';
-export { TokenStream } from './token-stream';
+export { ParsedExpression } from './parsed-expression';
+export { Parser } from './parser';
 export { SerializedParsedExpression } from './serialized-parsed-expression';
 export { SyntaxError } from './syntax-error';
+export { Token } from './token';
+export { TokenStream } from './token-stream';

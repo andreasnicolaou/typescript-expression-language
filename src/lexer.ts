@@ -1,6 +1,6 @@
+import { SyntaxError } from './syntax-error';
 import { Token } from './token';
 import { TokenStream } from './token-stream';
-import { SyntaxError } from './syntax-error';
 
 /**
  * Represents a lexer for an expression language.

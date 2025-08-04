@@ -1,6 +1,6 @@
+import { Compiler } from '../compiler';
 import { ConditionalNode } from './conditional-node';
 import { ConstantNode } from './constant-node';
-import { Compiler } from '../compiler';
 
 const getEvaluateData = (): (number | ConditionalNode)[][] => [
   [1, new ConditionalNode(new ConstantNode(true), new ConstantNode(1), new ConstantNode(2))],

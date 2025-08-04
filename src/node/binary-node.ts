@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Compiler } from '../compiler';
 import { Node } from '../node/node';
-import { ConstantNode } from './constant-node';
 import { SyntaxError } from '../syntax-error';
+import { ConstantNode } from './constant-node';
 
 /**
  * Represents a binary node in an abstract syntax tree (AST) for an expression language.

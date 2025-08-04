@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ArgumentsNode } from './node/arguments-node';
 import { ArrayNode } from './node/array-node';
-import { Node } from './node/node';
 import { BinaryNode } from './node/binary-node';
-import { ConstantNode } from './node/constant-node';
-import { TokenStream } from './token-stream';
-import { SyntaxError } from './syntax-error';
 import { ConditionalNode } from './node/conditional-node';
+import { ConstantNode } from './node/constant-node';
 import { FunctionNode } from './node/function-node';
 import { GetAttrNode } from './node/get-attr-node';
-import { UnaryNode } from './node/unary-node';
 import { NameNode } from './node/name-node';
-import { NullCoalescedNameNode } from './node/null-coalesced-name-node';
+import { Node } from './node/node';
 import { NullCoalesceNode } from './node/null-coalesce-node';
+import { NullCoalescedNameNode } from './node/null-coalesced-name-node';
+import { UnaryNode } from './node/unary-node';
+import { SyntaxError } from './syntax-error';
 import { Token } from './token';
+import { TokenStream } from './token-stream';
 export type Operators = Record<string, { precedence: number; associativity?: number }>;
 
 /**

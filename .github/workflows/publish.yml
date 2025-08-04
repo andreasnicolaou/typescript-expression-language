@@ -3,6 +3,8 @@ permissions:
   contents: read
   packages: write
 on:
+  release:
+    types: [published]
   push:
     tags:
       - 'v*.*.*'
@@ -25,7 +27,23 @@ jobs:
         run: npm test
       - name: Build the project
         run: npm run build
+      - name: Run bundlewatch
+        run: npx bundlewatch
+      - name: Check if version already published
+        id: version-check
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+
+          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version 2>/dev/null; then
+            echo "Version $PACKAGE_VERSION of $PACKAGE_NAME is already published on npm"
+            echo "already-published=true" >> $GITHUB_OUTPUT
+          else
+            echo "Version $PACKAGE_VERSION of $PACKAGE_NAME is not published yet"
+            echo "already-published=false" >> $GITHUB_OUTPUT
+          fi
       - name: Publish to npm
+        if: steps.version-check.outputs.already-published == 'false'
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

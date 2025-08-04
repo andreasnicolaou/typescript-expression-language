@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Compiler } from '../compiler';
+import { ArgumentsNode } from './arguments-node';
 import { ArrayNode } from './array-node';
 import { ConstantNode } from './constant-node';
 import { GetAttrNode } from './get-attr-node';
 import { NameNode } from './name-node';
-import { ArgumentsNode } from './arguments-node';
 
 type NodeTestValue = string | GetAttrNode | Record<string, any>;
 

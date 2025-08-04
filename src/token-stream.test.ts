@@ -1,6 +1,6 @@
-import { TokenStream } from './token-stream';
-import { Token } from './token';
 import { SyntaxError } from './syntax-error';
+import { Token } from './token';
+import { TokenStream } from './token-stream';
 
 describe('TokenStream tests', () => {
   test('should throw if constructed with no tokens', () => {

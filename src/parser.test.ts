@@ -7,10 +7,10 @@ import { ConditionalNode } from './node/conditional-node';
 import { ConstantNode } from './node/constant-node';
 import { GetAttrNode } from './node/get-attr-node';
 import { NameNode } from './node/name-node';
+import { Node } from './node/node';
 import { NullCoalesceNode } from './node/null-coalesce-node';
 import { NullCoalescedNameNode } from './node/null-coalesced-name-node';
 import { UnaryNode } from './node/unary-node';
-import { Node } from './node/node';
 import { Parser } from './parser';
 import { SyntaxError } from './syntax-error';
 

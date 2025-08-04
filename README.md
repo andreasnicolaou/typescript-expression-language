@@ -57,6 +57,7 @@ You can try this library live:
 ## ✨ Features
 
 - **Full Symfony Compatibility**: Write expressions that work the same way on both client and server.
+- **Zero Dependencies**: Self-contained library with no external runtime dependencies.
 - **Rich Syntax Support**: Includes numbers, strings, operators, functions, and advanced object/array access.
 - **Customizable Operators**: Define your own operators or extend existing ones.
 - **Brackets and Nesting**: Handle deeply nested brackets with accurate syntax validation.

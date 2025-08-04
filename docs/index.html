@@ -85,26 +85,56 @@
         min-height: 200px;
         resize: vertical;
       }
+      .button-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 20px 0;
+        justify-content: center;
+      }
+
       button {
         background-color: #3498db;
         color: white;
-        padding: 10px 20px;
+        padding: 12px 16px;
         border: none;
-        border-radius: 4px;
+        border-radius: 6px;
         cursor: pointer;
-        font-size: 16px;
-        margin: 5px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        min-width: 140px;
+        flex: 1;
+        max-width: 100%;
       }
+
       button:hover {
         background-color: #2980b9;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
       }
 
       #evaluate-btn {
         background-color: #27ae60;
+        font-weight: 600;
+        min-width: 160px;
       }
 
       #evaluate-btn:hover {
         background-color: #219653;
+      }
+
+      @media (max-width: 768px) {
+        .button-container {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        
+        button {
+          max-width: none;
+          min-width: auto;
+          margin: 0;
+        }
       }
 
       #interactive-result {
@@ -182,11 +212,13 @@
           >
         </div>
 
-        <button onclick="loadExample(1)">Example 1: Basic Math</button>
-        <button onclick="loadExample(2)">Example 2: String Concat</button>
-        <button onclick="loadExample(3)">Example 3: Array Access</button>
-        <button onclick="loadExample(4)">Example 4: Object Access</button>
-        <button onclick="evaluateExpression()" id="evaluate-btn">Evaluate Expression</button>
+        <div class="button-container">
+          <button onclick="loadExample(1)">Example 1: Basic Math</button>
+          <button onclick="loadExample(2)">Example 2: String Concat</button>
+          <button onclick="loadExample(3)">Example 3: Array Access</button>
+          <button onclick="loadExample(4)">Example 4: Object Access</button>
+          <button onclick="evaluateExpression()" id="evaluate-btn">Evaluate Expression</button>
+        </div>
 
         <div id="interactive-result"></div>
       </div>
@@ -380,6 +412,11 @@
       function loadExample(exampleNumber) {
         const expressionInput = document.getElementById('expression-input');
         const valuesInput = document.getElementById('values-input');
+        const resultDiv = document.getElementById('interactive-result');
+
+        // Clear previous results
+        resultDiv.innerHTML = '';
+        resultDiv.className = '';
 
         switch (exampleNumber) {
           case 1:
@@ -400,7 +437,12 @@
             break;
         }
 
-        evaluateExpression();
+        // Show a message indicating the example is loaded
+        resultDiv.innerHTML = `
+          <div style="padding: 10px; background-color: #e8f4f8; border: 1px solid #3498db; border-radius: 4px; color: #2c3e50;">
+            📝 Example ${exampleNumber} loaded! Click "Evaluate Expression" to see the result.
+          </div>
+        `;
       }
 
       // Allow Enter key to evaluate

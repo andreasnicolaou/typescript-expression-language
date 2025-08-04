@@ -4,8 +4,6 @@ import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 
-const external = [];
-
 export default [
   // ESM build
   {
@@ -15,7 +13,6 @@ export default [
       format: 'es',
       sourcemap: false,
     },
-    external,
     plugins: [
       resolve({ preferBuiltins: false }),
       commonjs(),
@@ -36,7 +33,6 @@ export default [
       sourcemap: false,
       exports: 'named',
     },
-    external,
     plugins: [
       resolve({ preferBuiltins: false }),
       commonjs(),
@@ -79,7 +75,6 @@ export default [
       file: 'dist/index.d.ts',
       format: 'es',
     },
-    external: [],
     plugins: [dts()],
   },
 ];

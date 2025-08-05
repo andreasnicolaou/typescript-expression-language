@@ -135,9 +135,8 @@ const { ExpressionLanguage } = require('@andreasnicolaou/typescript-expression-l
 ```html
 <script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
 <script>
-  const el = new TypescriptExpressionLanguage.ExpressionLanguage();
-  const result = el.evaluate('1 + 2 * 3');
-  console.log(result); // 7
+  const el = new typescriptExpressionLanguage.ExpressionLanguage();
+  console.log(el.evaluate('1 + 2 * 3')); // 7
 </script>
 ```
 
@@ -148,8 +147,7 @@ const { ExpressionLanguage } = require('@andreasnicolaou/typescript-expression-l
   import { ExpressionLanguage } from 'https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.js';
 
   const el = new ExpressionLanguage();
-  const result = el.evaluate('2 * (3 + 4)');
-  console.log(result); // 14
+  console.log(el.evaluate('2 * (3 + 4)')); // 14
 </script>
 ```
 
@@ -187,7 +185,7 @@ console.log(el.evaluate('x + y', { x: 10, y: 5 })); // 15
 ```html
 <script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
 <script>
-  const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+  const el = new typescriptExpressionLanguage.ExpressionLanguage();
   console.log(el.evaluate('"Hello " + name', { name: 'World' })); // "Hello World"
 </script>
 ```

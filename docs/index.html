@@ -177,7 +177,7 @@
         <strong>UMD file:</strong>
         <code>https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js</code><br />
         <strong>Dependencies:</strong> All bundled (lru-cache, locutus)<br />
-        <strong>Global namespace:</strong> <code>TypescriptExpressionLanguage</code>
+        <strong>Global namespace:</strong> <code>typescriptExpressionLanguage</code>
       </div>
 
       <h2>📋 Automated Test Cases</h2>
@@ -241,8 +241,8 @@
           name: 'Basic Library Loading',
           test: () => {
             return (
-              typeof TypescriptExpressionLanguage !== 'undefined' &&
-              typeof TypescriptExpressionLanguage.ExpressionLanguage === 'function'
+              typeof typescriptExpressionLanguage !== 'undefined' &&
+              typeof typescriptExpressionLanguage.ExpressionLanguage === 'function'
             );
           },
           description: 'Check if the library loads and ExpressionLanguage constructor is available',
@@ -250,7 +250,7 @@
         {
           name: 'Simple Math Expression',
           test: () => {
-            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            const el = new typescriptExpressionLanguage.ExpressionLanguage();
             return el.evaluate('1 + 2 * 3') === 7;
           },
           description: 'Evaluate: 1 + 2 * 3 = 7',
@@ -258,7 +258,7 @@
         {
           name: 'Expression with Variables',
           test: () => {
-            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            const el = new typescriptExpressionLanguage.ExpressionLanguage();
             return el.evaluate('x + y', { x: 10, y: 5 }) === 15;
           },
           description: 'Evaluate: x + y with x=10, y=5 = 15',
@@ -266,7 +266,7 @@
         {
           name: 'String Concatenation',
           test: () => {
-            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            const el = new typescriptExpressionLanguage.ExpressionLanguage();
             return el.evaluate('"Hello " + name', { name: 'World' }) === 'Hello World';
           },
           description: 'Evaluate: "Hello " + name with name="World" = "Hello World"',
@@ -274,7 +274,7 @@
         {
           name: 'Boolean Logic',
           test: () => {
-            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            const el = new typescriptExpressionLanguage.ExpressionLanguage();
             return el.evaluate('x > 5 and y < 10', { x: 8, y: 3 }) === true;
           },
           description: 'Evaluate: x > 5 and y < 10 with x=8, y=3 = true',
@@ -282,7 +282,7 @@
         {
           name: 'Array Access',
           test: () => {
-            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            const el = new typescriptExpressionLanguage.ExpressionLanguage();
             return el.evaluate('items[2]', { items: [10, 20, 30, 40] }) === 30;
           },
           description: 'Evaluate: items[2] with items=[10,20,30,40] = 30',
@@ -290,7 +290,7 @@
         {
           name: 'Object Property Access',
           test: () => {
-            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            const el = new typescriptExpressionLanguage.ExpressionLanguage();
             return el.evaluate('user.name', { user: { name: 'John', age: 30 } }) === 'John';
           },
           description: "Evaluate: user.name with user={name:'John', age:30} = 'John'",
@@ -298,7 +298,7 @@
         {
           name: 'Complex Expression',
           test: () => {
-            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            const el = new typescriptExpressionLanguage.ExpressionLanguage();
             const result = el.evaluate('(x + y) * 2 > threshold', { x: 10, y: 15, threshold: 40 });
             return result === true; // (10 + 15) * 2 = 50 > 40 = true
           },
@@ -307,7 +307,7 @@
         {
           name: 'Conditional Expression',
           test: () => {
-            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            const el = new typescriptExpressionLanguage.ExpressionLanguage();
             return el.evaluate('age >= 18 ? "adult" : "minor"', { age: 25 }) === 'adult';
           },
           description: 'Evaluate: age >= 18 ? "adult" : "minor" with age=25 = "adult"',
@@ -315,7 +315,7 @@
         {
           name: 'String Methods',
           test: () => {
-            const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+            const el = new typescriptExpressionLanguage.ExpressionLanguage();
             return el.evaluate('name starts with "Jo"', { name: 'John Doe' }) === true;
           },
           description: 'Evaluate: name starts with "Jo" with name="John Doe" = true',
@@ -386,7 +386,7 @@
           const expression = expressionInput.value.trim();
           const values = valuesInput.value.trim() ? JSON.parse(valuesInput.value) : {};
 
-          const el = new TypescriptExpressionLanguage.ExpressionLanguage();
+          const el = new typescriptExpressionLanguage.ExpressionLanguage();
           const result = el.evaluate(expression, values);
 
           resultDiv.className = 'success';
@@ -457,7 +457,7 @@
         runTests();
 
         // Show available globals for debugging
-        console.log('Available TypescriptExpressionLanguage exports:', Object.keys(TypescriptExpressionLanguage));
+        console.log('Available typescriptExpressionLanguage exports:', Object.keys(typescriptExpressionLanguage));
       });
     </script>
   </body>

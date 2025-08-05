@@ -50,7 +50,7 @@ export default [
     output: {
       file: 'dist/index.umd.js',
       format: 'umd',
-      name: 'TypescriptExpressionLanguage',
+      name: 'typescriptExpressionLanguage',
       sourcemap: false,
     },
     plugins: [

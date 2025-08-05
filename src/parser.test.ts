@@ -289,11 +289,12 @@ describe('Parser', () => {
   });
 
   test('should throw an error for unexpected token in primary expression', () => {
+    const stream = lexer.tokenize('* 5');
     expect(() => {
-      parser.parse(lexer.tokenize('* 5'), []);
+      parser.parse(stream, []);
     }).toThrow(SyntaxError);
     expect(() => {
-      parser.parse(lexer.tokenize('* 5'), []);
+      parser.parse(stream, []);
     }).toThrow('Unexpected token "operator" of value "*"');
   });
 

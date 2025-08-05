@@ -95,7 +95,7 @@ For direct browser usage without a build step:
 <script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
 
 <!-- unpkg CDN (pinned version - recommended) -->
-<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language@1.1.6/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language@1.2.0/dist/index.umd.js"></script>
 
 <!-- jsDelivr CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
@@ -247,6 +247,31 @@ expressionLanguage.addFunction(expressionFunction);
 const expression = 'isEven(10)';
 const result = expressionLanguage.evaluate(expression);
 console.log(result); // Outputs → `true`
+```
+
+---
+
+## ⚙️ Configuration
+
+### Custom LRU Cache
+
+By default, the library uses an internal LRU cache for expression parsing optimization. If you need to use a custom cache configuration, you'll need to install the `lru-cache` package separately and pass your own instance:
+
+```bash
+# Install lru-cache for custom cache usage
+npm install lru-cache
+```
+
+```typescript
+import { LRUCache } from 'lru-cache';
+import { ExpressionLanguage, ParsedExpression } from '@andreasnicolaou/typescript-expression-language';
+
+const customCache = new LRUCache<string, ParsedExpression>({
+  max: 1000,
+  ttl: 1000 * 60 * 5,
+});
+
+const expressionLanguage = new ExpressionLanguage(customCache);
 ```
 
 ---

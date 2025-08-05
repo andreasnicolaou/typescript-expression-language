@@ -1,7 +1,7 @@
-import { ParsedExpression } from './parsed-expression';
-import { ConstantNode } from './node/constant-node';
 import serialize from 'locutus/php/var/serialize';
 import unserialize from 'locutus/php/var/unserialize';
+import { ConstantNode } from './node/constant-node';
+import { ParsedExpression } from './parsed-expression';
 
 describe('ParsedExpression', () => {
   test('should serialize correctly', () => {

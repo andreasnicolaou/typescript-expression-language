@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Compiler } from '../compiler';
-import { Node } from '../node/node';
 import { ArrayNode } from '../node/array-node';
+import { Node } from '../node/node';
 import { ConstantNode } from './constant-node';
 
 /**

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Compiler } from '../compiler';
 import addcslashes from 'locutus/php/strings/addcslashes';
 import is_scalar from 'locutus/php/var/is_scalar';
+import { Compiler } from '../compiler';
 
 /**
  * Represents a node in an abstract syntax tree (AST) for an expression language.

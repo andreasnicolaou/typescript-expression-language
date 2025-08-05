@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Node } from './node/node';
 import addcslashes from 'locutus/php/strings/addcslashes';
+import { Node } from './node/node';
 
 /**
  * Represents a compiler for an expression language.

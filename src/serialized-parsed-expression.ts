@@ -1,5 +1,5 @@
-import { Node } from './node/node';
 import unserialize from 'locutus/php/var/unserialize';
+import { Node } from './node/node';
 
 /**
  * Represents an already serialized parsed expression.

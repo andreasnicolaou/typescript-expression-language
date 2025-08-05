@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Compiler } from '../compiler';
-import { Node } from '../node/node';
 import { ConstantNode } from '../node/constant-node';
+import { Node } from '../node/node';
 
 /**
  * Represents an array-like structure of an abstract syntax tree (AST) in the expression language.

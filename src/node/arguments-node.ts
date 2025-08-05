@@ -1,6 +1,6 @@
 import { Compiler } from '../compiler';
-import { ArrayNode } from './array-node';
 import { Node } from '../node/node';
+import { ArrayNode } from './array-node';
 
 /**
  * Represents a node for arguments of an abstract syntax tree (AST) in the expression language.

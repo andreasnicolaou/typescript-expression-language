@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Compiler } from '../compiler';
-import { GetAttrNode } from './get-attr-node';
 import { Node } from '../node/node';
+import { GetAttrNode } from './get-attr-node';
 
 /**
  * Represents a null-coalesce in an abstract syntax tree (AST) for an expression language.

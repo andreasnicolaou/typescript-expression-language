@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Node } from './node';
-import { FunctionNode } from './function-node';
-import { ConstantNode } from './constant-node';
 import { Compiler } from '../compiler';
+import { ConstantNode } from './constant-node';
+import { FunctionNode } from './function-node';
+import { Node } from './node';
 
 const getEvaluateData = (): (
   | string

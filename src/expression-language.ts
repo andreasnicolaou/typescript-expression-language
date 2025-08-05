@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import rawurlencode from 'locutus/php/url/rawurlencode';
+import { LRUCache } from 'lru-cache';
 import { Compiler } from './compiler';
-import { Lexer } from './lexer';
-import { Parser } from './parser';
-import { ParsedExpression } from './parsed-expression';
 import { Expression } from './expression';
 import { ExpressionFunction } from './expression-function';
-import { LRUCache } from 'lru-cache';
-import asort from 'locutus/php/array/asort';
-import rawurlencode from 'locutus/php/url/rawurlencode';
+import { Lexer } from './lexer';
+import { ParsedExpression } from './parsed-expression';
+import { Parser } from './parser';
 
 export interface ExpressionFunctionProvider {
   getFunctions(): ExpressionFunction[];
@@ -70,7 +69,17 @@ export class ExpressionLanguage {
     if (expression instanceof ParsedExpression) {
       return expression;
     }
-    asort(names);
+    // Sort names for consistent cache keys (supports both string names and objects with key-value pairs; replaces PHP asort)
+    names.sort((a, b) => {
+      const aVal = typeof a === 'object' && a !== null ? (Object.values(a)[0] ?? '') : a;
+      const bVal = typeof b === 'object' && b !== null ? (Object.values(b)[0] ?? '') : b;
+
+      // Convert to strings and use localeCompare for all comparisons
+      const aStr = String(aVal);
+      const bStr = String(bVal);
+
+      return aStr.localeCompare(bStr);
+    });
     const cacheKeyItems: string[] = [];
     for (const name of names) {
       const value: string = typeof name === 'object' ? `${Object.keys(name)[0]}:${Object.values(name)[0]}` : name;

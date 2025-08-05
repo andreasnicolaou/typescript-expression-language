@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NullCoalesceNode } from './null-coalesce-node';
 import { Compiler } from '../compiler';
-import { ConstantNode } from './constant-node';
 import { ArrayNode } from './array-node';
+import { ConstantNode } from './constant-node';
 import { GetAttrNode } from './get-attr-node';
 import { NameNode } from './name-node';
+import { NullCoalesceNode } from './null-coalesce-node';
 
 const getEvaluateData = (): (Record<string, any>[] | (Record<string, any> | null | string)[])[] => [
   ['default', new NullCoalesceNode(new ConstantNode(undefined), new ConstantNode('default')), {}],

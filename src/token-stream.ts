@@ -1,5 +1,5 @@
-import { Token } from './token';
 import { SyntaxError } from './syntax-error';
+import { Token } from './token';
 
 /**
  * Represents a token stream.

@@ -1,5 +1,5 @@
-import { SyntaxError } from '../syntax-error';
 import { Compiler } from '../compiler';
+import { SyntaxError } from '../syntax-error';
 import { ArrayNode } from './array-node';
 import { BinaryNode } from './binary-node';
 import { ConstantNode } from './constant-node';

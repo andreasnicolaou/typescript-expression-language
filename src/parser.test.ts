@@ -7,9 +7,10 @@ import { ConditionalNode } from './node/conditional-node';
 import { ConstantNode } from './node/constant-node';
 import { GetAttrNode } from './node/get-attr-node';
 import { NameNode } from './node/name-node';
-import { NullCoalesceNode } from './node/null-coalesce-node';
-import { UnaryNode } from './node/unary-node';
 import { Node } from './node/node';
+import { NullCoalesceNode } from './node/null-coalesce-node';
+import { NullCoalescedNameNode } from './node/null-coalesced-name-node';
+import { UnaryNode } from './node/unary-node';
 import { Parser } from './parser';
 import { SyntaxError } from './syntax-error';
 
@@ -272,10 +273,29 @@ describe('Parser', () => {
     }).toThrow(SyntaxError);
   });
 
+  test('should create NullCoalescedNameNode for unknown variable followed by null coalescing operator', () => {
+    const result = parser.parse(lexer.tokenize('unknownVar ?? "default"'), []);
+    expect(result).toBeInstanceOf(NullCoalesceNode);
+    expect(result.nodes.expr1).toBeInstanceOf(NullCoalescedNameNode);
+    expect(result.nodes.expr1.attributes.name).toBe('unknownVar');
+    expect(result.nodes.expr2).toBeInstanceOf(ConstantNode);
+    expect(result.nodes.expr2.attributes.value).toBe('default');
+  });
+
   test('should throw an error for unknown functions', () => {
     expect(() => {
       parser.parse(new Lexer().tokenize('foo()'));
     }).toThrow(SyntaxError);
+  });
+
+  test('should throw an error for unexpected token in primary expression', () => {
+    const stream = lexer.tokenize('* 5');
+    expect(() => {
+      parser.parse(stream, []);
+    }).toThrow(SyntaxError);
+    expect(() => {
+      parser.parse(stream, []);
+    }).toThrow('Unexpected token "operator" of value "*"');
   });
 
   test('should parse valid expressions', () => {

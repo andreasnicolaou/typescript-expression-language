@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Compiler } from '../compiler';
+import { ArgumentsNode } from './arguments-node';
 import { ArrayNode } from './array-node';
 import { ConstantNode } from './constant-node';
 import { GetAttrNode } from './get-attr-node';
 import { NameNode } from './name-node';
-import { ArgumentsNode } from './arguments-node';
 
 type NodeTestValue = string | GetAttrNode | Record<string, any>;
 
@@ -238,5 +238,21 @@ describe('GetAttrNode', () => {
     );
     node.attributes.is_null_coalesce = true;
     expect(node.evaluate({}, {})).toBeNull();
+  });
+
+  test('should return null when nested GetAttrNode is short-circuited', () => {
+    const node = new GetAttrNode(
+      new GetAttrNode(
+        new ConstantNode(null),
+        new ConstantNode('23', false, true), // null-safe property access
+        new ArgumentsNode(),
+        GetAttrNode.PROPERTY_CALL
+      ), // Inner node that will be short-circuited
+      new ConstantNode('foo'),
+      new ArgumentsNode(),
+      GetAttrNode.PROPERTY_CALL
+    );
+    const result = node.evaluate({}, {});
+    expect(result).toBeNull();
   });
 });

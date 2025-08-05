@@ -1,7 +1,7 @@
 import { Lexer } from './lexer';
+import { SyntaxError } from './syntax-error';
 import { Token } from './token';
 import { TokenStream } from './token-stream';
-import { SyntaxError } from './syntax-error';
 
 const getTokenizeData = (): (string | Token[])[][] => {
   return [

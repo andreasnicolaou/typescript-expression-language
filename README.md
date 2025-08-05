@@ -46,28 +46,159 @@ Use it to create dynamic and flexible expression-based logic on the frontend, pe
 
 ## 🧪 Demo
 
-You can try this library live on StackBlitz:
+You can try this library live:
 
-👉 <a href="https://stackblitz.com/edit/vitejs-vite-wzv1j5ar" target="_blank">Open in StackBlitz</a>
+👉 <a href="https://stackblitz.com/edit/vitejs-vite-wzv1j5ar" target="_blank">Interactive Demo on StackBlitz</a>
+
+🌐 <a href="https://andreasnicolaou.github.io/typescript-expression-language/" target="_blank">UMD Build Test on GitHub Pages</a>
 
 ---
 
 ## ✨ Features
 
 - **Full Symfony Compatibility**: Write expressions that work the same way on both client and server.
+- **Zero Dependencies**: Self-contained library with no external runtime dependencies.
 - **Rich Syntax Support**: Includes numbers, strings, operators, functions, and advanced object/array access.
 - **Customizable Operators**: Define your own operators or extend existing ones.
 - **Brackets and Nesting**: Handle deeply nested brackets with accurate syntax validation.
 - **Error Detection**: Detect and report invalid syntax with meaningful error messages.
 - **Word-Based Operators**: Supports expressions like `starts with`, `not in`, `ends with`, `contains`, `matches`, and more!
 - **TypeScript Ready**: Fully typed, ensuring seamless integration into TypeScript projects.
+- **Universal Compatibility**: Works in Node.js (ESM/CommonJS), browsers (UMD), and TypeScript projects.
+- **Professional Build**: Multiple output formats with tree-shaking support and optimized bundles.
 
 ---
 
-## 🚀 Installation
+## 📦 Installation & Module Support
+
+This library provides **universal compatibility** across all JavaScript environments:
+
+### Package Managers
 
 ```bash
+# npm
 npm install @andreasnicolaou/typescript-expression-language
+
+# yarn
+yarn add @andreasnicolaou/typescript-expression-language
+
+# pnpm
+pnpm add @andreasnicolaou/typescript-expression-language
+```
+
+### CDN Usage
+
+For direct browser usage without a build step:
+
+```html
+<!-- unpkg CDN (latest version) -->
+<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
+
+<!-- unpkg CDN (pinned version - recommended) -->
+<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language@1.2.0/dist/index.umd.js"></script>
+
+<!-- jsDelivr CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
+```
+
+**CDN Benefits:**
+
+- ✅ No build step required
+- ✅ Cached across websites for faster loading
+- ✅ Perfect for prototyping and demos
+- ✅ Works in any HTML page immediately
+- ✅ Minified for optimal performance
+
+### Module Format Support
+
+- **🟢 ESM (ES Modules)**: For modern bundlers and Node.js
+- **🟢 CommonJS**: For traditional Node.js projects
+- **🟢 UMD (Minified)**: For direct browser usage via CDN - optimized and compressed
+- **🟢 TypeScript**: Complete type definitions included
+
+### Usage Examples
+
+#### ES Modules (Recommended)
+
+```typescript
+import { ExpressionLanguage } from '@andreasnicolaou/typescript-expression-language';
+```
+
+#### CommonJS
+
+```javascript
+const { ExpressionLanguage } = require('@andreasnicolaou/typescript-expression-language');
+```
+
+#### Browser (UMD via CDN)
+
+```html
+<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
+<script>
+  const el = new typescriptExpressionLanguage.ExpressionLanguage();
+  console.log(el.evaluate('1 + 2 * 3')); // 7
+</script>
+```
+
+#### Browser (ES Modules via CDN)
+
+```html
+<script type="module">
+  import { ExpressionLanguage } from 'https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.js';
+
+  const el = new ExpressionLanguage();
+  console.log(el.evaluate('2 * (3 + 4)')); // 14
+</script>
+```
+
+#### TypeScript
+
+```typescript
+// Full type safety and IntelliSense support
+import { ExpressionLanguage, ParsedExpression } from '@andreasnicolaou/typescript-expression-language';
+```
+
+---
+
+## 🚀 Quick Start
+
+### Node.js (ESM)
+
+```javascript
+import { ExpressionLanguage } from '@andreasnicolaou/typescript-expression-language';
+
+const el = new ExpressionLanguage();
+console.log(el.evaluate('1 + 2 * 3')); // 7
+```
+
+### Node.js (CommonJS)
+
+```javascript
+const { ExpressionLanguage } = require('@andreasnicolaou/typescript-expression-language');
+
+const el = new ExpressionLanguage();
+console.log(el.evaluate('x + y', { x: 10, y: 5 })); // 15
+```
+
+### Browser (No Build Step)
+
+```html
+<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
+<script>
+  const el = new typescriptExpressionLanguage.ExpressionLanguage();
+  console.log(el.evaluate('"Hello " + name', { name: 'World' })); // "Hello World"
+</script>
+```
+
+### Modern Browser (ES Modules)
+
+```html
+<script type="module">
+  import { ExpressionLanguage } from 'https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.js';
+
+  const el = new ExpressionLanguage();
+  console.log(el.evaluate('Math.pow(2, 3)')); // 8
+</script>
 ```
 
 ---
@@ -116,6 +247,31 @@ expressionLanguage.addFunction(expressionFunction);
 const expression = 'isEven(10)';
 const result = expressionLanguage.evaluate(expression);
 console.log(result); // Outputs → `true`
+```
+
+---
+
+## ⚙️ Configuration
+
+### Custom LRU Cache
+
+By default, the library uses an internal LRU cache for expression parsing optimization. If you need to use a custom cache configuration, you'll need to install the `lru-cache` package separately and pass your own instance:
+
+```bash
+# Install lru-cache for custom cache usage
+npm install lru-cache
+```
+
+```typescript
+import { LRUCache } from 'lru-cache';
+import { ExpressionLanguage, ParsedExpression } from '@andreasnicolaou/typescript-expression-language';
+
+const customCache = new LRUCache<string, ParsedExpression>({
+  max: 1000,
+  ttl: 1000 * 60 * 5,
+});
+
+const expressionLanguage = new ExpressionLanguage(customCache);
 ```
 
 ---
@@ -346,6 +502,45 @@ This library ensures that expressions written in PHP's **Symfony Expression Lang
 - **Easy Integration**: Easily synchronize the logic between your PHP backend and TypeScript frontend, without needing separate implementations.
 
 This compatibility makes it easier to create unified and maintainable applications that share the same logic across the stack.
+
+---
+
+## 🔧 Development
+
+### Building from Source
+
+The library uses a professional build system with **Rollup** and **TypeScript**:
+
+```bash
+# Clone the repository
+git clone https://github.com/andreasnicolaou/typescript-expression-language.git
+cd typescript-expression-language
+
+# Install dependencies
+npm install
+
+# Run the build (generates all formats)
+npm run build
+```
+
+### Build Output
+
+The build process generates multiple optimized bundles:
+
+- `dist/index.js` - **ESM bundle** for modern environments
+- `dist/index.cjs` - **CommonJS bundle** for Node.js
+- `dist/index.umd.js` - **UMD bundle (minified)** for browsers
+- `dist/index.d.ts` - **TypeScript declarations** for full type support
+
+### Available Scripts
+
+```bash
+npm run build      # Build all formats (ESM, CJS, UMD, types)
+npm test           # Run Jest test suite
+npm run test:watch # Run tests in watch mode
+npm run lint       # Run ESLint
+npm run format     # Format code with Prettier
+```
 
 ---
 

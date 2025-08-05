@@ -303,4 +303,90 @@ describe('ExpressionLanguage', () => {
     const parsed = expressionLanguage.parse('1+1', []);
     expect(() => expressionLanguage.lint(parsed, ['a'])).not.toThrow();
   });
+
+  test('should use cache when parsing with same names in different order', () => {
+    const expression = 'a + b + c';
+    const names1 = ['c', 'a', 'b'];
+    const names2 = ['a', 'b', 'c'];
+    const names3 = ['b', 'c', 'a'];
+
+    const firstParse = expressionLanguage.parse(expression, names1);
+    expect(expressionLanguage.cache.size).toBe(1);
+
+    const secondParse = expressionLanguage.parse(expression, names2);
+    expect(firstParse).toBe(secondParse);
+    expect(expressionLanguage.cache.size).toBe(1);
+
+    const thirdParse = expressionLanguage.parse(expression, names3);
+    expect(firstParse).toBe(thirdParse);
+    expect(expressionLanguage.cache.size).toBe(1);
+  });
+
+  test('should use cache when parsing with mixed types in different order', () => {
+    const expression = 'a + b + c';
+    const names1 = ['c', 'a', 'b'];
+    const names2 = ['a', 'b', 'c'];
+    const names3 = ['b', 'c', 'a'];
+
+    const firstParse = expressionLanguage.parse(expression, names1);
+    expect(expressionLanguage.cache.size).toBe(1);
+
+    const secondParse = expressionLanguage.parse(expression, names2);
+    expect(firstParse).toBe(secondParse);
+    expect(expressionLanguage.cache.size).toBe(1);
+
+    const thirdParse = expressionLanguage.parse(expression, names3);
+    expect(firstParse).toBe(thirdParse);
+    expect(expressionLanguage.cache.size).toBe(1);
+  });
+
+  test('should sort string names correctly using localeCompare in parse method', () => {
+    // Create a simple test expression that uses string variable names
+    const expression = '10 + 2 + 1';
+    // Using string names to trigger the localeCompare sorting
+    const names = ['10', '2', '1'];
+
+    const parsed = expressionLanguage.parse(expression, names);
+    expect(parsed).toBeDefined();
+    expect(parsed.toString()).toBe(expression);
+
+    // The cache key should be generated with sorted string values (1, 10, 2)
+    expect(expressionLanguage.cache.size).toBe(1);
+
+    // Test with the same expression but names in different order should use same cache
+    const names2 = ['1', '10', '2'];
+    const parsed2 = expressionLanguage.parse(expression, names2);
+    expect(parsed).toBe(parsed2);
+    expect(expressionLanguage.cache.size).toBe(1);
+  });
+
+  test('should handle mixed string sorting correctly with localeCompare', () => {
+    const expression = '1 + 2 + 3';
+
+    // Test mixed strings - these will be used for cache key generation
+    const names1 = ['z', '10', 'a', '2'];
+    const names2 = ['2', 'a', '10', 'z']; // Same names, different order
+
+    const parsed1 = expressionLanguage.parse(expression, names1);
+    const parsed2 = expressionLanguage.parse(expression, names2);
+
+    // Should use the same cache entry since sorting should be consistent
+    expect(parsed1).toBe(parsed2);
+    expect(expressionLanguage.cache.size).toBe(1);
+  });
+
+  test('should handle special string characters with localeCompare', () => {
+    const expression = '1 + 2 + 3';
+
+    // Test strings with special characters that benefit from localeCompare
+    const names1 = ['ä', 'a', 'ß'];
+    const names2 = ['ß', 'a', 'ä']; // Same names, different order
+
+    const parsed1 = expressionLanguage.parse(expression, names1);
+    const parsed2 = expressionLanguage.parse(expression, names2);
+
+    // Should use the same cache entry
+    expect(parsed1).toBe(parsed2);
+    expect(expressionLanguage.cache.size).toBe(1);
+  });
 });

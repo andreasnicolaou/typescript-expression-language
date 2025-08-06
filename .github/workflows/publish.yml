@@ -5,9 +5,6 @@ permissions:
 on:
   release:
     types: [published]
-  push:
-    tags:
-      - 'v*.*.*'
 jobs:
   publish:
     runs-on: ubuntu-latest

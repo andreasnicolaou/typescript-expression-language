@@ -51,6 +51,7 @@
       aria-label="Toggle dark mode"
     >
       <svg class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <title>Toggle theme</title>
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
       </svg>
     </button>
@@ -140,11 +141,12 @@
       id="loading-overlay"
       class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
       style="background-color: rgba(var(--bs-body-bg-rgb), 0.95); z-index: 9999; backdrop-filter: blur(4px)"
+      aria-live="polite"
     >
       <div class="text-center">
-        <output class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem">
+        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem">
           <span class="visually-hidden">Loading...</span>
-        </output>
+        </div>
         <div class="text-body-secondary">Initializing demo components...</div>
       </div>
     </div>
@@ -375,12 +377,15 @@
           const values = valuesInput.value.trim() ? JSON.parse(valuesInput.value) : {};
 
           const el = new typescriptExpressionLanguage.ExpressionLanguage();
-          const expressionFunction = typescriptExpressionLanguage.ExpressionFunction.fromJs(
-            'squareFn',
-            (x) => x * x,
-            'square'
-          );
-          el.addFunction(expressionFunction);
+          
+          if (expression.includes('square')) {
+            const expressionFunction = typescriptExpressionLanguage.ExpressionFunction.fromJs(
+              'squareFn',
+              (x) => x * x,
+              'square'
+            );
+            el.addFunction(expressionFunction);
+          }
 
           const result = el.evaluate(expression, values);
 
@@ -459,10 +464,10 @@
         body.setAttribute('data-bs-theme', newTheme);
 
         if (newTheme === 'light') {
-          themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+          themeIcon.innerHTML = '<title>Toggle theme</title><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
         } else {
           themeIcon.innerHTML =
-            '<circle cx="12" cy="12" r="5"/><path d="m15 1 2 2-2 2M6 11l-2-2 2-2M20 11l2 2-2 2M9 19l-2 2 2 2M12 3V1M12 23v-2M3 12H1M23 12h-2"/>';
+            '<title>Toggle theme</title><circle cx="12" cy="12" r="5"/><path d="m15 1 2 2-2 2M6 11l-2-2 2-2M20 11l2 2-2 2M9 19l-2 2 2 2M12 3V1M12 23v-2M3 12H1M23 12h-2"/>';
         }
 
         localStorage.setItem('theme', newTheme);
@@ -476,10 +481,10 @@
         body.setAttribute('data-bs-theme', savedTheme);
 
         if (savedTheme === 'light') {
-          themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+          themeIcon.innerHTML = '<title>Toggle theme</title><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
         } else {
           themeIcon.innerHTML =
-            '<circle cx="12" cy="12" r="5"/><path d="m15 1 2 2-2 2M6 11l-2-2 2-2M20 11l2 2-2 2M9 19l-2 2 2 2M12 3V1M12 23v-2M3 12H1M23 12h-2"/>';
+            '<title>Toggle theme</title><circle cx="12" cy="12" r="5"/><path d="m15 1 2 2-2 2M6 11l-2-2 2-2M20 11l2 2-2 2M9 19l-2 2 2 2M12 3V1M12 23v-2M3 12H1M23 12h-2"/>';
         }
 
         runTests();

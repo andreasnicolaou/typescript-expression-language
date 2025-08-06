@@ -72,9 +72,9 @@
               >https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js</code
             >
             <span id="cdn-status" class="ms-2">
-              <output class="spinner-border spinner-border-sm text-primary" aria-label="Loading CDN">
+              <div class="spinner-border spinner-border-sm text-primary" aria-label="Loading CDN">
                 <span class="visually-hidden">Loading...</span>
-              </output> </span
+              </div> </span
             ><br />
             <strong>Global Variable:</strong> <code class="font-monospace">typescriptExpressionLanguage</code>
           </div>
@@ -377,7 +377,7 @@
           const values = valuesInput.value.trim() ? JSON.parse(valuesInput.value) : {};
 
           const el = new typescriptExpressionLanguage.ExpressionLanguage();
-          
+
           if (expression.includes('square')) {
             const expressionFunction = typescriptExpressionLanguage.ExpressionFunction.fromJs(
               'squareFn',
@@ -464,7 +464,8 @@
         body.setAttribute('data-bs-theme', newTheme);
 
         if (newTheme === 'light') {
-          themeIcon.innerHTML = '<title>Toggle theme</title><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+          themeIcon.innerHTML =
+            '<title>Toggle theme</title><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
         } else {
           themeIcon.innerHTML =
             '<title>Toggle theme</title><circle cx="12" cy="12" r="5"/><path d="m15 1 2 2-2 2M6 11l-2-2 2-2M20 11l2 2-2 2M9 19l-2 2 2 2M12 3V1M12 23v-2M3 12H1M23 12h-2"/>';
@@ -481,7 +482,8 @@
         body.setAttribute('data-bs-theme', savedTheme);
 
         if (savedTheme === 'light') {
-          themeIcon.innerHTML = '<title>Toggle theme</title><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+          themeIcon.innerHTML =
+            '<title>Toggle theme</title><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
         } else {
           themeIcon.innerHTML =
             '<title>Toggle theme</title><circle cx="12" cy="12" r="5"/><path d="m15 1 2 2-2 2M6 11l-2-2 2-2M20 11l2 2-2 2M9 19l-2 2 2 2M12 3V1M12 23v-2M3 12H1M23 12h-2"/>';

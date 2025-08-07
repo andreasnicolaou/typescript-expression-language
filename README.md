@@ -91,14 +91,17 @@ pnpm add @andreasnicolaou/typescript-expression-language
 For direct browser usage without a build step:
 
 ```html
-<!-- unpkg CDN (latest version) -->
+<!-- unpkg CDN (latest version, unminified) -->
 <script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
 
-<!-- unpkg CDN (pinned version - recommended) -->
-<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language@1.2.0/dist/index.umd.js"></script>
+<!-- unpkg CDN (latest version, minified) -->
+<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.min.js"></script>
 
-<!-- jsDelivr CDN -->
+<!-- jsDelivr CDN (unminified) -->
 <script src="https://cdn.jsdelivr.net/npm/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
+
+<!-- jsDelivr CDN (minified) -->
+<script src="https://cdn.jsdelivr.net/npm/@andreasnicolaou/typescript-expression-language/dist/index.umd.min.js"></script>
 ```
 
 **CDN Benefits:**
@@ -107,13 +110,13 @@ For direct browser usage without a build step:
 - ✅ Cached across websites for faster loading
 - ✅ Perfect for prototyping and demos
 - ✅ Works in any HTML page immediately
-- ✅ Minified for optimal performance
+- ✅ Choose minified (`.min.js`) for production, or unminified (`.js`) for debugging
 
 ### Module Format Support
 
 - **🟢 ESM (ES Modules)**: For modern bundlers and Node.js
 - **🟢 CommonJS**: For traditional Node.js projects
-- **🟢 UMD (Minified)**: For direct browser usage via CDN - optimized and compressed
+- **🟢 UMD (Unminified & Minified)**: For direct browser usage via CDN - use `.umd.js` for debugging, `.umd.min.js` for production
 - **🟢 TypeScript**: Complete type definitions included
 
 ### Usage Examples
@@ -133,7 +136,8 @@ const { ExpressionLanguage } = require('@andreasnicolaou/typescript-expression-l
 #### Browser (UMD via CDN)
 
 ```html
-<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
+<!-- Use .umd.js for debugging, .umd.min.js for production -->
+<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.min.js"></script>
 <script>
   const el = new typescriptExpressionLanguage.ExpressionLanguage();
   console.log(el.evaluate('1 + 2 * 3')); // 7
@@ -183,7 +187,8 @@ console.log(el.evaluate('x + y', { x: 10, y: 5 })); // 15
 ### Browser (No Build Step)
 
 ```html
-<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.js"></script>
+<!-- Use .umd.js for debugging, .umd.min.js for production -->
+<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.min.js"></script>
 <script>
   const el = new typescriptExpressionLanguage.ExpressionLanguage();
   console.log(el.evaluate('"Hello " + name', { name: 'World' })); // "Hello World"
@@ -529,7 +534,8 @@ The build process generates multiple optimized bundles:
 
 - `dist/index.js` - **ESM bundle** for modern environments
 - `dist/index.cjs` - **CommonJS bundle** for Node.js
-- `dist/index.umd.js` - **UMD bundle (minified)** for browsers
+- `dist/index.umd.js` - **UMD bundle (unminified)** for browsers (debugging)
+- `dist/index.umd.min.js` - **UMD bundle (minified)** for browsers (production)
 - `dist/index.d.ts` - **TypeScript declarations** for full type support
 
 ### Available Scripts

@@ -61,6 +61,11 @@
       },
       {
         "path": "dist/index.umd.js",
+        "maxSize": "40kB",
+        "compression": "gzip"
+      },
+      {
+        "path": "dist/index.umd.min.js",
         "maxSize": "20kB",
         "compression": "gzip"
       }

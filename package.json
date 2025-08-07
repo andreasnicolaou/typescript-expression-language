@@ -1,6 +1,6 @@
 {
   "name": "@andreasnicolaou/typescript-expression-language",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "TypeScript implementation of symfony/expression-language",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -61,6 +61,11 @@
       },
       {
         "path": "dist/index.umd.js",
+        "maxSize": "40kB",
+        "compression": "gzip"
+      },
+      {
+        "path": "dist/index.umd.min.js",
         "maxSize": "20kB",
         "compression": "gzip"
       }

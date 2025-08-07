@@ -44,11 +44,34 @@ export default [
       }),
     ],
   },
-  // UMD build (for browser) - bundle all dependencies
+  // UMD build (for browser) - unminified
   {
     input: 'src/index.ts',
     output: {
       file: 'dist/index.umd.js',
+      format: 'umd',
+      name: 'typescriptExpressionLanguage',
+      sourcemap: false,
+    },
+    plugins: [
+      resolve({
+        preferBuiltins: false,
+        browser: true,
+      }),
+      commonjs(),
+      typescript({
+        tsconfig: './tsconfig.json',
+        declaration: false,
+        declarationMap: false,
+        tslib: 'bundled',
+      }),
+    ],
+  },
+  // UMD build (for browser) - minified
+  {
+    input: 'src/index.ts',
+    output: {
+      file: 'dist/index.umd.min.js',
       format: 'umd',
       name: 'typescriptExpressionLanguage',
       sourcemap: false,

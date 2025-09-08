@@ -95,7 +95,7 @@
     "@typescript-eslint/parser": "^8.38.0",
     "bundlewatch": "^0.4.1",
     "cross-env": "^10.0.0",
-    "eslint": "^9.32.0",
+    "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.3.0",

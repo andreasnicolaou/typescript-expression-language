@@ -91,7 +91,7 @@
     "@types/jest": "^30.0.0",
     "@types/locutus": "^0.0.8",
     "@types/node": "^24.2.0",
-    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
     "@typescript-eslint/parser": "^8.38.0",
     "bundlewatch": "^0.4.1",
     "cross-env": "^10.0.0",

@@ -8,12 +8,20 @@ import { TokenStream } from './token-stream';
  * @author Andreas Nicolaou <anicolaou66@gmail.com>
  */
 export class Lexer {
-  private static readonly OPERATORS = [
+  private static readonly WORD_OPERATORS = new Set([
     'starts with',
     'ends with',
     'contains',
     'matches',
     'not in',
+    'and',
+    'not',
+    'or',
+    'in',
+  ]);
+
+  private static readonly SYMBOL_OPERATORS = [
+    ...Lexer.WORD_OPERATORS,
     '===',
     '!==',
     '&&',
@@ -26,10 +34,6 @@ export class Lexer {
     '>>',
     '**',
     '..',
-    'and',
-    'not',
-    'or',
-    'in',
     '!',
     '|',
     '^',
@@ -69,8 +73,10 @@ export class Lexer {
         continue;
       }
 
+      const slicedExpression = expression.slice(cursor);
+
       // Match numbers
-      const numberMatch = Lexer.NUMBER_REGEX.exec(expression.slice(cursor));
+      const numberMatch = Lexer.NUMBER_REGEX.exec(slicedExpression);
       if (numberMatch) {
         const rawMatch = numberMatch[0];
         const cleanedNumber = rawMatch.replace(/_/g, '');
@@ -107,7 +113,7 @@ export class Lexer {
       }
 
       // Match strings (double-quoted or single-quoted)
-      const stringMatch = Lexer.STRING_REGEX.exec(expression.slice(cursor));
+      const stringMatch = Lexer.STRING_REGEX.exec(slicedExpression);
       if (stringMatch != null) {
         tokens.push(new Token(Token.STRING_TYPE, stringMatch[1] || stringMatch[2], cursor + 1));
         cursor += stringMatch[0].length;
@@ -115,14 +121,14 @@ export class Lexer {
       }
 
       // Match comments
-      const commentMatch = Lexer.COMMENT_REGEX.exec(expression.slice(cursor));
+      const commentMatch = Lexer.COMMENT_REGEX.exec(slicedExpression);
       if (commentMatch != null) {
         cursor += commentMatch[0].length;
         continue;
       }
 
       // Match operators
-      const operator = this.extractOperator(expression.slice(cursor), expression, cursor);
+      const operator = this.extractOperator(slicedExpression, expression, cursor);
       if (operator) {
         tokens.push(new Token(Token.OPERATOR_TYPE, operator, cursor + 1));
         cursor += operator.length;
@@ -151,7 +157,7 @@ export class Lexer {
       }
 
       // Match names
-      const nameMatch = Lexer.NAME_REGEX.exec(expression.slice(cursor));
+      const nameMatch = Lexer.NAME_REGEX.exec(slicedExpression);
       if (nameMatch != null) {
         tokens.push(new Token(Token.NAME_TYPE, nameMatch[0], cursor + 1));
         cursor += nameMatch[0].length;
@@ -187,7 +193,7 @@ export class Lexer {
    */
   private extractOperator(str: string, originalExpression: string, cursor: number): string | null {
     // Loop through all possible operators
-    for (const operator of Lexer.OPERATORS) {
+    for (const operator of Lexer.SYMBOL_OPERATORS) {
       // Check if the string starts with the operator
       if (str.startsWith(operator)) {
         const operatorEnd = cursor + operator.length;
@@ -196,7 +202,7 @@ export class Lexer {
         // Check the character after the operator in the full expression
         const afterChar = originalExpression[operatorEnd] || ' ';
         // Handle word-based operators
-        if (Lexer.OPERATORS.filter((op) => /^[a-z ]+$/i.test(op)).includes(operator)) {
+        if (Lexer.WORD_OPERATORS.has(operator)) {
           // Ensure there are spaces or punctuation boundaries around the operator
           if (beforeChar.trim() === '' && afterChar.trim() === '') {
             return operator;

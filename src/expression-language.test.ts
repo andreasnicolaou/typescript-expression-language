@@ -262,8 +262,8 @@ describe('ExpressionLanguage', () => {
     expect(Object.keys(containedExpressionLanguage['functions'])).toContain('my_custom_fn');
   });
 
-  test('should call lint with null names and set flags', () => {
-    expect(() => expressionLanguage.lint('1+1', null)).not.toThrow();
+  test('should ignore unknown variables when IGNORE_UNKNOWN_VARIABLES flag is used', () => {
+    expect(() => expressionLanguage.lint('unknown_var + 1', [], Parser.IGNORE_UNKNOWN_VARIABLES)).not.toThrow();
   });
 
   test('should throw error when registering after parser is created', () => {

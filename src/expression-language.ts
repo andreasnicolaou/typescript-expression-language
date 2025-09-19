@@ -97,17 +97,14 @@ export class ExpressionLanguage {
 
   /**
    * Validates the syntax of an expression.
-   * @param expression
-   * @param names
-   * @param [flags]
+   * To ignore unknown variables during linting, pass `Parser.IGNORE_UNKNOWN_VARIABLES` as the flags parameter.
+   * @param expression - The expression to validate
+   * @param names - Array of allowed variable names (must be explicitly provided)
+   * @param [flags] - Parsing flags (use `Parser.IGNORE_UNKNOWN_VARIABLES` to ignore unknown variables)
    * @returns lint
    * @memberof ExpressionLanguage
    */
-  public lint(expression: Expression | string, names: string[] | null, flags = 0): void {
-    if (names === null) {
-      flags |= Parser.IGNORE_UNKNOWN_VARIABLES;
-      names = [];
-    }
+  public lint(expression: Expression | string, names: string[], flags = 0): void {
     if (expression instanceof ParsedExpression) {
       return;
     }

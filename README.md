@@ -285,156 +285,79 @@ const expressionLanguage = new ExpressionLanguage(customCache);
 
 ### Operators
 
-#### Arithmetic
-
-- `+`, `-`, `*`, `/`, `%`
-
-#### Comparison
-
-- `==`, `!=`, `<`, `<=`, `>`, `>=`
-
-#### Logical
-
-- `&&`, `||`, `!`
-
-#### Word-Based
-
-- `starts with`, `ends with`, `contains`, `matches`, `not`, `in`, `not in`, `and`, `or`, `xor`
-
-#### Bitwise
-
-- `&`, `|`, `^`, `~`, `<<`, `>>`
-
----
+| Type       | Operators                                                                             | Description           |
+| ---------- | ------------------------------------------------------------------------------------- | --------------------- |
+| Arithmetic | `+`, `-`, `*`, `/`, `%`                                                               | Basic math operations |
+| Comparison | `==`, `!=`, `===`, `!==`, `<`, `<=`, `>`, `>=`                                        | Value comparison      |
+| Logical    | `&&`, <code>&#124;&#124;</code>, `!`                                                  | Logical AND, OR, NOT  |
+| Word-Based | `starts with`, `ends with`, `contains`, `matches`, `not`, `in`, `not in`, `and`, `or` | Word-based logic      |
+| Bitwise    | `&`, <code>&#124;</code> , `^`, `~`, `<<`, `>>`                                       | Bitwise operations    |
+| Range      | `..`                                                                                  | Range (sequence)      |
 
 ### Data Access
 
-- **Access array elements**: `array[0]`
-- **Access object properties**: `obj.property`
-- **Call methods**: `obj.method(arg)`
-
----
+| Syntax            | Description              |
+| ----------------- | ------------------------ |
+| `array[0]`        | Access array elements    |
+| `obj.property`    | Access object properties |
+| `obj.method(arg)` | Call object methods      |
 
 ### Functions
 
 Add and register custom functions for flexible application logic.
 
----
-
 ## 🛠️ Built-in Functions
 
-The library includes a comprehensive set of built-in JavaScript functions to handle various operations. These functions are categorized as follows:
+The library includes a comprehensive set of built-in JavaScript functions to handle various operations. Below is a summary table:
 
-### Array Functions
-
-- `keys`: Returns the keys of an object.  
-  Example: `keys(obj)`
-- `values`: Returns the values of an object.  
-  Example: `values(obj)`
-- `isArray`: Checks if a value is an array.  
-  Example: `isArray(arr)`
-- `concat`: Merges multiple arrays.  
-  Example: `concat(arr1, arr2)`
-- `from`: Creates an array from an iterable.  
-  Example: `from(iterable)`
-- `of`: Creates a new array instance with the given elements.  
-  Example: `of(1, 2, 3)`
-
----
-
-### String Functions
-
-- `charAt`: Returns the character at a specific index.  
-  Example: `charAt('hello', 1)` → `'e'`
-- `charCodeAt`: Returns the Unicode value of the character at a specific index.  
-  Example: `charCodeAt('A', 0)` → `65`
-- `includes`: Checks if a string contains a substring.  
-  Example: `includes('hello', 'ell')` → `true`
-- `indexOf`: Returns the index of the first occurrence of a substring.  
-  Example: `indexOf('hello', 'e')` → `1`
-- `split`: Splits a string into an array by a separator.  
-  Example: `split('a,b,c', ',')` → `['a', 'b', 'c']`
-- `trim`: Removes whitespace from both ends of a string.  
-  Example: `trim(' hello ')` → `'hello'`
-- `toUpperCase`: Converts a string to uppercase.  
-  Example: `toUpperCase('hello')` → `'HELLO'`
-- `toLowerCase`: Converts a string to lowercase.  
-  Example: `toLowerCase('HELLO')` → `'hello'`
-
----
-
-### Number Functions
-
-- `isFinite`: Checks if a value is a finite number.  
-  Example: `isFinite(100)` → `true`
-- `isInteger`: Checks if a value is an integer.  
-  Example: `isInteger(100.5)` → `false`
-- `isNaN`: Checks if a value is NaN.  
-  Example: `isNaN(NaN)` → `true`
-- `toFixed`: Formats a number to a fixed number of decimals.  
-  Example: `toFixed(3.14159, 2)` → `'3.14'`
-
----
-
-### Date Functions
-
-- `now`: Returns the current timestamp.  
-  Example: `now()`
-- `toISOString`: Converts a date to an ISO string.  
-  Example: `toISOString(new Date())`
-- `toDateString`: Converts a date to a readable string.  
-  Example: `toDateString(new Date())`
-- `getTime`: Gets the timestamp of a date.  
-  Example: `getTime(new Date())`
-- `getFullYear`: Returns the year of a date.  
-  Example: `getFullYear(new Date())`
-- `getMonth`: Returns the month of a date (0-based).  
-  Example: `getMonth(new Date())`
-- `getDay`: Returns the day of the week.  
-  Example: `getDay(new Date())`
-- `getMinutes`: Returns the minutes of a date.  
-  Example: `getMinutes(new Date())`
-
----
-
-### JSON Functions
-
-- `stringify`: Converts a JavaScript object to a JSON string.  
-  Example: `stringify({ key: 'value' })` → `'{"key":"value"}'`
-- `parse`: Parses a JSON string into an object.  
-  Example: `parse('{"key":"value"}')` → `{ key: 'value' }`
-
----
-
-### Regular Expression Functions
-
-- `test`: Tests if a pattern matches a string.  
-  Example: `test(/abc/, 'abcdef')` → `true`
-- `exec`: Executes a pattern and returns the match.  
-  Example: `exec(/abc/, 'abcdef')` → `['abc']`
-
----
-
-### URI Functions
-
-- `decodeURI`: Decodes a URI.  
-  Example: `decodeURI('%20space')` → `' space'`
-- `encodeURI`: Encodes a URI.  
-  Example: `encodeURI(' space')` → `'%20space'`
-- `decodeURIComponent`: Decodes a URI component.  
-  Example: `decodeURIComponent('%20space')` → `' space'`
-- `encodeURIComponent`: Encodes a URI component.  
-  Example: `encodeURIComponent(' space')` → `'%20space'`
-
----
-
-### Math Functions
-
-All functions from JavaScript's `Math` object are included, such as:
-
-- `abs`, `ceil`, `floor`, `round`, `max`, `min`, `random`, `sqrt`, `pow`, `sin`, `cos`, `tan`, etc.
-
----
+| Function             | Category | Description                                              | Example                                             |
+| -------------------- | -------- | -------------------------------------------------------- | --------------------------------------------------- |
+| `keys`               | Array    | Returns the keys of an object                            | `keys(obj)`                                         |
+| `values`             | Array    | Returns the values of an object                          | `values(obj)`                                       |
+| `isArray`            | Array    | Checks if a value is an array                            | `isArray(arr)`                                      |
+| `concat`             | Array    | Merges multiple arrays                                   | `concat(arr1, arr2)`                                |
+| `from`               | Array    | Creates an array from an iterable                        | `from(iterable)`                                    |
+| `of`                 | Array    | Creates a new array instance with the given elements     | `of(1, 2, 3)`                                       |
+| `charAt`             | String   | Returns the character at a specific index                | `charAt('hello', 1)` → `'e'`                        |
+| `charCodeAt`         | String   | Returns the Unicode value of the character at an index   | `charCodeAt('A', 0)` → `65`                         |
+| `includes`           | String   | Checks if a string contains a substring                  | `includes('hello', 'ell')` → `true`                 |
+| `indexOf`            | String   | Returns the index of the first occurrence of a substring | `indexOf('hello', 'e')` → `1`                       |
+| `split`              | String   | Splits a string into an array by a separator             | `split('a,b,c', ',')` → `['a', 'b', 'c']`           |
+| `trim`               | String   | Removes whitespace from both ends of a string            | `trim(' hello ')` → `'hello'`                       |
+| `toUpperCase`        | String   | Converts a string to uppercase                           | `toUpperCase('hello')` → `'HELLO'`                  |
+| `toLowerCase`        | String   | Converts a string to lowercase                           | `toLowerCase('HELLO')` → `'hello'`                  |
+| `isFinite`           | Number   | Checks if a value is a finite number                     | `isFinite(100)` → `true`                            |
+| `isInteger`          | Number   | Checks if a value is an integer                          | `isInteger(100.5)` → `false`                        |
+| `isNaN`              | Number   | Checks if a value is NaN                                 | `isNaN(NaN)` → `true`                               |
+| `toFixed`            | Number   | Formats a number to a fixed number of decimals           | `toFixed(3.14159, 2)` → `'3.14'`                    |
+| `now`                | Date     | Returns the current timestamp                            | `now()`                                             |
+| `toISOString`        | Date     | Converts a date to an ISO string                         | `toISOString(new Date())`                           |
+| `toDateString`       | Date     | Converts a date to a readable string                     | `toDateString(new Date())`                          |
+| `getTime`            | Date     | Gets the timestamp of a date                             | `getTime(new Date())`                               |
+| `getFullYear`        | Date     | Returns the year of a date                               | `getFullYear(new Date())`                           |
+| `getMonth`           | Date     | Returns the month of a date (0-based)                    | `getMonth(new Date())`                              |
+| `getDay`             | Date     | Returns the day of the week                              | `getDay(new Date())`                                |
+| `getMinutes`         | Date     | Returns the minutes of a date                            | `getMinutes(new Date())`                            |
+| `stringify`          | JSON     | Converts a JavaScript object to a JSON string            | `stringify({ key: 'value' })` → `'{"key":"value"}'` |
+| `parse`              | JSON     | Parses a JSON string into an object                      | `parse('{"key":"value"}')` → `{ key: 'value' }`     |
+| `test`               | RegExp   | Tests if a pattern matches a string                      | `test(/abc/, 'abcdef')` → `true`                    |
+| `exec`               | RegExp   | Executes a pattern and returns the match                 | `exec(/abc/, 'abcdef')` → `['abc']`                 |
+| `decodeURI`          | URI      | Decodes a URI                                            | `decodeURI('%20space')` → `' space'`                |
+| `encodeURI`          | URI      | Encodes a URI                                            | `encodeURI(' space')` → `'%20space'`                |
+| `decodeURIComponent` | URI      | Decodes a URI component                                  | `decodeURIComponent('%20space')` → `' space'`       |
+| `encodeURIComponent` | URI      | Encodes a URI component                                  | `encodeURIComponent(' space')` → `'%20space'`       |
+| `abs`                | Math     | Returns the absolute value of a number                   | `abs(-5)` → `5`                                     |
+| `ceil`               | Math     | Rounds a number up to the nearest integer                | `ceil(3.2)` → `4`                                   |
+| `floor`              | Math     | Rounds a number down to the nearest integer              | `floor(3.8)` → `3`                                  |
+| `round`              | Math     | Rounds a number to the nearest integer                   | `round(3.5)` → `4`                                  |
+| `max`                | Math     | Returns the largest of zero or more numbers              | `max(1, 2, 3)` → `3`                                |
+| `min`                | Math     | Returns the smallest of zero or more numbers             | `min(1, 2, 3)` → `1`                                |
+| `random`             | Math     | Returns a pseudo-random number between 0 and 1           | `random()` → `0.123...`                             |
+| `sqrt`               | Math     | Returns the square root of a number                      | `sqrt(9)` → `3`                                     |
+| `pow`                | Math     | Returns base to the exponent power                       | `pow(2, 3)` → `8`                                   |
+| `sin`                | Math     | Returns the sine of a number                             | `sin(Math.PI / 2)` → `1`                            |
+| `cos`                | Math     | Returns the cosine of a number                           | `cos(0)` → `1`                                      |
+| `tan`                | Math     | Returns the tangent of a number                          | `tan(0)` → `0`                                      |
 
 ## 🛠️ Error Handling
 

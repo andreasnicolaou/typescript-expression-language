@@ -10,7 +10,7 @@ Use it to create dynamic and flexible expression-based logic on the frontend, pe
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/andreasnicolaou/typescript-expression-language/build.yaml)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/andreasnicolaou/typescript-expression-language)
 [![Known Vulnerabilities](https://snyk.io/test/github/andreasnicolaou/typescript-expression-language/badge.svg)](https://snyk.io/test/github/andreasnicolaou/typescript-expression-language)
-![Bundle Size](https://deno.bundlejs.com/badge?q=@andreasnicolaou/typescript-expression-language@1.3.0&treeshake=[*])
+![Bundle Size](https://deno.bundlejs.com/badge?q=@andreasnicolaou/typescript-expression-language&treeshake=[*])
 
 ![ESLint](https://img.shields.io/badge/linter-eslint-4B32C3.svg?logo=eslint)
 ![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?logo=prettier)

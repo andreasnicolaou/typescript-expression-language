@@ -389,4 +389,18 @@ describe('ExpressionLanguage', () => {
     expect(parsed1).toBe(parsed2);
     expect(expressionLanguage.cache.size).toBe(1);
   });
+
+  test('should handle object names with non-string values in localeCompare', () => {
+    const expression = 'ä + a + ß';
+    // Use objects with non-string values to trigger string conversion
+    const names1 = [{ ä: 1 }, { a: true }, { ß: null }];
+    const names2 = [{ ß: null }, { a: true }, { ä: 1 }]; // Same names, different order
+
+    const parsed1 = expressionLanguage.parse(expression, names1, Parser.IGNORE_UNKNOWN_VARIABLES);
+    const parsed2 = expressionLanguage.parse(expression, names2, Parser.IGNORE_UNKNOWN_VARIABLES);
+
+    // Should use the same cache entry
+    expect(parsed1).toBe(parsed2);
+    expect(expressionLanguage.cache.size).toBe(1);
+  });
 });

@@ -62,4 +62,22 @@ describe('TokenStream tests', () => {
     const ts = new TokenStream([t], 'foo');
     expect(ts.getExpression()).toBe('foo');
   });
+
+  test('expect should throw with custom message and value', () => {
+    const t1 = new Token('name', 'foo', 1);
+    const ts = new TokenStream([t1], 'foo');
+    expect(() => ts.expect('number', 'bar', 'Custom error')).toThrow(/Custom error/);
+  });
+
+  test('expect should throw with type mismatch only', () => {
+    const t1 = new Token('name', 'foo', 1);
+    const ts = new TokenStream([t1], 'foo');
+    expect(() => ts.expect('number')).toThrow(SyntaxError);
+  });
+
+  test('expect should throw with value but no message', () => {
+    const t1 = new Token('name', 'foo', 1);
+    const ts = new TokenStream([t1], 'foo');
+    expect(() => ts.expect('name', 'bar')).toThrow(SyntaxError);
+  });
 });

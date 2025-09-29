@@ -279,8 +279,6 @@ const customCache = new LRUCache<string, ParsedExpression>({
 const expressionLanguage = new ExpressionLanguage(customCache);
 ```
 
----
-
 ### Custom Providers
 
 #### Add a Simple Math Provider
@@ -338,6 +336,8 @@ console.log(el.evaluate('strtolower("HELLO")')); // Outputs → "hello"
 console.log(el.evaluate('strtoupper("world")')); // Outputs → "WORLD"
 ```
 
+---
+
 ## 📋 Supported Syntax
 
 ### Operators
@@ -362,6 +362,8 @@ console.log(el.evaluate('strtoupper("world")')); // Outputs → "WORLD"
 ### Functions
 
 Add and register custom functions for flexible application logic.
+
+---
 
 ## 🛠️ Built-in Functions
 
@@ -450,6 +452,8 @@ el.parse('foo + myFunc(42)', [], Parser.IGNORE_UNKNOWN_VARIABLES | Parser.IGNORE
 ```
 
 These flags are available on both `lint` and `parse` methods. They are intended for static analysis and editor tooling only. At runtime, if a variable or function is actually missing during evaluation, an error will still be thrown.
+
+---
 
 ## 🛠️ Error Handling
 

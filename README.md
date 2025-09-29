@@ -281,6 +281,63 @@ const expressionLanguage = new ExpressionLanguage(customCache);
 
 ---
 
+### Custom Providers
+
+#### Add a Simple Math Provider
+
+```typescript
+import {
+  ExpressionLanguage,
+  ExpressionFunction,
+  ExpressionFunctionProvider,
+} from '@andreasnicolaou/typescript-expression-language';
+
+class MathProvider implements ExpressionFunctionProvider {
+  getFunctions() {
+    return [
+      ExpressionFunction.fromJs('square', (x: number) => x * x),
+      ExpressionFunction.fromJs('add', (x: number, y: number) => x + y),
+    ];
+  }
+}
+
+const el = new ExpressionLanguage();
+el.registerProvider(new MathProvider());
+
+console.log(el.evaluate('square(5)')); // Outputs → 25
+console.log(el.evaluate('add(3, 4)')); // Outputs → 7
+```
+
+#### Add a Provider with Array and String Utilities
+
+```typescript
+import {
+  ExpressionLanguage,
+  ExpressionFunction,
+  ExpressionFunctionProvider,
+} from '@andreasnicolaou/typescript-expression-language';
+
+class UtilsProvider implements ExpressionFunctionProvider {
+  getFunctions() {
+    return [
+      ExpressionFunction.fromJs('isEven', (x: number) => x % 2 === 0),
+      ExpressionFunction.fromJs('maxInArray', (arr: number[]) => Math.max(...arr)),
+      ExpressionFunction.fromJs('join', (arr: string[], sep: string) => arr.join(sep)),
+      ExpressionFunction.fromJs('strtolower', (str: string) => (str + '').toLowerCase()), // PHP strtolower
+      ExpressionFunction.fromJs('strtoupper', (str: string) => (str + '').toUpperCase()), // PHP strtoupper
+    ];
+  }
+}
+
+const el = new ExpressionLanguage(null, [new UtilsProvider()]);
+
+console.log(el.evaluate('isEven(10)')); // Outputs → true
+console.log(el.evaluate('maxInArray([1, 5, 3, 9])')); // Outputs → 9
+console.log(el.evaluate('join(["a", "b", "c"], ",")')); // Outputs → "a,b,c"
+console.log(el.evaluate('strtolower("HELLO")')); // Outputs → "hello"
+console.log(el.evaluate('strtoupper("world")')); // Outputs → "WORLD"
+```
+
 ## 📋 Supported Syntax
 
 ### Operators
@@ -358,6 +415,41 @@ The library includes a comprehensive set of built-in JavaScript functions to han
 | `sin`                | Math     | Returns the sine of a number                             | `sin(Math.PI / 2)` → `1`                            |
 | `cos`                | Math     | Returns the cosine of a number                           | `cos(0)` → `1`                                      |
 | `tan`                | Math     | Returns the tangent of a number                          | `tan(0)` → `0`                                      |
+
+---
+
+## ⚠️ IGNORE_UNKNOWN_VARIABLES & IGNORE_UNKNOWN_FUNCTIONS
+
+When linting or parsing expressions, you may want to ignore errors about unknown variables or functions. The library provides two flags for this purpose:
+
+- `Parser.IGNORE_UNKNOWN_VARIABLES`: Ignores unknown variables during linting/parsing.
+- `Parser.IGNORE_UNKNOWN_FUNCTIONS`: Ignores unknown functions during linting/parsing.
+- You can combine both flags using the bitwise OR operator (`|`): `Parser.IGNORE_UNKNOWN_VARIABLES | Parser.IGNORE_UNKNOWN_FUNCTIONS` to ignore both unknown variables and functions.
+
+### Usage
+
+Import the `Parser` and use the flags as the third argument to `lint` or `parse`:
+
+```typescript
+import { ExpressionLanguage } from '@andreasnicolaou/typescript-expression-language';
+import { Parser } from '@andreasnicolaou/typescript-expression-language/dist/parser';
+
+const el = new ExpressionLanguage();
+
+// Ignore unknown variables
+el.lint('foo + 1', [], Parser.IGNORE_UNKNOWN_VARIABLES); // Does not throw
+el.parse('foo + 1', [], Parser.IGNORE_UNKNOWN_VARIABLES); // Does not throw
+
+// Ignore unknown functions
+el.lint('myFunc(42)', [], Parser.IGNORE_UNKNOWN_FUNCTIONS); // Does not throw
+el.parse('myFunc(42)', [], Parser.IGNORE_UNKNOWN_FUNCTIONS); // Does not throw
+
+// Ignore both unknown variables and functions
+el.lint('foo + myFunc(42)', [], Parser.IGNORE_UNKNOWN_VARIABLES | Parser.IGNORE_UNKNOWN_FUNCTIONS); // Does not throw
+el.parse('foo + myFunc(42)', [], Parser.IGNORE_UNKNOWN_VARIABLES | Parser.IGNORE_UNKNOWN_FUNCTIONS); // Does not throw
+```
+
+These flags are available on both `lint` and `parse` methods. They are intended for static analysis and editor tooling only. At runtime, if a variable or function is actually missing during evaluation, an error will still be thrown.
 
 ## 🛠️ Error Handling
 

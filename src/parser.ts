@@ -94,21 +94,14 @@ export class Parser {
   /**
    * Validates the syntax of an expression.
    * The syntax of the passed expression will be checked, but not parsed.
-   * If you want to skip checking dynamic variable names, pass `Parser.IGNORE_UNKNOWN_VARIABLES` instead of the array.
-   * @param stream
-   * @param [names]
-   * @param [flags]
+   * To ignore unknown variables during linting, pass `Parser.IGNORE_UNKNOWN_VARIABLES` as the flags parameter.
+   * @param stream - Token stream to validate
+   * @param names - Array of allowed variable names (must be explicitly provided)
+   * @param [flags] - Parsing flags (use `Parser.IGNORE_UNKNOWN_VARIABLES` to ignore unknown variables)
    * @throws SyntaxError
    * @memberof Parser
    */
-  public lint(stream: TokenStream, names: string[] | null = [], flags = 0): void {
-    if (names === null) {
-      console.warn(
-        'Passing "null" as the second argument of "lint()" is deprecated. Use "Parser.IGNORE_UNKNOWN_VARIABLES" instead.'
-      );
-      flags |= Parser.IGNORE_UNKNOWN_VARIABLES;
-      names = [];
-    }
+  public lint(stream: TokenStream, names: string[], flags = 0): void {
     this.doParse(stream, names, flags);
   }
 

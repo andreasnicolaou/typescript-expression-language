@@ -11,6 +11,9 @@ export class ExpressionFunction {
   private readonly compiler: Callable;
   private readonly evaluator: Callable;
 
+  // Static function map - computed once at class load time
+  private static readonly JS_FUNCTION_MAP = ExpressionFunction.createJsFunctionMap();
+
   constructor(
     private readonly name: string,
     compiler: Callable,
@@ -80,21 +83,24 @@ export class ExpressionFunction {
   }
 
   /**
-   * Resolves js function
-   * @param jsFunctionName
-   * @returns js function
+   * Creates the JavaScript function mapping
+   * @private
+   * @returns The complete function mapping
    * @memberof ExpressionFunction
    */
-  protected static resolveJsFunction(jsFunctionName: string): unknown {
-    const jsFunctionMap: Record<string, unknown> = {
+  private static createJsFunctionMap(): Record<string, unknown> {
+    const functionMap: Record<string, unknown> = {
+      // Object functions
       keys: Object.keys,
       values: Object.values,
+
+      // Array functions
       isArray: Array.isArray,
-      stringify: JSON.stringify,
-      parse: JSON.parse,
       concat: (...arrays: any[]) => arrays.flat(),
       from: Array.from,
       of: Array.of,
+
+      // String functions
       charAt: (str: string, index: number) => str.charAt(index),
       charCodeAt: (str: string, index: number) => str.charCodeAt(index),
       includes: (str: string, substr: string) => str.includes(substr),
@@ -103,10 +109,14 @@ export class ExpressionFunction {
       trim: (str: string) => str.trim(),
       toUpperCase: (str: string) => str.toUpperCase(),
       toLowerCase: (str: string) => str.toLowerCase(),
+
+      // Number functions
       isFinite: Number.isFinite,
       isInteger: Number.isInteger,
       isNaN: Number.isNaN,
       toFixed: (num: number, decimals: number) => num.toFixed(decimals),
+
+      // Date functions
       now: Date.now,
       toISOString: (date: Date) => date.toISOString(),
       toDateString: (date: Date) => date.toDateString(),
@@ -115,18 +125,42 @@ export class ExpressionFunction {
       getMonth: (date: Date) => date.getMonth(),
       getDay: (date: Date) => date.getDay(),
       getMinutes: (date: Date) => date.getMinutes(),
+
+      // RegExp functions
       test: (pattern: RegExp, str: string) => pattern.test(str),
       exec: (pattern: RegExp, str: string) => pattern.exec(str),
+
+      // URI functions
       decodeURI: decodeURI,
       encodeURI: encodeURI,
       decodeURIComponent: decodeURIComponent,
       encodeURIComponent: encodeURIComponent,
+
+      // JSON functions
+      stringify: JSON.stringify,
+      parse: JSON.parse,
     };
+
+    // Add Math functions dynamically
     Object.getOwnPropertyNames(Math).forEach((key) => {
-      if (typeof Math[key as keyof Math] === 'function') {
-        jsFunctionMap[key] = Math[key as keyof Math];
+      const mathProp = Math[key as keyof Math];
+      if (typeof mathProp === 'function') {
+        functionMap[key] = mathProp;
       }
     });
-    return jsFunctionMap[jsFunctionName] || (globalThis as Record<string, unknown>)[jsFunctionName];
+
+    return functionMap;
+  }
+
+  /**
+   * Resolves js function
+   * @param jsFunctionName
+   * @returns js function
+   * @memberof ExpressionFunction
+   */
+  protected static resolveJsFunction(jsFunctionName: string): unknown {
+    return (
+      ExpressionFunction.JS_FUNCTION_MAP[jsFunctionName] || (globalThis as Record<string, unknown>)[jsFunctionName]
+    );
   }
 }

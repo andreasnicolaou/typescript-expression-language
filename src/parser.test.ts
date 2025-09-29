@@ -349,15 +349,10 @@ describe('Parser', () => {
     }).toThrow('Unexpected token "punctuation" of value ":" around position 5 for expression `{[1]: 2}`.');
   });
 
-  test('should warn when lint is called with names=null', () => {
-    const stream = lexer.tokenize('1+1');
-    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {
-      return null;
-    });
-    parser.lint(stream, null);
-    expect(spy).toHaveBeenCalledWith(
-      'Passing "null" as the second argument of "lint()" is deprecated. Use "Parser.IGNORE_UNKNOWN_VARIABLES" instead.'
-    );
-    spy.mockRestore();
+  test('should ignore unknown variables when IGNORE_UNKNOWN_VARIABLES flag is used', () => {
+    const stream = lexer.tokenize('unknown_var + 1');
+    expect(() => {
+      parser.lint(stream, [], Parser.IGNORE_UNKNOWN_VARIABLES);
+    }).not.toThrow();
   });
 });

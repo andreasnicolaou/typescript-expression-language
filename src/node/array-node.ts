@@ -11,8 +11,6 @@ import { Node } from '../node/node';
 export class ArrayNode extends Node {
   protected index = -1;
   protected keyIndex = -1;
-  protected arrayNodeType: 'Array' | 'Object' = 'Array';
-
   constructor() {
     super();
   }
@@ -24,11 +22,7 @@ export class ArrayNode extends Node {
    * @memberof ArrayNode
    */
   public addElement(value: Node, key: Node | null = null): void {
-    if (!key) {
-      key = new ConstantNode(++this.index);
-    } else {
-      this.arrayNodeType = this.arrayNodeType === 'Array' ? 'Object' : 'Array';
-    }
+    key ??= new ConstantNode(++this.index);
     this.nodes[(++this.keyIndex).toString()] = key;
     this.nodes[(++this.keyIndex).toString()] = value;
   }
@@ -39,7 +33,8 @@ export class ArrayNode extends Node {
    * @memberof ArrayNode
    */
   public compile(compiler: Compiler): void {
-    const isObject = this.arrayNodeType === 'Object';
+    const value = this.toKeyValueObject();
+    const isObject = this.isHash(value);
     const openingBracket = isObject ? '{' : '[';
     const closingBracket = isObject ? '}' : ']';
     compiler.raw(openingBracket);
@@ -55,18 +50,21 @@ export class ArrayNode extends Node {
    * @memberof ArrayNode
    */
   public evaluate(functions: Record<string, any>, values: Record<string, any>): any[] | Record<any, any> {
-    const isArray = this.arrayNodeType === 'Array';
-    const result = isArray ? [] : {};
-    for (const pair of this.getKeyValuePairs()) {
-      const evaluatedKey = isArray ? undefined : pair.key.evaluate(functions, values);
-      const evaluatedValue = pair.value.evaluate(functions, values);
-      if (isArray) {
-        (result as any[]).push(evaluatedValue);
-      } else {
-        (result as Record<any, any>)[evaluatedKey] = evaluatedValue;
+    const value = this.toKeyValueObject();
+    const isObject = this.isHash(value);
+    if (isObject) {
+      const result: Record<string, unknown> = Object.create(Object.prototype);
+      for (const pair of this.getKeyValuePairs()) {
+        result[pair.key.evaluate(functions, values)] = pair.value.evaluate(functions, values);
       }
+      return result;
+    } else {
+      const result: any[] = [];
+      for (const pair of this.getKeyValuePairs()) {
+        result.push(pair.value.evaluate(functions, values));
+      }
+      return result;
     }
-    return result;
   }
 
   /**
@@ -75,10 +73,7 @@ export class ArrayNode extends Node {
    * @memberof ArrayNode
    */
   public toArray(): (string | Node)[] {
-    const value: Record<string, Node> = Object.create(Object.prototype);
-    for (const pair of this.getKeyValuePairs()) {
-      value[pair.key.attributes.value] = pair.value;
-    }
+    const value = this.toKeyValueObject();
     const array: (string | Node)[] = [];
     if (this.isHash(value)) {
       array.push('{');
@@ -128,5 +123,19 @@ export class ArrayNode extends Node {
       }
       compiler.compile(pair.value);
     }
+  }
+
+  /**
+   * Builds an object mapping key attribute values to value nodes for this array node.
+   * Used internally to determine if the node should be treated as an object/hash or array.
+   * @returns An object where each property is a key from the node and the value is the corresponding value node.
+   * @memberof ArrayNode
+   */
+  protected toKeyValueObject(): Record<string, Node> {
+    const value: Record<string, Node> = Object.create(Object.prototype);
+    for (const pair of this.getKeyValuePairs()) {
+      value[pair.key.attributes.value] = pair.value;
+    }
+    return value;
   }
 }

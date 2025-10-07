@@ -403,4 +403,94 @@ describe('ExpressionLanguage', () => {
     expect(parsed1).toBe(parsed2);
     expect(expressionLanguage.cache.size).toBe(1);
   });
+
+  describe('enum() function', () => {
+    beforeEach(() => {
+      (globalThis as any).GenericEnum = {
+        VALUE: { name: 'VALUE', number: 10 },
+        NULL_VALUE: null,
+        UNDEFINED_VALUE: undefined,
+        INVALID_OBJECT: { value: 'something', data: 'test' },
+        COMPLEX_OBJECT: { foo: 'bar', nested: { deep: 'value' } },
+      };
+
+      (globalThis as any).InputTypes = {
+        TEXT: 'text',
+        NUM: 1,
+        DEV: true,
+        PROD: false,
+      };
+    });
+
+    afterEach(() => {
+      delete (globalThis as any).GenericEnum;
+      delete (globalThis as any).InputTypes;
+    });
+
+    test('should throw error for invalid enum name', () => {
+      expect(() => expressionLanguage.evaluate('enum("GenericEnum.CASE")')).toThrow(
+        'The string "GenericEnum.CASE" is not the name of a valid enum case.'
+      );
+    });
+
+    test('should throw error for malformed enum string', () => {
+      expect(() => expressionLanguage.evaluate('enum("NOT_AN_ENUM")')).toThrow(
+        'The string "NOT_AN_ENUM" is not the name of a valid enum case.'
+      );
+    });
+
+    test('should throw error for non-existent enum values', () => {
+      expect(() => expressionLanguage.evaluate('enum("NON_EXISTENT_ENUM.VALUE")')).toThrow(
+        'The string "NON_EXISTENT_ENUM.VALUE" is not the name of a valid enum case.'
+      );
+    });
+
+    test('should work in complex expressions', () => {
+      const result = expressionLanguage.evaluate('enum("GenericEnum.VALUE").number + 5');
+      expect(result).toBe(15);
+    });
+
+    test('should support TypeScript-style enums (string, number, boolean)', () => {
+      expect(expressionLanguage.evaluate('enum("InputTypes.TEXT")')).toBe('text');
+      expect(expressionLanguage.evaluate('enum("InputTypes.NUM")')).toBe(1);
+      expect(expressionLanguage.evaluate('enum("InputTypes.DEV")')).toBe(true);
+      expect(expressionLanguage.evaluate('enum("InputTypes.PROD")')).toBe(false);
+    });
+
+    test('should compile enum expressions correctly', () => {
+      const compiled = expressionLanguage.compile('enum("StatusEnum.ACTIVE")', []);
+      expect(compiled).toContain('constant');
+      expect(compiled).toContain('TypeError');
+      expect(compiled).toMatch(/^\(function\(v\)/);
+      expect(compiled).toContain('StatusEnum.ACTIVE');
+    });
+
+    test('should cover actual enum function parameter validation', () => {
+      // Use reflection to access the actual enum function and test its evaluator directly
+      const expressionLangAny = expressionLanguage as any;
+      const enumFunction = expressionLangAny.functions.enum;
+      const evaluator = enumFunction.getEvaluator();
+      expect(() => evaluator({}, 123)).toThrow('enum() expects parameter 1 to be string');
+      expect(() => evaluator({}, null)).toThrow('enum() expects parameter 1 to be string');
+      expect(() => evaluator({}, '')).toThrow('enum() expects parameter 1 to be string');
+    });
+
+    test('should throw error for null/undefined enum values', () => {
+      expect(() => expressionLanguage.evaluate('enum("GenericEnum.NULL_VALUE")')).toThrow(
+        'The string "GenericEnum.NULL_VALUE" is not the name of a valid enum case.'
+      );
+      expect(() => expressionLanguage.evaluate('enum("GenericEnum.UNDEFINED_VALUE")')).toThrow(
+        'The string "GenericEnum.UNDEFINED_VALUE" is not the name of a valid enum case.'
+      );
+    });
+
+    test('should throw error for invalid object enums without name property', () => {
+      expect(() => expressionLanguage.evaluate('enum("GenericEnum.INVALID_OBJECT")')).toThrow(
+        'The string "GenericEnum.INVALID_OBJECT" is not the name of a valid enum case.'
+      );
+      expect(() => expressionLanguage.evaluate('enum("GenericEnum.COMPLEX_OBJECT")')).toThrow(
+        'The string "GenericEnum.COMPLEX_OBJECT" is not the name of a valid enum case.'
+      );
+    });
+  });
 });

@@ -21,6 +21,10 @@ const getEvaluateData = (): (
   return [
     [true, new BinaryNode('or', new ConstantNode(true), new ConstantNode(false))],
     [true, new BinaryNode('||', new ConstantNode(true), new ConstantNode(false))],
+    [false, new BinaryNode('xor', new ConstantNode(true), new ConstantNode(true))],
+    [true, new BinaryNode('xor', new ConstantNode(true), new ConstantNode(false))],
+    [true, new BinaryNode('xor', new ConstantNode(false), new ConstantNode(true))],
+    [false, new BinaryNode('xor', new ConstantNode(false), new ConstantNode(false))],
     [false, new BinaryNode('and', new ConstantNode(true), new ConstantNode(false))],
     [false, new BinaryNode('&&', new ConstantNode(true), new ConstantNode(false))],
     [0, new BinaryNode('&', new ConstantNode(2), new ConstantNode(4))],
@@ -66,6 +70,10 @@ const getDumpData = (): (string | BinaryNode)[][] => {
   return [
     ['(true or false)', new BinaryNode('or', new ConstantNode(true), new ConstantNode(false))],
     ['(true || false)', new BinaryNode('||', new ConstantNode(true), new ConstantNode(false))],
+    ['(true xor true)', new BinaryNode('xor', new ConstantNode(true), new ConstantNode(true))],
+    ['(true xor false)', new BinaryNode('xor', new ConstantNode(true), new ConstantNode(false))],
+    ['(false xor true)', new BinaryNode('xor', new ConstantNode(false), new ConstantNode(true))],
+    ['(false xor false)', new BinaryNode('xor', new ConstantNode(false), new ConstantNode(false))],
     ['(true and false)', new BinaryNode('and', new ConstantNode(true), new ConstantNode(false))],
     ['(true && false)', new BinaryNode('&&', new ConstantNode(true), new ConstantNode(false))],
     ['(2 & 4)', new BinaryNode('&', new ConstantNode(2), new ConstantNode(4))],
@@ -108,6 +116,7 @@ const getCompileData = (): (string | BinaryNode)[][] => {
   return [
     ['(true || false)', new BinaryNode('or', new ConstantNode(true), new ConstantNode(false))],
     ['(true || false)', new BinaryNode('||', new ConstantNode(true), new ConstantNode(false))],
+    ['(true xor true)', new BinaryNode('xor', new ConstantNode(true), new ConstantNode(true))],
     ['(true && false)', new BinaryNode('and', new ConstantNode(true), new ConstantNode(false))],
     ['(true && false)', new BinaryNode('&&', new ConstantNode(true), new ConstantNode(false))],
     ['(2 & 4)', new BinaryNode('&', new ConstantNode(2), new ConstantNode(4))],

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ExpressionFunction } from './expression-function';
 import { ExpressionLanguage } from './expression-language';
 
@@ -332,5 +333,86 @@ describe('ExpressionFunction', () => {
     const powFn = ExpressionFunction.fromJs('pow');
     expect(powFn.getEvaluator()(null, 2, 3)).toBe(8);
     expect(powFn.getCompiler()(2, 3)).toBe('pow(2, 3)');
+
+    const constantFunc = ExpressionFunction.fromJs('constant');
+    expect(() => constantFunc.getEvaluator()({}, 123)).toThrow('constant() expects parameter 1 to be string');
+    expect(() => constantFunc.getEvaluator()({}, null)).toThrow('constant() expects parameter 1 to be string');
+    expect(() => constantFunc.getEvaluator()({}, undefined)).toThrow('constant() expects parameter 1 to be string');
+  });
+
+  test('should return undefined for non-existent JavaScript functions', () => {
+    const result = ExpressionFunction['resolveJsFunction']('SomethingFunction');
+    expect(result).toBeUndefined();
+
+    const result2 = ExpressionFunction['resolveJsFunction']('SomethingFunctionFound');
+    expect(result2).toBeUndefined();
+  });
+
+  test('should find functions in global scope that are not in JS_FUNCTION_MAP', () => {
+    const plusFunction = (x: number): number => x + x;
+    (globalThis as Record<string, unknown>).plusFunction = plusFunction;
+
+    try {
+      const result = ExpressionFunction['resolveJsFunction']('plusFunction');
+      expect(result).toBe(plusFunction);
+    } finally {
+      delete (globalThis as Record<string, unknown>).plusFunction;
+    }
+  });
+
+  test('should handle edge cases in getGlobalObject', () => {
+    const globalObj = ExpressionFunction['getGlobalObject']();
+    expect(globalObj).toBeDefined();
+    expect(typeof globalObj).toBe('object');
+
+    expect(globalObj === globalThis || globalObj === global).toBe(true);
+
+    const getGlobalObjMethod = ExpressionFunction['getGlobalObject'];
+    expect(typeof getGlobalObjMethod).toBe('function');
+    expect(getGlobalObjMethod()).toBe(globalObj);
+  });
+
+  describe('constant() function', () => {
+    beforeEach(() => {
+      (globalThis as any).SIMPLE_GLOBAL = 'global_value';
+      (globalThis as any).TestClass = {
+        CONSTANT_VALUE: 'test_constant',
+        NUMERIC_CONSTANT: 42,
+        Class: {
+          CONSTANT_VALUE: 'nested_constant',
+        },
+      };
+    });
+
+    afterEach(() => {
+      delete (globalThis as any).TestClass;
+      delete (globalThis as any).SIMPLE_GLOBAL;
+    });
+
+    test('should handle PHP-style class constants with :: notation', () => {
+      const constantFunc = ExpressionFunction.fromJs('constant');
+      expect(constantFunc.getEvaluator()({}, 'TestClass::CONSTANT_VALUE')).toBe('test_constant');
+      expect(constantFunc.getEvaluator()({}, 'TestClass::NUMERIC_CONSTANT')).toBe(42);
+    });
+
+    test('should throw error for non-existent class constants with :: notation', () => {
+      const constantFunc = ExpressionFunction.fromJs('constant');
+      expect(() => constantFunc.getEvaluator()({}, 'NonExistentClass::CONSTANT')).toThrow(
+        "Constant 'NonExistentClass::CONSTANT' is not defined"
+      );
+      expect(() => constantFunc.getEvaluator()({}, 'TestClass::MISSING_CONSTANT')).toThrow(
+        "Constant 'TestClass::MISSING_CONSTANT' is not defined"
+      );
+    });
+
+    test('should handle nested class constants with :: notation', () => {
+      const constantFunc = ExpressionFunction.fromJs('constant');
+      expect(constantFunc.getEvaluator()({}, 'TestClass.Class::CONSTANT_VALUE')).toBe('nested_constant');
+    });
+
+    test('should handle simple global property lookup fallback', () => {
+      const constantFunc = ExpressionFunction.fromJs('constant');
+      expect(constantFunc.getEvaluator()({}, 'SIMPLE_GLOBAL')).toBe('global_value');
+    });
   });
 });

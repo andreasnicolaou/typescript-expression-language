@@ -10,7 +10,7 @@ import { GetAttrNode } from './get-attr-node';
  */
 export class NullCoalesceNode extends Node {
   constructor(expr1: Node, expr2: Node) {
-    super({ expr1, expr2 }, {});
+    super({ expr1, expr2 }, Object.create(null));
   }
 
   /**

@@ -9,7 +9,7 @@ import { Node } from '../node/node';
  */
 export class NullCoalescedNameNode extends Node {
   constructor(name: string | number | null) {
-    super({}, { name });
+    super(Object.create(null), { name });
   }
 
   /**

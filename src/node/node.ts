@@ -9,12 +9,12 @@ import { Compiler } from '../compiler';
  * @author Andreas Nicolaou <anicolaou66@gmail.com>
  */
 export class Node {
-  public nodes: Record<string, Node> = Object.create(Object.prototype);
-  public attributes: Record<string, any> = Object.create(Object.prototype);
+  public nodes: Record<string, Node> = Object.create(null);
+  public attributes: Record<string, any> = Object.create(null);
 
   constructor(
-    nodes: Record<string, Node> = Object.create(Object.prototype),
-    attributes: Record<string, any> = Object.create(Object.prototype)
+    nodes: Record<string, Node> = Object.create(null),
+    attributes: Record<string, any> = Object.create(null)
   ) {
     this.nodes = nodes;
     this.attributes = attributes;
@@ -31,13 +31,13 @@ export class Node {
       return out;
     }, []);
 
-    const repr = [this.constructor.name + '(' + attributes.join(', ')];
+    const repr = [`${this.constructor.name}(${attributes.join(', ')}`];
 
     if (Object.values(this.nodes).length > 0) {
       for (const node of Object.values(this.nodes)) {
         const lines = node.toString().split('\n');
         for (const line of lines) {
-          repr.push('    ' + line);
+          repr.push(`    ${line}`);
         }
       }
       repr.push(')');

@@ -41,6 +41,7 @@ export class Parser {
   private static readonly binaryOperators: Operators = {
     or: { precedence: 10, associativity: Parser.OPERATOR_LEFT },
     '||': { precedence: 10, associativity: Parser.OPERATOR_LEFT },
+    xor: { precedence: 12, associativity: Parser.OPERATOR_LEFT },
     and: { precedence: 15, associativity: Parser.OPERATOR_LEFT },
     '&&': { precedence: 15, associativity: Parser.OPERATOR_LEFT },
     '|': { precedence: 16, associativity: Parser.OPERATOR_LEFT },

@@ -139,6 +139,50 @@ export class ExpressionFunction {
       // JSON functions
       stringify: JSON.stringify,
       parse: JSON.parse,
+
+      // PHP-style constant function
+      constant: (name: string) => {
+        if (typeof name !== 'string') {
+          throw new Error('constant() expects parameter 1 to be string');
+        }
+
+        const globalObj = ExpressionFunction.getGlobalObject();
+        const errorMessage = `Constant '${name}' is not defined`;
+        // Helper function to traverse object path
+        const traversePath = (obj: any, parts: string[]): any => {
+          let current = obj;
+          for (const part of parts) {
+            if (current && (typeof current === 'object' || typeof current === 'function') && part in current) {
+              current = current[part];
+            } else {
+              throw new Error(errorMessage);
+            }
+          }
+          return current;
+        };
+
+        // Handle PHP-style class constants with :: notation
+        if (name.includes('::')) {
+          const [className, constantName] = name.split('::');
+          const classObj = traversePath(globalObj, className.split('.'));
+          if ((typeof classObj === 'object' || typeof classObj === 'function') && constantName in classObj) {
+            return classObj[constantName];
+          }
+          throw new Error(errorMessage);
+        }
+
+        // Handle dot notation for nested properties
+        if (name.includes('.')) {
+          return traversePath(globalObj, name.split('.'));
+        }
+
+        // Simple global property lookup
+        if (name in globalObj) {
+          return globalObj[name];
+        }
+
+        throw new Error(errorMessage);
+      },
     };
 
     // Add Math functions dynamically
@@ -159,8 +203,28 @@ export class ExpressionFunction {
    * @memberof ExpressionFunction
    */
   protected static resolveJsFunction(jsFunctionName: string): unknown {
-    return (
-      ExpressionFunction.JS_FUNCTION_MAP[jsFunctionName] || (globalThis as Record<string, unknown>)[jsFunctionName]
-    );
+    if (ExpressionFunction.JS_FUNCTION_MAP[jsFunctionName]) {
+      return ExpressionFunction.JS_FUNCTION_MAP[jsFunctionName];
+    }
+    const globalObj = ExpressionFunction.getGlobalObject();
+    if (jsFunctionName in globalObj) {
+      return globalObj[jsFunctionName];
+    }
+    return undefined;
+  }
+
+  /**
+   * Gets the global object for cross-environment compatibility
+   * @returns the global object (prioritizes globalThis, falls back to window or global)
+   * @memberof ExpressionFunction
+   */
+  protected static getGlobalObject(): any {
+    if (typeof globalThis !== 'undefined') return globalThis;
+    /* istanbul ignore next */
+    if (typeof window !== 'undefined') return window;
+    /* istanbul ignore next */
+    if (typeof global !== 'undefined') return global;
+    /* istanbul ignore next */
+    return {};
   }
 }

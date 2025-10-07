@@ -12,7 +12,7 @@ export class ConstantNode extends Node {
   public isIdentifier!: boolean;
 
   constructor(value: any, isIdentifier = false, isNullSafe = false) {
-    super({}, { value });
+    super(Object.create(null), { value });
     this.isIdentifier = isIdentifier;
     this.isNullSafe = isNullSafe;
   }

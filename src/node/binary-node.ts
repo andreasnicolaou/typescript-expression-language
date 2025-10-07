@@ -39,7 +39,7 @@ export class BinaryNode extends Node {
     const operator = this.attributes['operator'];
     if (operator === 'matches') {
       if (this.nodes.right instanceof ConstantNode) {
-        this.evaluateMatches(this.nodes.right.evaluate({}, {}), '');
+        this.evaluateMatches(this.nodes.right.evaluate(Object.create(null), Object.create(null)), '');
       } else if (this.nodes.right instanceof BinaryNode && this.nodes.right.attributes['operator'] !== '~') {
         throw new SyntaxError('The regex passed to "matches" must be a string.');
       }
@@ -77,8 +77,6 @@ export class BinaryNode extends Node {
   public evaluate(functions: Record<string, any>, values: Record<string, any>): any {
     const operator = this.attributes['operator'];
     const left = this.nodes.left?.evaluate(functions, values);
-    let right = null;
-
     if (operator in BinaryNode.FUNCTIONS) {
       const right = this.nodes.right.evaluate(functions, values);
       switch (operator) {
@@ -105,19 +103,15 @@ export class BinaryNode extends Node {
     switch (operator) {
       case 'or':
       case '||':
-        if (!left) {
-          right = this.nodes.right.evaluate(functions, values);
-        }
-        return left || right;
+        return left || this.nodes.right.evaluate(functions, values);
+      case 'xor':
+        return !!left !== !!this.nodes.right.evaluate(functions, values);
       case 'and':
       case '&&':
-        if (left) {
-          right = this.nodes.right.evaluate(functions, values);
-        }
-        return left && right;
+        return left && this.nodes.right.evaluate(functions, values);
     }
 
-    right = this.nodes.right.evaluate(functions, values);
+    const right = this.nodes.right.evaluate(functions, values);
 
     switch (operator) {
       case '|':

@@ -18,6 +18,7 @@ export class Lexer {
     'not',
     'or',
     'in',
+    'xor',
   ]);
 
   private static readonly SYMBOL_OPERATORS = [

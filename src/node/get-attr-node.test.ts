@@ -255,4 +255,51 @@ describe('GetAttrNode', () => {
     const result = node.evaluate({}, {});
     expect(result).toBeNull();
   });
+
+  test('should handle default case in toArray method', () => {
+    const compiler = new Compiler({});
+    const node = new GetAttrNode(
+      new NameNode('foo'),
+      new ConstantNode('foo', false, true),
+      new ArgumentsNode(),
+      GetAttrNode.METHOD_CALL
+    );
+    node.compile(compiler);
+    expect(compiler.getSource()).toContain('foo?.foo()');
+
+    expect(node.toArray()).toEqual([
+      { attributes: { name: 'foo' }, nodes: {} },
+      '?.',
+      { attributes: { value: 'foo' }, isIdentifier: false, isNullSafe: true, nodes: {} },
+      '(',
+      { attributes: {}, index: -1, keyIndex: -1, nodes: {} },
+      ')',
+    ]);
+  });
+
+  test('should handle default case in toArray method', () => {
+    const node = new GetAttrNode(
+      new NameNode('foo'),
+      new ConstantNode('bar', false, true),
+      new ArgumentsNode(),
+      GetAttrNode.PROPERTY_CALL
+    );
+    expect(node.toArray()).toEqual([
+      { attributes: { name: 'foo' }, nodes: {} },
+      '?.',
+      { attributes: { value: 'bar' }, isIdentifier: false, isNullSafe: true, nodes: {} },
+    ]);
+  });
+
+  test('should compile with null-safe attribute', () => {
+    const compiler = new Compiler({});
+    const node = new GetAttrNode(
+      new NameNode('foo'),
+      new ConstantNode('bar', false, true),
+      new ArgumentsNode(),
+      GetAttrNode.PROPERTY_CALL
+    );
+    node.compile(compiler);
+    expect(compiler.getSource()).toContain('foo?.bar');
+  });
 });

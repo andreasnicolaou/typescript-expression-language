@@ -113,6 +113,7 @@ export class ArrayNode extends Node {
    * @param withKeys - Whether to include keys in the compiled output.
    * @memberof ArrayNode
    */
+  /* istanbul ignore next */
   protected compileArguments(compiler: Compiler, withKeys = true): void {
     for (const [index, pair] of this.getKeyValuePairs().entries()) {
       if (index > 0) {

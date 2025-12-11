@@ -80,4 +80,10 @@ describe('TokenStream tests', () => {
     const ts = new TokenStream([t1], 'foo');
     expect(() => ts.expect('name', 'bar')).toThrow(SyntaxError);
   });
+
+  test('TokenStream sets default expression to empty string', () => {
+    const t = new Token('name', 'foo', 1);
+    const ts = new TokenStream([t]);
+    expect(ts.expression).toBe('');
+  });
 });

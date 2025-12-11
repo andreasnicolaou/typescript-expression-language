@@ -88,7 +88,7 @@ export class Compiler {
     // Check if the value is a number before performing arithmetic operations
     if (isIdentifier) {
       this.raw(value);
-    } else if (Number.isInteger(value) || (+value === value && (!isFinite(value) || !!(value % 1)))) {
+    } else if (typeof value === 'number') {
       this.raw('' + value);
     } else if (value === null) {
       this.raw('null');

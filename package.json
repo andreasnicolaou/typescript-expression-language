@@ -23,7 +23,7 @@
     "build": "rollup -c",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "format:check:hook": "npm run format:check || (echo '\\n💡 To fix all formatting issues, run: npm run format' && exit 1)",
+    "format:check:hook": "npm run format:check",
     "lint": "eslint --fix",
     "test": "jest",
     "test:ci": "cross-env JEST_JUNIT_CLASSNAME=\"{filepath}\" jest --reporters=default --reporters=jest-junit",

@@ -188,7 +188,7 @@ describe('ExpressionLanguage', () => {
 
     shortCircuits.forEach(([expression, variables, expectedResult]) => {
       const compiled = expressionLanguage.compile(expression as string, variables as Record<string, string>[]);
-      const result = eval(compiled);
+      const result = new Function('return ' + compiled)();
       expect(result).toBe(expectedResult);
     });
   });

@@ -188,8 +188,8 @@ describe('ExpressionLanguage', () => {
 
     shortCircuits.forEach(([expression, variables, expectedResult]) => {
       const compiled = expressionLanguage.compile(expression as string, variables as Record<string, string>[]);
-      const varNames = Object.keys(variables[0] || {});
-      const varValues = varNames.map(name => variables[0][name]);
+      const varNames = Object.keys((variables as Record<string, string>[])[0] || {});
+      const varValues = varNames.map((name) => (variables as Record<string, string>[])[0][name]);
       const func = new Function(...varNames, 'return ' + compiled);
       const result = func(...varValues);
       expect(result).toBe(expectedResult);

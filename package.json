@@ -29,7 +29,8 @@
     "test:ci": "cross-env JEST_JUNIT_CLASSNAME=\"{filepath}\" jest --reporters=default --reporters=jest-junit",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:bundle": "echo 'Bundle size check: see rollup-plugin-visualizer reports in dist/'",
+    "test:bundle": "node scripts/check-bundle-size.js",
+    "build:check": "npm run build && npm run test:bundle",
     "prepare": "husky",
     "prepublishOnly": "npm run build"
   },
@@ -47,6 +48,28 @@
   },
   "license": "MIT",
   "sideEffects": false,
+  "bundle-size": [
+    {
+      "path": "dist/index.js",
+      "limit": "40kB",
+      "gzip": true
+    },
+    {
+      "path": "dist/index.cjs",
+      "limit": "40kB",
+      "gzip": true
+    },
+    {
+      "path": "dist/index.umd.js",
+      "limit": "40kB",
+      "gzip": true
+    },
+    {
+      "path": "dist/index.umd.min.js",
+      "limit": "20kB",
+      "gzip": true
+    }
+  ],
   "jest": {
     "transform": {
       "^.+\\.(ts)$": [

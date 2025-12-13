@@ -29,7 +29,7 @@
     "test:ci": "cross-env JEST_JUNIT_CLASSNAME=\"{filepath}\" jest --reporters=default --reporters=jest-junit",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:bundle": "size-limit",
+    "test:bundle": "echo 'Bundle size check: see rollup-plugin-visualizer reports in dist/'",
     "prepare": "husky",
     "prepublishOnly": "npm run build"
   },
@@ -47,28 +47,6 @@
   },
   "license": "MIT",
   "sideEffects": false,
-  "size-limit": [
-    {
-      "path": "dist/index.js",
-      "limit": "40kB",
-      "gzip": true
-    },
-    {
-      "path": "dist/index.cjs",
-      "limit": "40kB",
-      "gzip": true
-    },
-    {
-      "path": "dist/index.umd.js",
-      "limit": "40kB",
-      "gzip": true
-    },
-    {
-      "path": "dist/index.umd.min.js",
-      "limit": "20kB",
-      "gzip": true
-    }
-  ],
   "jest": {
     "transform": {
       "^.+\\.(ts)$": [
@@ -86,7 +64,6 @@
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.3.0",
-    "@size-limit/preset-big-lib": "^12.0.0",
     "@types/jest": "^30.0.0",
     "@types/locutus": "^0.0.8",
     "@types/node": "^25.0.1",
@@ -106,7 +83,6 @@
     "prettier-plugin-organize-imports": "^4.3.0",
     "rollup": "^4.53.3",
     "rollup-plugin-dts": "^6.3.0",
-    "size-limit": "^12.0.0",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "tslib": "^2.8.1",

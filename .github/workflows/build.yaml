@@ -35,6 +35,7 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
           CI: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEBUG: codecov*
       - name: Verify Codecov token is available
         run: |
           if [ -n "$CODECOV_TOKEN" ]; then

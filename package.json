@@ -83,6 +83,7 @@
     ]
   },
   "devDependencies": {
+    "@codecov/rollup-plugin": "^1.9.1",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",

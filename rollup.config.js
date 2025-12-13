@@ -1,3 +1,4 @@
+import { codecovRollupPlugin } from '@codecov/rollup-plugin';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
@@ -22,6 +23,12 @@ export default [
         declarationMap: false,
         tslib: 'bundled',
       }),
+      codecovRollupPlugin({
+        enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+        bundleName: 'typescript-expression-language',
+        uploadToken: process.env.CODECOV_TOKEN,
+        gitService: 'github',
+      }),
     ],
   },
   // CommonJS build
@@ -41,6 +48,12 @@ export default [
         declaration: false,
         declarationMap: false,
         tslib: 'bundled',
+      }),
+      codecovRollupPlugin({
+        enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+        bundleName: 'typescript-expression-language',
+        uploadToken: process.env.CODECOV_TOKEN,
+        gitService: 'github',
       }),
     ],
   },
@@ -64,6 +77,12 @@ export default [
         declaration: false,
         declarationMap: false,
         tslib: 'bundled',
+      }),
+      codecovRollupPlugin({
+        enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+        bundleName: 'typescript-expression-language',
+        uploadToken: process.env.CODECOV_TOKEN,
+        gitService: 'github',
       }),
     ],
   },
@@ -89,6 +108,12 @@ export default [
         tslib: 'bundled',
       }),
       terser(),
+      codecovRollupPlugin({
+        enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+        bundleName: 'typescript-expression-language',
+        uploadToken: process.env.CODECOV_TOKEN,
+        gitService: 'github',
+      }),
     ],
   },
   // Type definitions

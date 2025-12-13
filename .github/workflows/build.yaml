@@ -29,8 +29,19 @@ jobs:
         run: npm run test:ci
       - name: Run tests with coverage
         run: npm run test:coverage
-      - name: Build the project
+      - name: Build the project and upload bundle stats
         run: npm run build
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          CI: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify Codecov token is available
+        run: |
+          if [ -n "$CODECOV_TOKEN" ]; then
+            echo "✅ CODECOV_TOKEN is available"
+          else
+            echo "❌ CODECOV_TOKEN is missing"
+          fi
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Upload coverage reports to Codecov

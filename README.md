@@ -17,6 +17,7 @@ Use it to create dynamic and flexible expression-based logic on the frontend, pe
 ![Jest](https://img.shields.io/badge/tested_with-jest-99424f.svg?logo=jest)
 ![Maintenance](https://img.shields.io/maintenance/yes/2025)
 [![codecov](https://codecov.io/gh/andreasnicolaou/typescript-expression-language/graph/badge.svg?token=ELH4YWG68O)](https://codecov.io/gh/andreasnicolaou/typescript-expression-language)
+[![Socket Badge](https://badge.socket.dev/npm/package/@andreasnicolaou/typescript-expression-language/1.5.1)](https://badge.socket.dev/npm/package/@andreasnicolaou/typescript-expression-language/1.5.1)
 
 ![NPM Downloads](https://img.shields.io/npm/dm/%40andreasnicolaou%2Ftypescript-expression-language)
 

@@ -13,6 +13,7 @@ eslint.config.mjs
 rollup.config.js
 tsconfig.json
 temp/
+scripts/
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 SECURITY.md

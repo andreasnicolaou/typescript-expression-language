@@ -13,6 +13,8 @@ import { NullCoalescedNameNode } from './node/null-coalesced-name-node';
 import { UnaryNode } from './node/unary-node';
 import { Parser } from './parser';
 import { SyntaxError } from './syntax-error';
+import { Token } from './token';
+import { TokenStream } from './token-stream';
 
 const getInvalidPostfixData = (): (string | string[])[][] => {
   return [
@@ -354,5 +356,32 @@ describe('Parser', () => {
     expect(() => {
       parser.lint(stream, [], Parser.IGNORE_UNKNOWN_VARIABLES);
     }).not.toThrow();
+  });
+
+  test('parser covers ternary with omitted true expr (a ? : b)', () => {
+    const tokens = [
+      new Token(Token.NAME_TYPE, 'a', 0),
+      new Token(Token.PUNCTUATION_TYPE, '?', 1),
+      new Token(Token.PUNCTUATION_TYPE, ':', 2),
+      new Token(Token.NAME_TYPE, 'b', 3),
+      new Token(Token.EOF_TYPE, null, 4),
+    ];
+    const stream = new TokenStream(tokens, 'a ?: b');
+    const parser = new Parser({});
+    expect(() => parser.parse(stream, ['a', 'b'])).not.toThrow();
+  });
+
+  test('parser covers ternary with true expr (a ? b : c)', () => {
+    const tokens = [
+      new Token(Token.NAME_TYPE, 'a', 0),
+      new Token(Token.PUNCTUATION_TYPE, '?', 1),
+      new Token(Token.NAME_TYPE, 'b', 2),
+      new Token(Token.PUNCTUATION_TYPE, ':', 3),
+      new Token(Token.NAME_TYPE, 'c', 4),
+      new Token(Token.EOF_TYPE, null, 5),
+    ];
+    const stream = new TokenStream(tokens, 'a ? b : c');
+    const parser = new Parser({});
+    expect(() => parser.parse(stream, ['a', 'b', 'c'])).not.toThrow();
   });
 });

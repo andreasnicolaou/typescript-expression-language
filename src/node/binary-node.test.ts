@@ -204,6 +204,14 @@ describe('BinaryNode', () => {
     expect(() => node.compile(new Compiler({}))).toThrow(SyntaxError);
   });
 
+  test('should allow matches with BinaryNode when operator is ~', () => {
+    const right = new BinaryNode('~', new ConstantNode('pattern'), new ConstantNode('flags'));
+    const node = new BinaryNode('matches', new ConstantNode('abc'), right);
+    const compiler = new Compiler({});
+    expect(() => node.compile(compiler)).not.toThrow();
+    expect(compiler.getSource()).toContain('matches');
+  });
+
   test('should throw Error for division by zero', () => {
     const node = new BinaryNode('/', new ConstantNode(1), new ConstantNode(0));
     expect(() => node.evaluate({}, {})).toThrow('Division by zero.');

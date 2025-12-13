@@ -414,5 +414,25 @@ describe('ExpressionFunction', () => {
       const constantFunc = ExpressionFunction.fromJs('constant');
       expect(constantFunc.getEvaluator()({}, 'SIMPLE_GLOBAL')).toBe('global_value');
     });
+
+    test('should handle edge cases in traversePath function', () => {
+      const constantFunc = ExpressionFunction.fromJs('constant');
+      expect(() => constantFunc.getEvaluator()({}, 'TestClass.MissingPath.CONSTANT')).toThrow(
+        "Constant 'TestClass.MissingPath.CONSTANT' is not defined"
+      );
+      expect(() => constantFunc.getEvaluator()({}, 'TestClass.Class.InvalidProperty')).toThrow(
+        "Constant 'TestClass.Class.InvalidProperty' is not defined"
+      );
+    });
+
+    test('should handle function-type objects in traversePath', () => {
+      const constantFunc = ExpressionFunction.fromJs('constant');
+      (globalThis as any).TestFunction = function (): void {
+        /* empty */
+      };
+      (globalThis as any).TestFunction.FUNC_CONSTANT = 'function_constant';
+      expect(constantFunc.getEvaluator()({}, 'TestFunction::FUNC_CONSTANT')).toBe('function_constant');
+      delete (globalThis as any).TestFunction;
+    });
   });
 });

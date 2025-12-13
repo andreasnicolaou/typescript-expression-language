@@ -24,8 +24,8 @@ jobs:
         run: npm test
       - name: Build the project
         run: npm run build
-      - name: Run bundlewatch
-        run: npx bundlewatch
+      - name: Check bundle size
+        run: npm run test:bundle
       - name: Check if version already published
         id: version-check
         run: |

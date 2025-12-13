@@ -1,4 +1,4 @@
-name: Bundlewatch
+name: Bundle Size Check
 permissions:
   contents: read
 on:
@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
     branches: [main]
 jobs:
-  bundlewatch:
+  size-check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -20,5 +20,5 @@ jobs:
         run: npm install
       - name: Build the project
         run: npm run build
-      - name: Run Bundlewatch
-        run: npx bundlewatch
+      - name: Check bundle size
+        run: npm run test:bundle

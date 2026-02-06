@@ -1,0 +1,35 @@
+version: 2
+# Socket.dev configuration
+# https://docs.socket.dev/docs/socket-yml
+
+# Mirror .npmignore - these files are not published to npm
+projectIgnorePaths:
+  - '.idea'
+  - 'src'
+  - '.prettierrc'
+  - '.github'
+  - '.prettierignore'
+  - 'eslint.config.mjs'
+  - 'docs'
+  - 'coverage'
+  - '*.tgz'
+  - '.husky'
+  - 'rollup.config.js'
+  - 'tsconfig.json'
+  - 'temp'
+  - 'scripts'
+  - 'CODE_OF_CONDUCT.md'
+  - 'CONTRIBUTING.md'
+  - 'SECURITY.md'
+
+issueRules:
+  # new Function() is only used in test files (not published to npm)
+  # Tests verify that compiled expressions produce correct JavaScript
+  usesEval: false
+
+  # Network access is from docs/index.html (demo page) and README badges
+  # Neither are part of the library runtime - docs folder is not published
+  networkAccess: false
+
+  # Download count will grow over time
+  unpopularPackage: false

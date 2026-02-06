@@ -4,23 +4,23 @@ version: 2
 
 # Mirror .npmignore - these files are not published to npm
 projectIgnorePaths:
-  - ".idea"
-  - "src"
-  - ".prettierrc"
-  - ".github"
-  - ".prettierignore"
-  - "eslint.config.mjs"
-  - "docs"
-  - "coverage"
-  - "*.tgz"
-  - ".husky"
-  - "rollup.config.js"
-  - "tsconfig.json"
-  - "temp"
-  - "scripts"
-  - "CODE_OF_CONDUCT.md"
-  - "CONTRIBUTING.md"
-  - "SECURITY.md"
+  - '.idea'
+  - 'src'
+  - '.prettierrc'
+  - '.github'
+  - '.prettierignore'
+  - 'eslint.config.mjs'
+  - 'docs'
+  - 'coverage'
+  - '*.tgz'
+  - '.husky'
+  - 'rollup.config.js'
+  - 'tsconfig.json'
+  - 'temp'
+  - 'scripts'
+  - 'CODE_OF_CONDUCT.md'
+  - 'CONTRIBUTING.md'
+  - 'SECURITY.md'
 
 issueRules:
   # new Function() is only used in test files (not published to npm)

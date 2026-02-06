@@ -22,6 +22,7 @@ const getInvalidPostfixData = (): (string | string[])[][] => {
     ['foo."bar"', ['foo']],
     ['foo.**', ['foo']],
     ['foo.123', ['foo']],
+    ['foo.[0]', ['foo']],
   ];
 };
 
@@ -126,6 +127,11 @@ const getParseData = (): (
         GetAttrNode.METHOD_CALL
       ),
       'foo?.not()',
+      ['foo'],
+    ],
+    [
+      new GetAttrNode(new NameNode('foo'), new ConstantNode(0), new ArgumentsNode(), GetAttrNode.ARRAY_CALL, true),
+      'foo?.[0]',
       ['foo'],
     ],
     [

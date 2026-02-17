@@ -354,14 +354,14 @@ console.log(el.evaluate('strtoupper("world")')); // Outputs → "WORLD"
 
 ### Data Access
 
-| Syntax            | Description                      |
-| ----------------- | -------------------------------- |
-| `array[0]`        | Access array elements            |
-| `array?.[0]`      | Null-safe array element access   |
-| `obj.property`    | Access object properties         |
-| `obj?.property`   | Null-safe property access        |
-| `obj.method(arg)` | Call object methods              |
-| `obj?.method()`   | Null-safe method call            |
+| Syntax            | Description                    |
+| ----------------- | ------------------------------ |
+| `array[0]`        | Access array elements          |
+| `array?.[0]`      | Null-safe array element access |
+| `obj.property`    | Access object properties       |
+| `obj?.property`   | Null-safe property access      |
+| `obj.method(arg)` | Call object methods            |
+| `obj?.method()`   | Null-safe method call          |
 
 ### Functions
 

@@ -317,26 +317,38 @@ export class Parser {
         const isNullSafe = token.value === '?.';
         this.stream.next();
         token = this.stream.current;
-        this.stream.next();
 
-        if (
-          token.type !== Token.NAME_TYPE &&
-          (token.type !== Token.OPERATOR_TYPE ||
-            !/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/.test(token.value?.toString() ?? ''))
-        ) {
-          throw new SyntaxError('Expected name', token.cursor, this.stream.expression);
+        // Check for null-safe array access: ?.[
+        if (token.test(Token.PUNCTUATION_TYPE, '[')) {
+          if (!isNullSafe) {
+            throw new SyntaxError('Expected name', token.cursor, this.stream.expression);
+          }
+          this.stream.next();
+          const arg = this.parseExpression();
+          this.stream.expect(Token.PUNCTUATION_TYPE, ']');
+          node = new GetAttrNode(node, arg, new ArgumentsNode(), GetAttrNode.ARRAY_CALL, true);
+        } else {
+          this.stream.next();
+
+          if (
+            token.type !== Token.NAME_TYPE &&
+            (token.type !== Token.OPERATOR_TYPE ||
+              !/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/.test(token.value?.toString() ?? ''))
+          ) {
+            throw new SyntaxError('Expected name', token.cursor, this.stream.expression);
+          }
+
+          const arg = new ConstantNode(token.value, true, isNullSafe);
+          const _arguments = new ArgumentsNode();
+          let type = GetAttrNode.PROPERTY_CALL;
+
+          if (this.stream.current.test(Token.PUNCTUATION_TYPE, '(')) {
+            type = GetAttrNode.METHOD_CALL;
+            Object.values(this.parseArguments().nodes).forEach((n) => _arguments.addElement(n));
+          }
+
+          node = new GetAttrNode(node, arg, _arguments, type, isNullSafe);
         }
-
-        const arg = new ConstantNode(token.value, true, isNullSafe);
-        const _arguments = new ArgumentsNode();
-        let type = GetAttrNode.PROPERTY_CALL;
-
-        if (this.stream.current.test(Token.PUNCTUATION_TYPE, '(')) {
-          type = GetAttrNode.METHOD_CALL;
-          Object.values(this.parseArguments().nodes).forEach((n) => _arguments.addElement(n));
-        }
-
-        node = new GetAttrNode(node, arg, _arguments, type);
       } else if (token.value === '[') {
         this.stream.next();
         const arg = this.parseExpression();

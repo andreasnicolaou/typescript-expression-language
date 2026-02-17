@@ -235,6 +235,17 @@ describe('ExpressionLanguage', () => {
     }).toThrow('Unable to call method "myfunction" of object "object".');
   });
 
+  test('should evaluate null-safe array access', () => {
+    expect(expressionLanguage.evaluate('foo?.[0]', { foo: null })).toBeNull();
+    expect(expressionLanguage.evaluate('foo?.[0]', { foo: ['bar'] })).toBe('bar');
+    expect(expressionLanguage.evaluate('foo?.[0].bar', { foo: null })).toBeNull();
+  });
+
+  test('should compile null-safe array access', () => {
+    const result = expressionLanguage.compile('foo?.[0]', ['foo']);
+    expect(result).toBe('foo?.[0]');
+  });
+
   test('should evaluate valid expressions', () => {
     getEvaluateData().forEach(([expression, values, expectedOutcome, provider]) => {
       if (provider) {

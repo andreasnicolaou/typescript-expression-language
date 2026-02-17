@@ -14,8 +14,12 @@ export class GetAttrNode extends Node {
   public static readonly METHOD_CALL = 2;
   public static readonly ARRAY_CALL = 3;
 
-  constructor(node: Node, attribute: Node, argumentsNode: ArrayNode, type: number) {
-    super({ node, attribute, arguments: argumentsNode }, { type, is_null_coalesce: false, is_short_circuited: false });
+  constructor(node: Node, attribute: Node, argumentsNode: ArrayNode, type: number, isNullSafe = false) {
+    const nullSafe = GetAttrNode.ARRAY_CALL === type && isNullSafe;
+    super(
+      { node, attribute, arguments: argumentsNode },
+      { type, is_null_coalesce: false, is_short_circuited: false, is_null_safe: nullSafe }
+    );
   }
 
   /**
@@ -24,7 +28,8 @@ export class GetAttrNode extends Node {
    * @memberof GetAttrNode
    */
   public compile(compiler: Compiler): void {
-    const nullSafe = this.nodes.attribute instanceof ConstantNode && this.nodes.attribute.isNullSafe;
+    const nullSafe =
+      (this.nodes.attribute instanceof ConstantNode && this.nodes.attribute.isNullSafe) || this.attributes.is_null_safe;
     switch (this.attributes.type) {
       case GetAttrNode.PROPERTY_CALL:
         compiler
@@ -42,7 +47,11 @@ export class GetAttrNode extends Node {
           .raw(')');
         break;
       case GetAttrNode.ARRAY_CALL:
-        compiler.compile(this.nodes.node).raw('[').compile(this.nodes.attribute).raw(']');
+        if (nullSafe) {
+          compiler.compile(this.nodes.node).raw('?.[').compile(this.nodes.attribute).raw(']');
+        } else {
+          compiler.compile(this.nodes.node).raw('[').compile(this.nodes.attribute).raw(']');
+        }
         break;
     }
   }
@@ -57,6 +66,7 @@ export class GetAttrNode extends Node {
   public evaluate(functions: Record<string, any>, values: Record<string, any>): any {
     const valEvaluation = this.nodes.node.evaluate(functions, values);
     const property = this.nodes.attribute.attributes.value;
+    const nullSafe = this.attributes.is_null_safe;
     switch (this.attributes.type) {
       case GetAttrNode.PROPERTY_CALL:
         if (
@@ -97,10 +107,11 @@ export class GetAttrNode extends Node {
         }
         return valEvaluation[property](...Object.values(this.nodes['arguments'].evaluate(functions, values)));
       case GetAttrNode.ARRAY_CALL:
-        if (valEvaluation === null && this.isShortCircuited()) {
+        if (valEvaluation === null && (nullSafe || this.isShortCircuited())) {
+          this.attributes.is_short_circuited = nullSafe || this.attributes.is_short_circuited;
           return null;
         }
-        if (typeof valEvaluation !== 'object' && !(valEvaluation instanceof Array)) {
+        if (typeof valEvaluation !== 'object' && !Array.isArray(valEvaluation)) {
           throw new Error(`Unable to get an item of non-array "${this.nodes.node.dump()}".`);
         }
         if (this.attributes.is_null_coalesce) {
@@ -123,7 +134,7 @@ export class GetAttrNode extends Node {
       case GetAttrNode.METHOD_CALL:
         return [this.nodes.node, nullSafe ? '?.' : '.', this.nodes.attribute, '(', this.nodes.arguments, ')'];
       case GetAttrNode.ARRAY_CALL:
-        return [this.nodes.node, '[', this.nodes.attribute, ']'];
+        return [this.nodes.node, this.attributes.is_null_safe ? '?.[' : '[', this.nodes.attribute, ']'];
       default:
         return [];
     }

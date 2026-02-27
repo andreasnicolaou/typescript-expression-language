@@ -2,6 +2,7 @@ name: Publish to npm
 permissions:
   contents: read
   packages: write
+  id-token: write
 on:
   release:
     types: [published]
@@ -39,8 +40,8 @@ jobs:
             echo "Version $PACKAGE_VERSION of $PACKAGE_NAME is not published yet"
             echo "already-published=false" >> $GITHUB_OUTPUT
           fi
+      - name: Configure npm for Trusted Publishing
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
       - name: Publish to npm
         if: steps.version-check.outputs.already-published == 'false'
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

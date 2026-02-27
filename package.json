@@ -1,6 +1,6 @@
 {
   "name": "@andreasnicolaou/typescript-expression-language",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "TypeScript implementation of symfony/expression-language",
   "main": "dist/index.cjs",
   "module": "dist/index.js",

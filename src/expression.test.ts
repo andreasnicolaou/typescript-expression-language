@@ -5,8 +5,8 @@ import { Expression } from './expression';
 describe('Expression', () => {
   test('should serialize and un-serialize', () => {
     const expression = new Expression('kernel.boot()');
-    const serializedExpression = serialize(expression);
+    const serializedExpression = serialize(expression.toString());
     const unSerializedExpression = unserialize(serializedExpression);
-    expect(unSerializedExpression).toEqual(expression);
+    expect(unSerializedExpression).toEqual(expression.toString());
   });
 });

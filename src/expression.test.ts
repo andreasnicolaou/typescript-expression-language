@@ -1,5 +1,5 @@
-import serialize from 'locutus/php/var/serialize';
-import unserialize from 'locutus/php/var/unserialize';
+import { serialize } from 'locutus/php/var/serialize';
+import { unserialize } from 'locutus/php/var/unserialize';
 import { Expression } from './expression';
 
 describe('Expression', () => {

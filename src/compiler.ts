@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import addcslashes from 'locutus/php/strings/addcslashes';
+import { addcslashes } from 'locutus/php/strings/addcslashes';
 import { Node } from './node/node';
 
 /**

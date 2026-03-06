@@ -1,4 +1,4 @@
-import levenshtein from 'locutus/php/strings/levenshtein';
+import { levenshtein } from 'locutus/php/strings/levenshtein';
 
 /**
  * Represents a syntax error in an expression.

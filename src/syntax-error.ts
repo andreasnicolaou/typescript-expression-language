@@ -12,7 +12,7 @@ export class SyntaxError extends Error {
     subject: string | number | null = null,
     proposals: (string | number)[] | null = null
   ) {
-    const around = cursor != null ? ` around position ${cursor}` : '';
+    const around = cursor === null ? '' : ` around position ${cursor}`;
     let formattedMessage = `${message.replace(/\.$/, '')}${around}`;
     if (expression) {
       formattedMessage = `${formattedMessage} for expression \`${expression}\``;
@@ -24,7 +24,7 @@ export class SyntaxError extends Error {
       let guess: string | number | undefined;
 
       for (const proposal of proposals) {
-        const distance: number | undefined = levenshtein(subject, proposal);
+        const distance: number | undefined = levenshtein(subject?.toString(), proposal?.toString());
         if (distance !== undefined && distance < minScore) {
           guess = proposal;
           minScore = distance;

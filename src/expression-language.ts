@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import rawurlencode from 'locutus/php/url/rawurlencode';
+import { rawurlencode } from 'locutus/php/url/rawurlencode';
 import { LRUCache } from 'lru-cache';
 import { Compiler } from './compiler';
 import { Expression } from './expression';

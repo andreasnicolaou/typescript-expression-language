@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import addcslashes from 'locutus/php/strings/addcslashes';
-import is_scalar from 'locutus/php/var/is_scalar';
+import { addcslashes } from 'locutus/php/strings/addcslashes';
+import { is_scalar } from 'locutus/php/var/is_scalar';
 import { Compiler } from '../compiler';
 
 /**

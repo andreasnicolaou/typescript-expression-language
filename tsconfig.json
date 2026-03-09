@@ -9,7 +9,7 @@
     "outDir": "./dist",
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "types": ["jest", "locutus", "node"],
+    "types": ["jest", "node"],
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,

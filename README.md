@@ -15,7 +15,7 @@ Use it to create dynamic and flexible expression-based logic on the frontend, pe
 ![ESLint](https://img.shields.io/badge/linter-eslint-4B32C3.svg?logo=eslint)
 ![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?logo=prettier)
 ![Jest](https://img.shields.io/badge/tested_with-jest-99424f.svg?logo=jest)
-![Maintenance](https://img.shields.io/maintenance/yes/2025)
+![Maintenance](https://img.shields.io/maintenance/yes/2026)
 [![codecov](https://codecov.io/gh/andreasnicolaou/typescript-expression-language/graph/badge.svg?token=ELH4YWG68O)](https://codecov.io/gh/andreasnicolaou/typescript-expression-language)
 [![Socket Badge](https://badge.socket.dev/npm/package/@andreasnicolaou/typescript-expression-language)](https://badge.socket.dev/npm/package/@andreasnicolaou/typescript-expression-language)
 

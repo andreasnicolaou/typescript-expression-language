@@ -1,4 +1,5 @@
 import { unserialize } from 'locutus/php/var/unserialize';
+import { Node } from './node/node';
 
 /**
  * Represents an already serialized parsed expression.
@@ -19,7 +20,7 @@ export class SerializedParsedExpression {
    * @returns The deserialized nodes, or false if deserialization fails.
    * @memberof SerializedParsedExpression
    */
-  public getNodes(): ReturnType<typeof unserialize> {
-    return unserialize(this.nodes);
+  public getNodes(): Node | false {
+    return unserialize(this.nodes) as Node | false;
   }
 }

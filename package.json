@@ -103,7 +103,7 @@
     "husky": "^9.1.7",
     "jest": "^30.3.0",
     "jest-junit": "^16.0.0",
-    "locutus": "^3.0.24",
+    "locutus": "^3.0.25",
     "lru-cache": "^11.2.7",
     "prettier": "3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",

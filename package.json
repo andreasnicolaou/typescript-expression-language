@@ -102,7 +102,7 @@
     "globals": "^17.5.0",
     "husky": "^9.1.7",
     "jest": "^30.3.0",
-    "jest-junit": "^16.0.0",
+    "jest-junit": "^17.0.0",
     "locutus": "^3.0.34",
     "lru-cache": "^11.3.5",
     "prettier": "3.8.1",

@@ -23,6 +23,7 @@ const getInvalidPostfixData = (): (string | string[])[][] => {
     ['foo.**', ['foo']],
     ['foo.123', ['foo']],
     ['foo.[0]', ['foo']],
+    ['foo?.[]', ['foo']],
   ];
 };
 

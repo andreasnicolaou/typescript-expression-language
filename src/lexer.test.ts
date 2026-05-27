@@ -131,7 +131,7 @@ describe('Lexer Tests', () => {
       new Token(Token.EOF_TYPE, null, expression.length + 1),
     ];
 
-    const tokenStream = new TokenStream(tokens, expression.replace(/\n/g, ' '));
+    const tokenStream = new TokenStream(tokens, expression.replaceAll('\n', ' '));
     expect(lexer.tokenize(expression)).toEqual(tokenStream);
   });
 
@@ -210,5 +210,32 @@ describe('Lexer Tests', () => {
     const expression = '(]';
     expect(() => lexer.tokenize(expression)).toThrow(SyntaxError);
     expect(() => lexer.tokenize(expression)).toThrow('Unclosed "("');
+  });
+
+  describe('word operator boundary', () => {
+    test('should tokenize "and" without space before "("', () => {
+      const tokens = lexer.tokenize('true and(false)');
+      const types = tokens.tokens.map((t) => `${t.type}:${t.value}`);
+      expect(types).toContain(`${Token.OPERATOR_TYPE}:and`);
+    });
+
+    test('should tokenize "or" without space before "("', () => {
+      const tokens = lexer.tokenize('false or(true)');
+      const types = tokens.tokens.map((t) => `${t.type}:${t.value}`);
+      expect(types).toContain(`${Token.OPERATOR_TYPE}:or`);
+    });
+
+    test('should tokenize "not" without space before "("', () => {
+      const tokens = lexer.tokenize('not(true)');
+      const types = tokens.tokens.map((t) => `${t.type}:${t.value}`);
+      expect(types).toContain(`${Token.OPERATOR_TYPE}:not`);
+    });
+
+    test('should not tokenize "not" as operator when it is part of a name', () => {
+      const tokens = lexer.tokenize('notable');
+      const types = tokens.tokens.map((t) => `${t.type}:${t.value}`);
+      expect(types).not.toContain(`${Token.OPERATOR_TYPE}:not`);
+      expect(types).toContain(`${Token.NAME_TYPE}:notable`);
+    });
   });
 });

@@ -116,7 +116,7 @@ export class Lexer {
       // Match strings (double-quoted or single-quoted)
       const stringMatch = Lexer.STRING_REGEX.exec(slicedExpression);
       if (stringMatch != null) {
-        tokens.push(new Token(Token.STRING_TYPE, stringMatch[1] || stringMatch[2], cursor + 1));
+        tokens.push(new Token(Token.STRING_TYPE, stringMatch[1] ?? stringMatch[2], cursor + 1));
         cursor += stringMatch[0].length;
         continue;
       }
@@ -204,8 +204,9 @@ export class Lexer {
         const afterChar = originalExpression[operatorEnd] || ' ';
         // Handle word-based operators
         if (Lexer.WORD_OPERATORS.has(operator)) {
-          // Ensure there are spaces or punctuation boundaries around the operator
-          if (beforeChar.trim() === '' && afterChar.trim() === '') {
+          const validBefore = beforeChar.trim() === '' || beforeChar === '(';
+          const validAfter = afterChar.trim() === '' || afterChar === '(';
+          if (validBefore && validAfter) {
             return operator;
           }
         } else {

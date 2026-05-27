@@ -3,6 +3,11 @@ import { Node } from './node/node';
 
 /**
  * Represents an already serialized parsed expression.
+ *
+ * The serialized form passed to the constructor MUST come from a trusted source.
+ * By contract, callers are expected to serialize their own ParsedExpression instances
+ * and keep the resulting data under their control. Pass attacker-controlled data here at your peril.
+ *
  * @class SerializedParsedExpression
  * @author Andreas Nicolaou <anicolaou66@gmail.com>
  */

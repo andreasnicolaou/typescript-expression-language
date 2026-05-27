@@ -105,7 +105,7 @@
     "jest-junit": "^16.0.0",
     "locutus": "^3.0.36",
     "lru-cache": "^11.5.0",
-    "prettier": "3.8.1",
+    "prettier": "3.8.3",
     "prettier-plugin-organize-imports": "^4.3.0",
     "rollup": "^4.60.4",
     "rollup-plugin-dts": "^6.4.1",

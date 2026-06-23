@@ -554,5 +554,4 @@ describe('ExpressionLanguage', () => {
       expect(expressionLanguage.evaluate('notable', { notable: true })).toBe(true);
     });
   });
-
 });

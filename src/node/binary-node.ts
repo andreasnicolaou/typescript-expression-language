@@ -45,7 +45,7 @@ export class BinaryNode extends Node {
       }
       compiler
         .raw(
-          String.raw`(function (regexp, str) { try { var m = /\/(.+)\/(.*)/.exec(regexp); if (m) { return new RegExp(m[1], m[2]).test(str ?? ""); } return new RegExp(regexp).test(str ?? ""); } catch (e) { throw new SyntaxError('Invalid regex passed to "matches".'); } })(`
+          String.raw`(function (regexp, str) { try { var m = /^\/(.+)\/([a-z]*)$/.exec(regexp); if (m) { return new RegExp(m[1], m[2]).test(str ?? ""); } return new RegExp(regexp).test(str ?? ""); } catch (e) { throw new SyntaxError('Invalid regex passed to "matches".'); } })(`
         )
         .compile(this.nodes.right)
         .raw(', ')
@@ -183,7 +183,7 @@ export class BinaryNode extends Node {
    */
   private evaluateMatches(regexp: string, str: string | null): boolean {
     try {
-      const m = /\/(.+)\/(.*)/.exec(regexp);
+      const m = /^\/(.+)\/([a-z]*)$/.exec(regexp);
       if (m) {
         return new RegExp(m[1], m[2]).test(str ?? '');
       }

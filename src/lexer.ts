@@ -204,8 +204,12 @@ export class Lexer {
         const afterChar = originalExpression[operatorEnd] || ' ';
         // Handle word-based operators
         if (Lexer.WORD_OPERATORS.has(operator)) {
-          const validBefore = beforeChar.trim() === '' || beforeChar === '(';
-          const validAfter = afterChar.trim() === '' || afterChar === '(';
+          // Word operators must not be adjacent to identifier characters (same char
+          // class as NAME_REGEX) nor to "." which denotes property access (e.g. "foo.not"),
+          // so any other punctuation/space is a valid boundary.
+          const nonBoundary = /[a-zA-Z0-9_\x7f-\xff.]/;
+          const validBefore = !nonBoundary.test(beforeChar);
+          const validAfter = !nonBoundary.test(afterChar);
           if (validBefore && validAfter) {
             return operator;
           }

@@ -268,6 +268,19 @@ describe('ExpressionLanguage', () => {
     expect(expressionLanguage.evaluate('isset(val)', { val: undefined })).toBe(false);
   });
 
+  test('should compile isset() correctly', () => {
+    expect(expressionLanguage.compile('isset(val)', ['val'])).toBe('(val != null)');
+  });
+
+  test('should evaluate isset() with multiple arguments', () => {
+    expect(expressionLanguage.evaluate('isset(a, b)', { a: 1, b: 2 })).toBe(true);
+    expect(expressionLanguage.evaluate('isset(a, b)', { a: 1, b: null })).toBe(false);
+  });
+
+  test('should compile isset() with multiple arguments', () => {
+    expect(expressionLanguage.compile('isset(a, b)', ['a', 'b'])).toBe('(a != null) && (b != null)');
+  });
+
   test('should initialize with providers and register their functions', () => {
     const provider = {
       getFunctions: (): ExpressionFunction[] => [

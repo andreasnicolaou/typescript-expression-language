@@ -237,5 +237,18 @@ describe('Lexer Tests', () => {
       expect(types).not.toContain(`${Token.OPERATOR_TYPE}:not`);
       expect(types).toContain(`${Token.NAME_TYPE}:notable`);
     });
+
+    test('should tokenize "and" adjacent to closing and opening parens', () => {
+      const tokens = lexer.tokenize('(true)and(false)');
+      const types = tokens.tokens.map((t) => `${t.type}:${t.value}`);
+      expect(types).toContain(`${Token.OPERATOR_TYPE}:and`);
+    });
+
+    test('should not tokenize a word operator used as a property name', () => {
+      const tokens = lexer.tokenize('foo.not');
+      const types = tokens.tokens.map((t) => `${t.type}:${t.value}`);
+      expect(types).not.toContain(`${Token.OPERATOR_TYPE}:not`);
+      expect(types).toContain(`${Token.NAME_TYPE}:not`);
+    });
   });
 });

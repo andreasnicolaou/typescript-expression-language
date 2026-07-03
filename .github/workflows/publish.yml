@@ -6,6 +6,7 @@ permissions:
 on:
   release:
     types: [published]
+  workflow_dispatch:
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -16,7 +17,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '22'
-          registry-url: 'https://registry.npmjs.org/'
       - name: Upgrade npm (OIDC trusted publishing requires >= 11.5.1)
         run: npm install -g npm@latest
       - name: Install dependencies

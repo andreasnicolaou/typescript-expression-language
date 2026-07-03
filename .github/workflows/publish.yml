@@ -42,6 +42,16 @@ jobs:
             echo "Version $PACKAGE_VERSION of $PACKAGE_NAME is not published yet"
             echo "already-published=false" >> $GITHUB_OUTPUT
           fi
+      - name: Debug OIDC prerequisites
+        run: |
+          echo "npm version: $(npm -v)"
+          echo "npm path: $(which npm)"
+          echo "node version: $(node -v)"
+          if [ -n "$ACTIONS_ID_TOKEN_REQUEST_URL" ]; then
+            echo "OIDC token endpoint: AVAILABLE"
+          else
+            echo "OIDC token endpoint: MISSING"
+          fi
       - name: Publish to npm
         if: steps.version-check.outputs.already-published == 'false'
         run: npm publish --access public

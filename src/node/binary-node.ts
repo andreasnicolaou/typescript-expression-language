@@ -45,7 +45,7 @@ export class BinaryNode extends Node {
       }
       compiler
         .raw(
-          '(function (regexp, str) { try { if (regexp.startsWith("/") && regexp.endsWith("/")) { regexp = regexp.slice(1, -1); } return new RegExp(regexp).test(str ?? ""); } catch () { throw new SyntaxError(\'Invalid regex passed to "matches".\'); } })('
+          String.raw`(function (regexp, str) { try { var m = /^\/(.+)\/([a-z]*)$/.exec(regexp); if (m) { return new RegExp(m[1], m[2]).test(str ?? ""); } return new RegExp(regexp).test(str ?? ""); } catch (e) { throw new SyntaxError('Invalid regex passed to "matches".'); } })(`
         )
         .compile(this.nodes.right)
         .raw(', ')
@@ -183,9 +183,9 @@ export class BinaryNode extends Node {
    */
   private evaluateMatches(regexp: string, str: string | null): boolean {
     try {
-      if (regexp.startsWith('/') && regexp.endsWith('/')) {
-        // Remove the slashes and use the part in between as the pattern
-        regexp = regexp.slice(1, -1);
+      const m = /^\/(.+)\/([a-z]*)$/.exec(regexp);
+      if (m) {
+        return new RegExp(m[1], m[2]).test(str ?? '');
       }
       return new RegExp(regexp).test(str ?? '');
     } catch (error) {
@@ -202,11 +202,11 @@ export class BinaryNode extends Node {
   }
 
   private inArray(item: any, array: any[]): boolean {
-    return array.indexOf(item) >= 0;
+    return array.includes(item);
   }
 
   private notInArray(item: any, array: any[]): boolean {
-    return array.indexOf(item) === -1;
+    return !array.includes(item);
   }
 
   private strContains(str: string, substr: string): boolean {

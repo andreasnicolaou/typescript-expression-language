@@ -9,6 +9,7 @@ export default [
   // ESM build
   {
     input: 'src/index.ts',
+    external: ['node:diagnostics_channel'],
     output: {
       file: 'dist/index.js',
       format: 'es',
@@ -35,6 +36,7 @@ export default [
   // CommonJS build
   {
     input: 'src/index.ts',
+    external: ['node:diagnostics_channel'],
     output: {
       file: 'dist/index.cjs',
       format: 'cjs',

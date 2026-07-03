@@ -1,6 +1,6 @@
 {
   "name": "@andreasnicolaou/typescript-expression-language",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "TypeScript implementation of symfony/expression-language",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -129,7 +129,7 @@
     "ast",
     "evaluator",
     "custom functions",
-    "safe eval",
+    "safe expressions",
     "formula",
     "calculation",
     "runtime",

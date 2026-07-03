@@ -260,6 +260,27 @@ describe('ExpressionLanguage', () => {
     });
   });
 
+  test('should evaluate isset() correctly', () => {
+    expect(expressionLanguage.evaluate('isset(val)', { val: 'hello' })).toBe(true);
+    expect(expressionLanguage.evaluate('isset(val)', { val: 0 })).toBe(true);
+    expect(expressionLanguage.evaluate('isset(val)', { val: false })).toBe(true);
+    expect(expressionLanguage.evaluate('isset(val)', { val: null })).toBe(false);
+    expect(expressionLanguage.evaluate('isset(val)', { val: undefined })).toBe(false);
+  });
+
+  test('should compile isset() correctly', () => {
+    expect(expressionLanguage.compile('isset(val)', ['val'])).toBe('(val != null)');
+  });
+
+  test('should evaluate isset() with multiple arguments', () => {
+    expect(expressionLanguage.evaluate('isset(a, b)', { a: 1, b: 2 })).toBe(true);
+    expect(expressionLanguage.evaluate('isset(a, b)', { a: 1, b: null })).toBe(false);
+  });
+
+  test('should compile isset() with multiple arguments', () => {
+    expect(expressionLanguage.compile('isset(a, b)', ['a', 'b'])).toBe('(a != null) && (b != null)');
+  });
+
   test('should initialize with providers and register their functions', () => {
     const provider = {
       getFunctions: (): ExpressionFunction[] => [
@@ -418,6 +439,27 @@ describe('ExpressionLanguage', () => {
     expect(expressionLanguage.cache.size).toBe(1);
   });
 
+  test('should generate consistent cache keys for expressions containing ~ operator', () => {
+    const expression = 'first ~ last';
+    expressionLanguage.evaluate(expression, { first: 'John', last: 'Doe' });
+    expect(expressionLanguage.cache.size).toBe(1);
+    expressionLanguage.evaluate(expression, { first: 'Jane', last: 'Smith' });
+    expect(expressionLanguage.cache.size).toBe(1);
+  });
+
+  test('should generate distinct cache keys for different expressions with special characters', () => {
+    expressionLanguage.evaluate('a ~ b', { a: 'x', b: 'y' });
+    expressionLanguage.evaluate('a ~ c', { a: 'x', c: 'z' });
+    expect(expressionLanguage.cache.size).toBe(2);
+  });
+
+  test('should generate consistent cache keys regardless of variable name order when expression has special chars', () => {
+    const expression = 'x ~ y';
+    const parsed1 = expressionLanguage.parse(expression, ['x', 'y']);
+    const parsed2 = expressionLanguage.parse(expression, ['y', 'x']);
+    expect(parsed1).toBe(parsed2);
+  });
+
   describe('enum() function', () => {
     beforeEach(() => {
       (globalThis as any).GenericEnum = {
@@ -505,6 +547,24 @@ describe('ExpressionLanguage', () => {
       expect(() => expressionLanguage.evaluate('enum("GenericEnum.COMPLEX_OBJECT")')).toThrow(
         'The string "GenericEnum.COMPLEX_OBJECT" is not the name of a valid enum case.'
       );
+    });
+  });
+
+  describe('word operator boundary', () => {
+    test('should evaluate "and" without space before parenthesis', () => {
+      expect(expressionLanguage.evaluate('true and(false)', {})).toBe(false);
+    });
+
+    test('should evaluate "or" without space before parenthesis', () => {
+      expect(expressionLanguage.evaluate('false or(true)', {})).toBe(true);
+    });
+
+    test('should evaluate "not" without space before parenthesis', () => {
+      expect(expressionLanguage.evaluate('not(true)', {})).toBe(false);
+    });
+
+    test('should not treat "notable" as "not" operator', () => {
+      expect(expressionLanguage.evaluate('notable', { notable: true })).toBe(true);
     });
   });
 });

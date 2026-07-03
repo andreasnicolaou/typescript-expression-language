@@ -62,6 +62,8 @@ const getEvaluateData = (): (
     [true, new BinaryNode('matches', new ConstantNode('abc'), new ConstantNode('/^[a-z]+$/'))],
     [false, new BinaryNode('matches', new ConstantNode(''), new ConstantNode('/^[a-z]+$/'))],
     [false, new BinaryNode('matches', new ConstantNode(null), new ConstantNode('/^[a-z]+$/'))],
+    [true, new BinaryNode('matches', new ConstantNode('ABC'), new ConstantNode('/^[a-z]+$/i'))],
+    [false, new BinaryNode('matches', new ConstantNode('ABC'), new ConstantNode('/^[a-z]+$/'))],
   ];
 };
 
@@ -147,7 +149,7 @@ const getCompileData = (): (string | BinaryNode)[][] => {
     ['notInArray("a", ["a", "b"])', new BinaryNode('not in', new ConstantNode('a'), array)],
     ['range(1, 3)', new BinaryNode('..', new ConstantNode(1), new ConstantNode(3))],
     [
-      '(function (regexp, str) { try { if (regexp.startsWith("/") && regexp.endsWith("/")) { regexp = regexp.slice(1, -1); } return new RegExp(regexp).test(str ?? ""); } catch () { throw new SyntaxError(\'Invalid regex passed to "matches".\'); } })("/^[a-z]+$/", "abc")',
+      String.raw`(function (regexp, str) { try { var m = /^\/(.+)\/([a-z]*)$/.exec(regexp); if (m) { return new RegExp(m[1], m[2]).test(str ?? ""); } return new RegExp(regexp).test(str ?? ""); } catch (e) { throw new SyntaxError('Invalid regex passed to "matches".'); } })("/^[a-z]+$/", "abc")`,
       new BinaryNode('matches', new ConstantNode('abc'), new ConstantNode('/^[a-z]+$/')),
     ],
     ['strStartsWith("abc", "a")', new BinaryNode('starts with', new ConstantNode('abc'), new ConstantNode('a'))],

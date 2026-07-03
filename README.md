@@ -1,8 +1,8 @@
 # TypeScript Symfony Expression Language
 
-A **TypeScript implementation** of the popular **Symfony Expression Language**. This library allows you to evaluate complex expressions **client-side**, fully mirroring the functionality of the PHP version.
+A **TypeScript-native** implementation of the **Symfony Expression Language** — written in TypeScript from the ground up, not transpiled JavaScript with bolted-on type definitions.
 
-Use it to create dynamic and flexible expression-based logic on the frontend, perfectly synchronized with the server-side implementation in Symfony/PHP.
+Evaluate complex expressions client-side with full Symfony parity, a bounded LRU cache, ESM/CJS/UMD output, and zero peer dependencies.
 
 ![TypeScript](https://img.shields.io/badge/TS-TypeScript-3178c6?logo=typescript&logoColor=white)
 ![GitHub contributors](https://img.shields.io/github/contributors/andreasnicolaou/typescript-expression-language)
@@ -57,16 +57,14 @@ You can try this library live:
 
 ## ✨ Features
 
-- **Full Symfony Compatibility**: Write expressions that work the same way on both client and server.
-- **Zero Dependencies**: Self-contained library with no external runtime dependencies.
-- **Rich Syntax Support**: Includes numbers, strings, operators, functions, and advanced object/array access.
-- **Customizable Operators**: Define your own operators or extend existing ones.
-- **Brackets and Nesting**: Handle deeply nested brackets with accurate syntax validation.
-- **Error Detection**: Detect and report invalid syntax with meaningful error messages.
-- **Word-Based Operators**: Supports expressions like `starts with`, `not in`, `ends with`, `contains`, `matches`, `xor`, and more!
-- **TypeScript Ready**: Fully typed, ensuring seamless integration into TypeScript projects.
-- **Universal Compatibility**: Works in Node.js (ESM/CommonJS), browsers (UMD), and TypeScript projects.
-- **Professional Build**: Multiple output formats with tree-shaking support and optimized bundles.
+- **TypeScript-native source**: Types are generated from the implementation — never out of sync with the API.
+- **ESM-first**: Tree-shakeable ES module output alongside CJS and UMD. Use only what you import.
+- **Bounded LRU cache**: Parsed expressions are cached with a configurable max size and TTL — no unbounded memory growth.
+- **Full Symfony parity**: Every operator, literal type, and access pattern from Symfony's ExpressionLanguage works identically here.
+- **Zero peer dependencies**: No packages to install alongside this one — everything is self-contained.
+- **Rich syntax**: Numbers (with underscore separators), strings, arrays, hashes, block comments, regex matching, ranges, null-safe operators, and more.
+- **Extensible**: Register custom functions or group them into reusable providers.
+- **Strict error reporting**: Syntax errors include the position, the offending token, and a "did you mean?" suggestion when a name is close.
 
 ---
 
@@ -377,6 +375,7 @@ The library provides access to a comprehensive set of JavaScript functions. Some
 | -------------------- | -------- | :----------------: | -------------------------------------------------------- | --------------------------------------------------- |
 | `constant`           | Core     |         ✅         | Access global constants and nested properties            | `constant("CONFIG.API_URL")`                        |
 | `enum`               | Core     |         ✅         | Access PHP-style and TypeScript-style enums              | `enum("Status.ACTIVE")`                             |
+| `isset`              | Core     |         ✅         | Returns `true` if the value is not `null` or `undefined` | `isset(user.email)` → `true`                        |
 | `min`                | Math     |         ✅         | Returns the smallest of zero or more numbers             | `min(1, 2, 3)` → `1`                                |
 | `max`                | Math     |         ✅         | Returns the largest of zero or more numbers              | `max(1, 2, 3)` → `3`                                |
 | `now`                | Date     |         ✅         | Returns the current timestamp                            | `now()`                                             |

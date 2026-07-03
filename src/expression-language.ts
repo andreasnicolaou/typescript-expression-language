@@ -153,6 +153,14 @@ export class ExpressionLanguage {
     this.addFunction(ExpressionFunction.fromJs('now'));
     this.addFunction(
       new ExpressionFunction(
+        'isset',
+        (...args: string[]): string =>
+          args.length === 0 ? 'false' : args.map((arg) => `(${arg} != null)`).join(' && '),
+        (_values: unknown, ...args: unknown[]): boolean => args.length > 0 && args.every((val) => val != null)
+      )
+    );
+    this.addFunction(
+      new ExpressionFunction(
         'enum',
         (str: string): string => {
           return (

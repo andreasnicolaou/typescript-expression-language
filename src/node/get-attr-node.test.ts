@@ -241,6 +241,17 @@ describe('GetAttrNode', () => {
     expect(() => node.evaluate({}, {})).toThrow(/Unable to get an item of non-array/);
   });
 
+  test('should throw for null-safe ARRAY_CALL on non-array non-null value', () => {
+    const node = new GetAttrNode(
+      new NameNode('foo'),
+      new ConstantNode(0),
+      new ArgumentsNode(),
+      GetAttrNode.ARRAY_CALL,
+      true
+    );
+    expect(() => node.evaluate({}, { foo: 42 })).toThrow('Unable to get an item of non-array "foo".');
+  });
+
   test('should return null for ARRAY_CALL with is_null_coalesce and missing key', () => {
     const arr = { a: 1 };
     const node = new GetAttrNode(

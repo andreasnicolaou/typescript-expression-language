@@ -24,9 +24,9 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+ - OS: [e.g. macOS, Windows, Linux]
+ - Browser: [e.g. chrome, safari]
+ - Version: [e.g. 120]
 
 **Smartphone (please complete the following information):**
  - Device: [e.g. iPhone6]

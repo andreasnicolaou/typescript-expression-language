@@ -36,10 +36,20 @@ describe('TokenStream tests', () => {
     expect(() => ts.next()).toThrow(SyntaxError);
   });
 
+  test('next should use cursor zero when the current token has no cursor', () => {
+    const ts = new TokenStream([new Token('name', 'foo')], 'foo');
+    expect(() => ts.next()).toThrow('around position 0');
+  });
+
   test('expect should throw SyntaxError if type/value mismatch', () => {
     const t1 = new Token('name', 'foo', 1);
     const ts = new TokenStream([t1], 'foo');
     expect(() => ts.expect('number', 'bar')).toThrow(SyntaxError);
+  });
+
+  test('expect should use cursor zero when the token has no cursor', () => {
+    const ts = new TokenStream([new Token('name', 'foo')], 'foo');
+    expect(() => ts.expect('number')).toThrow('around position 0');
   });
 
   test('expect should advance if type/value match', () => {

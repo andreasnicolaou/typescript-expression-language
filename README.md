@@ -59,7 +59,7 @@ You can try this library live:
 
 - **TypeScript-native source**: Types are generated from the implementation — never out of sync with the API.
 - **ESM-first**: Tree-shakeable ES module output alongside CJS and UMD. Use only what you import.
-- **Bounded LRU cache**: Parsed expressions are cached with a configurable max size and TTL — no unbounded memory growth.
+- **Bounded LRU cache**: Parsed expressions are cached in a lightweight 500-entry `ArrayCache`, which can be replaced with a custom cache.
 - **Full Symfony parity**: Every operator, literal type, and access pattern from Symfony's ExpressionLanguage works identically here.
 - **Zero peer dependencies**: No packages to install alongside this one — everything is self-contained.
 - **Rich syntax**: Numbers (with underscore separators), strings, arrays, hashes, block comments, regex matching, ranges, null-safe operators, and more.
@@ -257,26 +257,38 @@ console.log(result); // Outputs → `true`
 
 ## ⚙️ Configuration
 
-### Custom LRU Cache
+### Custom Cache
 
-By default, the library uses an internal LRU cache for expression parsing optimization. If you need to use a custom cache configuration, you'll need to install the `lru-cache` package separately and pass your own instance:
-
-```bash
-# Install lru-cache for custom cache usage
-npm install lru-cache
-```
+By default, the library uses a lightweight, 500-entry `ArrayCache` for expression parsing optimization. You can pass any cache that implements the exported `ExpressionCache` interface:
 
 ```typescript
-import { LRUCache } from 'lru-cache';
-import { ExpressionLanguage, ParsedExpression } from '@andreasnicolaou/typescript-expression-language';
+import { ExpressionCache, ExpressionLanguage, ParsedExpression } from '@andreasnicolaou/typescript-expression-language';
 
-const customCache = new LRUCache<string, ParsedExpression>({
-  max: 1000,
-  ttl: 1000 * 60 * 5,
-});
+const values = new Map<string, ParsedExpression>();
+const customCache: ExpressionCache = {
+  get: (key) => values.get(key),
+  set: (key, value) => values.set(key, value),
+  get size() {
+    return values.size;
+  },
+};
 
 const expressionLanguage = new ExpressionLanguage(customCache);
 ```
+
+> **Upgrading from v1?** The bundled `lru-cache` dependency was removed in v2.0.0, but LRU still works — an `LRUCache` instance satisfies `ExpressionCache` structurally. Just install the package yourself and pass the instance straight in:
+>
+> ```bash
+> npm install lru-cache
+> ```
+>
+> ```typescript
+> import { LRUCache } from 'lru-cache';
+> import { ExpressionLanguage, ParsedExpression } from '@andreasnicolaou/typescript-expression-language';
+>
+> const cache = new LRUCache<string, ParsedExpression>({ max: 500, ttl: 1000 * 60 });
+> const expressionLanguage = new ExpressionLanguage(cache);
+> ```
 
 ### Custom Providers
 
@@ -326,7 +338,7 @@ class UtilsProvider implements ExpressionFunctionProvider {
   }
 }
 
-const el = new ExpressionLanguage(null, [new UtilsProvider()]);
+const el = new ExpressionLanguage(undefined, [new UtilsProvider()]);
 
 console.log(el.evaluate('isEven(10)')); // Outputs → true
 console.log(el.evaluate('maxInArray([1, 5, 3, 9])')); // Outputs → 9

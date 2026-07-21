@@ -431,7 +431,9 @@ describe('ExpressionFunction', () => {
         /* empty */
       };
       (globalThis as any).TestFunction.FUNC_CONSTANT = 'function_constant';
+      (globalThis as any).TestFunction.Nested = { VALUE: 'nested_function_constant' };
       expect(constantFunc.getEvaluator()({}, 'TestFunction::FUNC_CONSTANT')).toBe('function_constant');
+      expect(constantFunc.getEvaluator()({}, 'TestFunction.Nested.VALUE')).toBe('nested_function_constant');
       delete (globalThis as any).TestFunction;
     });
   });

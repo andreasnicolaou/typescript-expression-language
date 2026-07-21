@@ -223,6 +223,14 @@ describe('ExpressionLanguage', () => {
     expect(expressionLanguage.cache.size).toBe(2);
   });
 
+  test('should not reuse cached parses with different parser flags', () => {
+    const expression = 'unknown + 1';
+
+    expect(() => expressionLanguage.parse(expression, [], Parser.IGNORE_UNKNOWN_VARIABLES)).not.toThrow();
+    expect(() => expressionLanguage.parse(expression, [])).toThrow('Variable "unknown" is not valid');
+    expect(expressionLanguage.cache.size).toBe(1);
+  });
+
   test('should handle strict equality expressions', () => {
     const expression = '123 === a';
     const result = expressionLanguage.compile(expression, ['a']);
@@ -261,6 +269,7 @@ describe('ExpressionLanguage', () => {
   });
 
   test('should evaluate isset() correctly', () => {
+    expect(expressionLanguage.evaluate('isset()')).toBe(false);
     expect(expressionLanguage.evaluate('isset(val)', { val: 'hello' })).toBe(true);
     expect(expressionLanguage.evaluate('isset(val)', { val: 0 })).toBe(true);
     expect(expressionLanguage.evaluate('isset(val)', { val: false })).toBe(true);
@@ -269,6 +278,7 @@ describe('ExpressionLanguage', () => {
   });
 
   test('should compile isset() correctly', () => {
+    expect(expressionLanguage.compile('isset()', [])).toBe('false');
     expect(expressionLanguage.compile('isset(val)', ['val'])).toBe('(val != null)');
   });
 

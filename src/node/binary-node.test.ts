@@ -62,6 +62,7 @@ const getEvaluateData = (): (
     [true, new BinaryNode('matches', new ConstantNode('abc'), new ConstantNode('/^[a-z]+$/'))],
     [false, new BinaryNode('matches', new ConstantNode(''), new ConstantNode('/^[a-z]+$/'))],
     [false, new BinaryNode('matches', new ConstantNode(null), new ConstantNode('/^[a-z]+$/'))],
+    [false, new BinaryNode('matches', new ConstantNode(null), new ConstantNode('^[a-z]+$'))],
     [true, new BinaryNode('matches', new ConstantNode('ABC'), new ConstantNode('/^[a-z]+$/i'))],
     [false, new BinaryNode('matches', new ConstantNode('ABC'), new ConstantNode('/^[a-z]+$/'))],
   ];

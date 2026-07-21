@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { rawurlencode } from 'locutus/php/url/rawurlencode';
-import { LRUCache } from 'lru-cache';
+import { ArrayCache } from './array-cache';
 import { Compiler } from './compiler';
 import { Expression } from './expression';
 import { ExpressionFunction } from './expression-function';
@@ -12,20 +12,26 @@ export interface ExpressionFunctionProvider {
   getFunctions(): ExpressionFunction[];
 }
 
+export interface ExpressionCache {
+  readonly size: number;
+  get(key: string): ParsedExpression | undefined;
+  set(key: string, value: ParsedExpression): unknown;
+}
+
 /**
  * Represents an expression language.
  * @class ExpressionLanguage
  * @author Andreas Nicolaou <anicolaou66@gmail.com>
  */
 export class ExpressionLanguage {
-  public readonly cache!: LRUCache<string, ParsedExpression>;
+  public readonly cache: ExpressionCache;
   private lexer?: Lexer;
   private parser?: Parser;
   private compiler?: Compiler;
   private functions: Record<string, any> = Object.create(Object.prototype);
 
-  constructor(cache?: LRUCache<string, ParsedExpression>, providers: Iterable<ExpressionFunctionProvider> = []) {
-    this.cache = cache || new LRUCache({ max: 500, ttl: 1000 * 60 });
+  constructor(cache?: ExpressionCache | null, providers: Iterable<ExpressionFunctionProvider> = []) {
+    this.cache = cache ?? new ArrayCache<string, ParsedExpression>();
     this.registerFunctions();
     for (const provider of providers) {
       this.registerProvider(provider);
@@ -85,7 +91,7 @@ export class ExpressionLanguage {
       const value: string = typeof name === 'object' ? `${Object.keys(name)[0]}:${Object.values(name)[0]}` : name;
       cacheKeyItems.push(value);
     }
-    const cacheKey = rawurlencode(`${expression}//${cacheKeyItems.join('|')}`);
+    const cacheKey = rawurlencode(`${expression}//${cacheKeyItems.join('|')}//${flags}`);
     let parsedExpression = this.cache.get(cacheKey);
     if (!parsedExpression) {
       const nodes = this.getParser().parse(this.getLexer().tokenize(expression.toString()), names, flags);

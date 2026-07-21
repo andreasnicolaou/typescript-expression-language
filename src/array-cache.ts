@@ -8,11 +8,13 @@ export class ArrayCache<K, V> {
   }
 
   public get(key: K): V | undefined {
-    if (!this.values.has(key)) {
+    const value = this.values.get(key);
+    // Fast path: a defined value is unambiguously a hit. Only fall back to `has`
+    // when the value is undefined, to keep supporting undefined as a cached value.
+    if (value === undefined && !this.values.has(key)) {
       return undefined;
     }
 
-    const value = this.values.get(key);
     this.values.delete(key);
     this.values.set(key, value as V);
 

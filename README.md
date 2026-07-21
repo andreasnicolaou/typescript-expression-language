@@ -276,6 +276,20 @@ const customCache: ExpressionCache = {
 const expressionLanguage = new ExpressionLanguage(customCache);
 ```
 
+> **Upgrading from v1?** The bundled `lru-cache` dependency was removed in v2.0.0, but LRU still works — an `LRUCache` instance satisfies `ExpressionCache` structurally. Just install the package yourself and pass the instance straight in:
+>
+> ```bash
+> npm install lru-cache
+> ```
+>
+> ```typescript
+> import { LRUCache } from 'lru-cache';
+> import { ExpressionLanguage, ParsedExpression } from '@andreasnicolaou/typescript-expression-language';
+>
+> const cache = new LRUCache<string, ParsedExpression>({ max: 500, ttl: 1000 * 60 });
+> const expressionLanguage = new ExpressionLanguage(cache);
+> ```
+
 ### Custom Providers
 
 #### Add a Simple Math Provider

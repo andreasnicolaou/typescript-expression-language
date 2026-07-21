@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://andreasnicolaou.github.io/typescript-expression-language/
+    about: Check the docs before opening an issue.
+  - name: 💬 Questions & Discussions
+    url: https://github.com/andreasnicolaou/typescript-expression-language/discussions
+    about: Ask questions or discuss ideas here instead of opening an issue.

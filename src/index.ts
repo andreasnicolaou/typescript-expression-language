@@ -13,10 +13,11 @@ export { NullCoalescedNameNode } from './node/null-coalesced-name-node';
 export { UnaryNode } from './node/unary-node';
 
 // Expression Language src/*
+export { ArrayCache } from './array-cache';
 export { Compiler } from './compiler';
 export { Expression } from './expression';
 export { ExpressionFunction } from './expression-function';
-export { ExpressionLanguage, type ExpressionFunctionProvider } from './expression-language';
+export { ExpressionLanguage, type ExpressionCache, type ExpressionFunctionProvider } from './expression-language';
 export { Lexer } from './lexer';
 export { ParsedExpression } from './parsed-expression';
 export { Parser } from './parser';

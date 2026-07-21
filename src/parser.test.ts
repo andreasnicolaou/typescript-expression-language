@@ -365,6 +365,23 @@ describe('Parser', () => {
     }).not.toThrow();
   });
 
+  test('lint should default to strict parser flags', () => {
+    expect(() => parser.lint(lexer.tokenize('known + 1'), ['known'])).not.toThrow();
+  });
+
+  test('should reject a property operator without a value', () => {
+    const stream = new TokenStream(
+      [
+        new Token(Token.NAME_TYPE, 'foo', 0),
+        new Token(Token.PUNCTUATION_TYPE, '.', 3),
+        new Token(Token.OPERATOR_TYPE, null, 4),
+        new Token(Token.EOF_TYPE, null, 5),
+      ],
+      'foo.'
+    );
+    expect(() => parser.parse(stream, ['foo'])).toThrow('Expected name');
+  });
+
   test('parser covers ternary with omitted true expr (a ? : b)', () => {
     const tokens = [
       new Token(Token.NAME_TYPE, 'a', 0),

@@ -106,7 +106,7 @@
     "locutus": "^3.0.36",
     "prettier": "3.9.6",
     "prettier-plugin-organize-imports": "^4.3.0",
-    "rollup": "^4.62.2",
+    "rollup": "^4.62.3",
     "rollup-plugin-dts": "^6.4.1",
     "ts-jest": "^29.4.12",
     "ts-node": "^10.9.2",

@@ -1,499 +1,199 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TypeScript Expression Language - Live Demo</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>typescript-expression-language demo</title>
+    <meta
+      name="description"
+      content="Live demo and quick reference for @andreasnicolaou/typescript-expression-language, running the published package from unpkg."
+    />
     <link
       rel="icon"
-      type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23007bff'/%3E%3Ctext x='50' y='70' font-family='serif' font-size='60' font-weight='bold' text-anchor='middle' fill='white'%3E∑%3C/text%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%236fb6ff'/%3E%3Ctext%20x='16'%20y='24'%20font-family='serif'%20font-size='22'%20font-weight='700'%20text-anchor='middle'%20fill='%230e1116'%3E%E2%88%91%3C/text%3E%3C/svg%3E"
     />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-      .theme-toggle {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1050;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-      }
-      .theme-icon {
-        width: 24px;
-        height: 24px;
-        fill: currentColor;
-        transition: transform 0.3s ease;
-      }
-      .theme-toggle:hover .theme-icon {
-        transform: rotate(15deg);
-      }
-      .loading {
-        overflow: hidden;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css" />
   </head>
-  <body style="font-family: Arial, sans-serif" class="bg-body-secondary loading" data-bs-theme="light">
-    <button
-      class="btn btn-outline-secondary theme-toggle"
-      id="theme-toggle"
-      type="button"
-      aria-label="Toggle dark mode"
-    >
-      <svg class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <title>Toggle theme</title>
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-      </svg>
-    </button>
+  <body>
+    <main>
+      <h1>typescript-expression-language</h1>
+      <p>
+        A TypeScript-native implementation of the Symfony Expression Language. Zero dependencies, ESM, CommonJS and UMD
+        output, and a bounded LRU cache. Everything below runs the published package, loaded straight from unpkg.
+      </p>
 
-    <div class="container-xl p-3">
-      <div class="card shadow-sm mb-4">
-        <div class="card-body">
-          <h1 class="text-center mb-4" style="padding-left: 50px; padding-right: 50px">
-            TypeScript Expression Language Demo
-          </h1>
+      <div class="pg">
+        <label class="pg-label" for="example-select">Example</label>
+        <select id="example-select"></select>
 
-          <div class="alert alert-info" role="alert">
-            <strong>Live Demo:</strong> Testing the published package from npm<br />
-            <strong>Package:</strong>
-            <code class="font-monospace">@andreasnicolaou/typescript-expression-language</code><br />
-            <strong>CDN Source:</strong>
-            <code class="font-monospace"
-              >https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.min.js</code
-            >
-            <span id="cdn-status" class="ms-2">
-              <div class="spinner-border spinner-border-sm text-primary" aria-label="Loading CDN">
-                <span class="visually-hidden">Loading...</span>
-              </div> </span
-            ><br />
-            <strong>Global Variable:</strong> <code class="font-monospace">typescriptExpressionLanguage</code>
-          </div>
-
-          <h2 class="text-body-emphasis border-bottom border-secondary border-2 pb-1 mb-3 mt-4">Try It Yourself</h2>
-          <div id="interactive-section">
-            <div class="mb-3">
-              <label for="example-select" class="form-label fw-bold">Choose an example:</label>
-              <select class="form-select" id="example-select" onchange="loadSelectedExample()">
-                <option value="">-- Select an example --</option>
-                <option value="0">Basic Context Example</option>
-                <option value="1">Basic Math: (x + y) * 2</option>
-                <option value="2">String Concatenation</option>
-                <option value="3">Array Access: items[0] + items[2] + items[4]</option>
-                <option value="4">Object Access: Conditional location</option>
-                <option value="5">User is adult and active</option>
-                <option value="6">Order is paid and total over 100</option>
-                <option value="7">Environment is production</option>
-                <option value="8">Check for user role</option>
-                <option value="9">Nested object comparison</option>
-                <option value="10">Array length check</option>
-                <option value="11">Conditional string output</option>
-                <option value="12">Math and logic combo</option>
-                <option value="13">Use custom function (square)</option>
-                <option value="14">Simple mathematical expression</option>
-                <option value="15">Invalid Expression</option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label for="expression-input" class="form-label fw-bold">Expression:</label>
-              <input
-                type="text"
-                class="form-control font-monospace"
-                id="expression-input"
-                placeholder="Enter an expression (e.g., 1 + 2 * 3)"
-                value=""
-              />
-            </div>
-
-            <div class="mb-3">
-              <label for="values-input" class="form-label fw-bold">Variables (JSON format):</label>
-              <textarea
-                class="form-control font-monospace"
-                id="values-input"
-                rows="8"
-                placeholder='{"x": 10, "y": 5, "name": "World"}'
-              ></textarea>
-            </div>
-
-            <div class="d-grid gap-2 col-md-6 mx-auto my-4">
-              <button class="btn btn-success btn-lg" onclick="evaluateExpression()" id="evaluate-btn">
-                Evaluate Expression
-              </button>
-            </div>
-
-            <div id="interactive-result" class="mt-3"></div>
-          </div>
+        <label class="pg-label" for="expression-input">Expression</label>
+        <div class="pg-input">
+          <span class="caret" aria-hidden="true">›</span>
+          <input id="expression-input" type="text" spellcheck="false" autocomplete="off" placeholder="1 + 2 * 3" />
         </div>
-      </div>
-    </div>
 
-    <div
-      id="loading-overlay"
-      class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-      style="background-color: rgba(var(--bs-body-bg-rgb), 0.95); z-index: 9999; backdrop-filter: blur(4px)"
-      aria-live="polite"
-    >
-      <div class="text-center">
-        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem">
-          <span class="visually-hidden">Loading...</span>
+        <label class="pg-label" for="values-input">Variables</label>
+        <textarea id="values-input" spellcheck="false" rows="5" placeholder='{ "x": 10, "y": 5 }'></textarea>
+
+        <div class="pg-out">
+          <span class="pg-label">Result <em id="result-type"></em></span>
+          <pre id="result-output" aria-live="polite"></pre>
         </div>
-        <div class="text-body-secondary">Initializing demo components...</div>
+
+        <div class="pg-out">
+          <span class="pg-label">Compiled</span>
+          <pre id="compiled-output"></pre>
+        </div>
+
+        <label class="pg-check">
+          <input type="checkbox" id="providers-check" />
+          <span>Register the built-in providers</span>
+        </label>
+        <p class="pg-note" id="providers-hint"></p>
       </div>
-    </div>
+
+      <p class="status" id="status"></p>
+
+      <section aria-labelledby="quick-start">
+        <h2 id="quick-start">Quick start</h2>
+
+        <h3>Install</h3>
+        <pre><code>npm install @andreasnicolaou/typescript-expression-language</code></pre>
+
+        <h3>ESM</h3>
+        <pre><code>import { ExpressionLanguage } from "@andreasnicolaou/typescript-expression-language";
+
+const el = new ExpressionLanguage();
+
+el.evaluate("user.age &gt;= 18 and user.active", {
+  user: { age: 30, active: true },
+});</code></pre>
+
+        <h3>Browser</h3>
+        <pre><code>&lt;script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  const { ExpressionLanguage } = typescriptExpressionLanguage;
+  new ExpressionLanguage().evaluate("1 + 2 * 3");
+&lt;/script&gt;</code></pre>
+
+        <p>
+          <code>evaluate()</code> runs an expression directly. <code>compile()</code> returns the equivalent source
+          instead, and <code>lint()</code> validates without running.
+        </p>
+      </section>
+
+      <section aria-labelledby="syntax">
+        <h2 id="syntax">Syntax</h2>
+        <dl>
+          <dt>+ - * / % **</dt>
+          <dd>Arithmetic. <code>1 / 0</code> and <code>10 % 0</code> throw rather than returning Infinity or NaN.</dd>
+
+          <dt>== === != !==</dt>
+          <dd>Loose and strict comparison, alongside <code>&lt; &gt; &lt;= &gt;=</code>.</dd>
+
+          <dt>and or not xor</dt>
+          <dd>Logic, with <code>&amp;&amp; || !</code> available as symbol forms.</dd>
+
+          <dt>&amp; | ^ &lt;&lt; &gt;&gt;</dt>
+          <dd>Bitwise operators. Unary <code>~</code> is bitwise not.</dd>
+
+          <dt>~</dt>
+          <dd>String concatenation, using JavaScript coercion.</dd>
+
+          <dt>matches</dt>
+          <dd>
+            Tests against a JavaScript regular expression, written as a delimited literal such as
+            <code>'/^\d{4}$/'</code>.
+          </dd>
+
+          <dt>starts with</dt>
+          <dd>Also <code>ends with</code> and <code>contains</code>.</dd>
+
+          <dt>in</dt>
+          <dd>Membership, with <code>not in</code> for the inverse.</dd>
+
+          <dt>..</dt>
+          <dd>Range, so <code>1..5</code> yields <code>[1, 2, 3, 4, 5]</code>.</dd>
+
+          <dt>? : ?: ?? ?.</dt>
+          <dd>Ternary, elvis, null-coalescing and null-safe access.</dd>
+
+          <dt>[] {}</dt>
+          <dd>Array and hash literals, indexed with <code>items[0]</code> and <code>user.name</code>.</dd>
+
+          <dt>1_000_000</dt>
+          <dd>
+            Numeric separators, plus scientific and leading-dot forms such as <code>.5</code> and <code>1.5e2</code>.
+          </dd>
+
+          <dt>/* … */</dt>
+          <dd>Block comments, ignored by the lexer.</dd>
+
+          <dt>min max constant</dt>
+          <dd>Registered by default, along with <code>enum</code>, <code>isset</code> and <code>now</code>.</dd>
+        </dl>
+      </section>
+
+      <section aria-labelledby="providers">
+        <h2 id="providers">Providers</h2>
+        <p>
+          PHP-named helpers are not registered by default. They ship behind a separate <code>/providers</code> entry
+          point so the core bundle stays lean, and they carry no runtime dependencies either.
+        </p>
+        <pre><code>import { ExpressionLanguage } from "@andreasnicolaou/typescript-expression-language";
+import { StringProvider } from "@andreasnicolaou/typescript-expression-language/providers";
+
+const el = new ExpressionLanguage(undefined, [new StringProvider()]);
+el.evaluate('strtoupper(substr(name, 0, 3))', { name: "andreas" });</code></pre>
+        <dl>
+          <dt>MathProvider</dt>
+          <dd>abs, ceil, floor, round, sqrt, pow</dd>
+
+          <dt>StringProvider</dt>
+          <dd>
+            strtolower, strtoupper, strlen, trim, ltrim, rtrim, ucfirst, lcfirst, ucwords, strrev, explode, str_replace,
+            substr
+          </dd>
+
+          <dt>ArrayProvider</dt>
+          <dd>
+            count, implode, array_keys, array_values, array_merge, array_reverse, array_unique, array_sum, in_array,
+            array_intersect, array_slice
+          </dd>
+
+          <dt>DateProvider</dt>
+          <dd>checkdate, date, date_parse, gmdate, gmmktime, mktime, strtotime, time — using PHP second timestamps</dd>
+        </dl>
+      </section>
+
+      <section aria-labelledby="symfony">
+        <h2 id="symfony">Symfony compatibility</h2>
+        <p>
+          Operators, precedence, literals and error behavior follow Symfony's ExpressionLanguage rather than
+          JavaScript's where the two disagree. String literals unescape the same way, so <code>'\\'</code> is one
+          backslash while <code>'\d'</code> stays intact and regex patterns survive.
+        </p>
+        <p>
+          Values stay JavaScript-native by design: numbers are IEEE-754 doubles, <code>matches</code> uses JavaScript
+          regular expressions rather than PCRE, and <code>~</code> concatenates with JavaScript coercion.
+        </p>
+      </section>
+
+      <section aria-labelledby="links">
+        <h2 id="links">Links</h2>
+        <p>
+          <a href="https://github.com/andreasnicolaou/typescript-expression-language">GitHub</a> ·
+          <a href="https://www.npmjs.com/package/@andreasnicolaou/typescript-expression-language">npm</a> ·
+          <a href="https://github.com/andreasnicolaou/typescript-expression-language/blob/main/CHANGELOG.md"
+            >Changelog</a
+          >
+        </p>
+      </section>
+    </main>
 
     <script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.min.js"></script>
-
-    <script>
-      function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-      }
-
-      const examples = [
-        {
-          label: 'Basic Context Example',
-          expression: 'x + y',
-          context: `{
-  "x": 10,
-  "y": 5,
-  "name": "World",
-  "items": [1, 2, 3, 4, 5],
-  "user": {
-    "name": "John",
-    "age": 30,
-    "city": "New York"
-  }
-}`,
-        },
-        {
-          label: 'Basic Math: (x + y) * 2',
-          expression: '(x + y) * 2',
-          context: `{
-  "x": 5,
-  "y": 3
-}`,
-        },
-        {
-          label: 'String Concatenation',
-          expression: '"Hello " + user.name + "! You are " + user.age + " years old."',
-          context: `{
-  "user": {
-    "name": "Alice",
-    "age": 28
-  }
-}`,
-        },
-        {
-          label: 'Array Access: items[0] + items[2] + items[4]',
-          expression: 'items[0] + items[2] + items[4]',
-          context: `{
-  "items": [10, 20, 30, 40, 50]
-}`,
-        },
-        {
-          label: 'Object Access: Conditional location',
-          expression: 'user.city == "New York" ? "East Coast" : "Other"',
-          context: `{
-  "user": {
-    "name": "John",
-    "age": 30,
-    "city": "New York"
-  }
-}`,
-        },
-        {
-          label: 'User is adult and active',
-          expression: 'user.age > 18 && user.active',
-          context: `{
-  "user": {
-    "age": 20,
-    "active": true
-  }
-}`,
-        },
-        {
-          label: 'Order is paid and total over 100',
-          expression: 'order.total > 100 && order.status === "paid"',
-          context: `{
-  "order": {
-    "total": 120,
-    "status": "paid"
-  }
-}`,
-        },
-        {
-          label: 'Environment is production',
-          expression: 'env === "production" ? true : false',
-          context: `{
-  "env": "production"
-}`,
-        },
-        {
-          label: 'Check for user role',
-          expression: 'user.roles contains "admin"',
-          context: `{
-  "user": {
-    "roles": ["editor", "admin"]
-  }
-}`,
-        },
-        {
-          label: 'Nested object comparison',
-          expression: 'account.details.plan === "premium" && account.active',
-          context: `{
-  "account": {
-    "details": {
-      "plan": "premium"
-    },
-    "active": true
-  }
-}`,
-        },
-        {
-          label: 'Array length check',
-          expression: 'tasks.length > 0',
-          context: `{
-  "tasks": [
-    { "id": 1, "done": false },
-    { "id": 2, "done": true }
-  ]
-}`,
-        },
-        {
-          label: 'Conditional string output',
-          expression: 'user.loggedIn ? "Welcome" : "Please login"',
-          context: `{
-  "user": {
-    "loggedIn": false
-  }
-}`,
-        },
-        {
-          label: 'Math and logic combo',
-          expression: '(cart.total + cart.tax) < 100 && !cart.checkedOut',
-          context: `{
-  "cart": {
-    "total": 80,
-    "tax": 10,
-    "checkedOut": false
-  }
-}`,
-        },
-        {
-          label: 'Use custom function (square)',
-          expression: 'square(5) < square(cart.tax)',
-          context: `{
-  "cart": {
-    "total": 80,
-    "tax": 10,
-    "checkedOut": false
-  }
-}`,
-        },
-        {
-          label: 'Simple mathematical expression',
-          expression: '1 * 2 + 3 * 4',
-          context: '{}',
-        },
-        {
-          label: 'Invalid Expression',
-          expression: 'a + b + ',
-          context: '{}',
-        },
-      ];
-
-      function runTests() {
-        const cdnStatus = document.getElementById('cdn-status');
-        const hideLoadingOverlay = () => {
-          setTimeout(() => {
-            const loadingOverlay = document.getElementById('loading-overlay');
-            if (loadingOverlay) {
-              loadingOverlay.style.transition = 'opacity 0.3s ease-out';
-              loadingOverlay.style.opacity = '0';
-              setTimeout(() => {
-                loadingOverlay.remove();
-                document.body.classList.remove('loading');
-              }, 300);
-            }
-          }, 1500);
-        };
-
-        try {
-          if (
-            typeof typescriptExpressionLanguage !== 'undefined' &&
-            typeof typescriptExpressionLanguage.ExpressionLanguage === 'function'
-          ) {
-            cdnStatus.innerHTML = `
-              <svg class="text-success" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-              </svg>
-            `;
-            hideLoadingOverlay();
-          } else {
-            cdnStatus.innerHTML = `
-              <svg class="text-danger" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-              </svg>
-            `;
-            hideLoadingOverlay();
-          }
-        } catch (error) {
-          console.error('Failed to load TypeScript Expression Language:', error);
-          cdnStatus.innerHTML = `
-            <svg class="text-danger" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-            </svg>
-          `;
-          hideLoadingOverlay();
-        }
-      }
-
-      function updateButtonState() {
-        const expressionInput = document.getElementById('expression-input');
-        const evaluateBtn = document.getElementById('evaluate-btn');
-
-        const hasExpression = expressionInput.value.trim() !== '';
-        evaluateBtn.disabled = !hasExpression;
-      }
-
-      function evaluateExpression() {
-        const expressionInput = document.getElementById('expression-input');
-        const valuesInput = document.getElementById('values-input');
-        const resultDiv = document.getElementById('interactive-result');
-
-        try {
-          const expression = expressionInput.value.trim();
-          const values = valuesInput.value.trim() ? JSON.parse(valuesInput.value) : {};
-
-          const el = new typescriptExpressionLanguage.ExpressionLanguage();
-
-          if (expression.includes('square')) {
-            const expressionFunction = typescriptExpressionLanguage.ExpressionFunction.fromJs(
-              'squareFn',
-              (x) => x * x,
-              'square'
-            );
-            el.addFunction(expressionFunction);
-          }
-
-          const result = el.evaluate(expression, values);
-
-          resultDiv.className = 'text-success';
-          resultDiv.innerHTML = `
-                    <div class="fw-bold text-success mb-2">
-                        <strong>Result:</strong> <em>(${escapeHtml(typeof result)})</em>
-                    </div>
-                    <pre class="bg-body-tertiary p-3 rounded font-monospace">${escapeHtml(JSON.stringify(result, null, 2))}</pre>
-                `;
-        } catch (error) {
-          resultDiv.className = 'text-danger';
-          resultDiv.innerHTML = `
-                    <div class="fw-bold text-danger">
-                        <strong>Error:</strong> ${escapeHtml(error.message)}
-                    </div>
-                `;
-        }
-      }
-
-      function loadSelectedExample() {
-        const select = document.getElementById('example-select');
-        const selectedIndex = select.value;
-
-        if (selectedIndex === '') {
-          const expressionInput = document.getElementById('expression-input');
-          const valuesInput = document.getElementById('values-input');
-          const resultDiv = document.getElementById('interactive-result');
-
-          expressionInput.value = '';
-          valuesInput.value = '';
-          resultDiv.innerHTML = '';
-          resultDiv.className = '';
-          updateButtonState();
-          return;
-        }
-
-        const example = examples[parseInt(selectedIndex)];
-        loadExample(example);
-      }
-
-      function loadExample(example) {
-        const expressionInput = document.getElementById('expression-input');
-        const valuesInput = document.getElementById('values-input');
-        const resultDiv = document.getElementById('interactive-result');
-
-        resultDiv.innerHTML = '';
-        resultDiv.className = '';
-
-        expressionInput.value = example.expression;
-        valuesInput.value = example.context;
-
-        updateButtonState();
-
-        resultDiv.innerHTML = `
-          <div class="alert alert-info">
-            Example "${example.label}" loaded! Click "Evaluate Expression" to see the result.
-          </div>
-        `;
-      }
-
-      document.getElementById('expression-input').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-          evaluateExpression();
-        }
-      });
-
-      document.getElementById('expression-input').addEventListener('input', updateButtonState);
-
-      document.getElementById('theme-toggle').addEventListener('click', function () {
-        const body = document.body;
-        const currentTheme = body.getAttribute('data-bs-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        const themeIcon = document.querySelector('.theme-icon');
-
-        body.setAttribute('data-bs-theme', newTheme);
-
-        if (newTheme === 'light') {
-          themeIcon.innerHTML =
-            '<title>Toggle theme</title><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
-        } else {
-          themeIcon.innerHTML =
-            '<title>Toggle theme</title><circle cx="12" cy="12" r="5"/><path d="m15 1 2 2-2 2M6 11l-2-2 2-2M20 11l2 2-2 2M9 19l-2 2 2 2M12 3V1M12 23v-2M3 12H1M23 12h-2"/>';
-        }
-
-        localStorage.setItem('theme', newTheme);
-      });
-
-      document.addEventListener('DOMContentLoaded', function () {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        const body = document.body;
-        const themeIcon = document.querySelector('.theme-icon');
-
-        body.setAttribute('data-bs-theme', savedTheme);
-
-        if (savedTheme === 'light') {
-          themeIcon.innerHTML =
-            '<title>Toggle theme</title><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
-        } else {
-          themeIcon.innerHTML =
-            '<title>Toggle theme</title><circle cx="12" cy="12" r="5"/><path d="m15 1 2 2-2 2M6 11l-2-2 2-2M20 11l2 2-2 2M9 19l-2 2 2 2M12 3V1M12 23v-2M3 12H1M23 12h-2"/>';
-        }
-
-        runTests();
-        loadExample(examples[0]);
-        document.getElementById('example-select').value = '0';
-        updateButtonState();
-      });
-    </script>
+    <!-- Optional second bundle. If it 404s the page detects the missing global and disables the toggle. -->
+    <script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/providers.umd.min.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>

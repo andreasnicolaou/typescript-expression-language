@@ -282,6 +282,15 @@ describe('Parser', () => {
     }).toThrow(SyntaxError);
   });
 
+  test('should throw a clear error when names is not an array', () => {
+    const stream = lexer.tokenize('a + b');
+    expect(() => parser.parse(stream, 'foo' as unknown as string[])).toThrow(TypeError);
+    expect(() => parser.parse(stream, 'foo' as unknown as string[])).toThrow('The "names" argument must be an array.');
+    expect(() => parser.lint(lexer.tokenize('a + b'), null as unknown as string[])).toThrow(
+      'The "names" argument must be an array.'
+    );
+  });
+
   test('should create NullCoalescedNameNode for unknown variable followed by null coalescing operator', () => {
     const result = parser.parse(lexer.tokenize('unknownVar ?? "default"'), []);
     expect(result).toBeInstanceOf(NullCoalesceNode);

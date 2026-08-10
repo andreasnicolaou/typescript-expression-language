@@ -57,6 +57,9 @@ const getTokenizeData = (): (string | Token[])[][] => {
     ],
     [[new Token(Token.STRING_TYPE, '#foo', 1)], "'#foo'"],
     [[new Token(Token.STRING_TYPE, '#foo', 1)], '"#foo"'],
+    [[new Token(Token.STRING_TYPE, "it's", 1)], "'it\\'s'"],
+    [[new Token(Token.STRING_TYPE, 'a"b', 1)], '"a\\"b"'],
+    [[new Token(Token.STRING_TYPE, 'c:\\tmp', 1)], "'c:\\\\tmp'"],
     [
       [
         new Token(Token.NAME_TYPE, 'foo', 1),

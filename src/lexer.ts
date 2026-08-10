@@ -100,12 +100,9 @@ export class Lexer {
           throw new SyntaxError(`Unexpected "${expression[cursor]}"`, cursor, expression);
         }
 
-        const lastBracket = brackets.pop();
-        if (lastBracket) {
-          const [expected, cur] = lastBracket;
-          if (expression[cursor] !== { '(': ')', '[': ']', '{': '}' }[expected]) {
-            throw new SyntaxError(`Unclosed "${expected}"`, cur, expression);
-          }
+        const [expected, cur] = brackets.pop()!;
+        if (expression[cursor] !== { '(': ')', '[': ']', '{': '}' }[expected]) {
+          throw new SyntaxError(`Unclosed "${expected}"`, cur, expression);
         }
 
         tokens.push(new Token(Token.PUNCTUATION_TYPE, expression[cursor], cursor + 1));
@@ -116,7 +113,8 @@ export class Lexer {
       // Match strings (double-quoted or single-quoted)
       const stringMatch = Lexer.STRING_REGEX.exec(slicedExpression);
       if (stringMatch != null) {
-        tokens.push(new Token(Token.STRING_TYPE, stringMatch[1] ?? stringMatch[2], cursor + 1));
+        const rawValue = stringMatch[1] ?? stringMatch[2];
+        tokens.push(new Token(Token.STRING_TYPE, Lexer.unescapeString(rawValue), cursor + 1));
         cursor += stringMatch[0].length;
         continue;
       }
@@ -173,11 +171,8 @@ export class Lexer {
 
     // Check for unclosed brackets
     if (brackets.length > 0) {
-      const lastBracket = brackets.pop();
-      if (lastBracket) {
-        const [expect, cur] = lastBracket;
-        throw new SyntaxError(`Unclosed "${expect}"`, cur, expression);
-      }
+      const [expect, cur] = brackets.pop()!;
+      throw new SyntaxError(`Unclosed "${expect}"`, cur, expression);
     }
 
     return new TokenStream(tokens, expression);
@@ -220,5 +215,30 @@ export class Lexer {
       }
     }
     return null;
+  }
+
+  /**
+   * Unescapes quotes and literal backslashes while preserving JavaScript regex
+   * escapes such as `\d`.
+   * @private
+   * @param {string} raw - The raw string content between the quotes.
+   * @returns {string} The unescaped string value.
+   * @memberof Lexer
+   */
+  private static unescapeString(raw: string): string {
+    if (!raw.includes('\\')) {
+      return raw;
+    }
+    let result = '';
+    for (let i = 0; i < raw.length; i++) {
+      const next = raw[i + 1];
+      if (raw[i] === '\\' && (next === "'" || next === '"' || next === '\\')) {
+        result += next;
+        i++;
+      } else {
+        result += raw[i];
+      }
+    }
+    return result;
   }
 }

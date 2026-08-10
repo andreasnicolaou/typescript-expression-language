@@ -277,6 +277,27 @@ describe('ExpressionLanguage', () => {
     expect(expressionLanguage.evaluate('isset(val)', { val: undefined })).toBe(false);
   });
 
+  test('should evaluate now() as the current timestamp', () => {
+    const before = Date.now();
+    const result = expressionLanguage.evaluate('now()');
+    const after = Date.now();
+
+    expect(result).toBeGreaterThanOrEqual(before);
+    expect(result).toBeLessThanOrEqual(after);
+  });
+
+  test('should preserve regular expression escapes in string literals', () => {
+    expect(expressionLanguage.evaluate("'2026-07' matches '/^\\d{4}-\\d{2}$/'")).toBe(true);
+  });
+
+  test('should concatenate values as strings with ~', () => {
+    expect(expressionLanguage.evaluate('"foo" ~ "bar"')).toBe('foobar');
+    expect(expressionLanguage.evaluate('1 ~ 2')).toBe('12');
+    expect(expressionLanguage.evaluate('"v=" ~ value', { value: true })).toBe('v=true');
+    expect(expressionLanguage.evaluate('"v=" ~ value', { value: false })).toBe('v=false');
+    expect(expressionLanguage.evaluate('"v=" ~ value', { value: null })).toBe('v=null');
+  });
+
   test('should compile isset() correctly', () => {
     expect(expressionLanguage.compile('isset()', [])).toBe('false');
     expect(expressionLanguage.compile('isset(val)', ['val'])).toBe('(val != null)');

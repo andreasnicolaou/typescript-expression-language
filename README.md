@@ -2,7 +2,7 @@
 
 A **TypeScript-native** implementation of the **Symfony Expression Language** — written in TypeScript from the ground up, not transpiled JavaScript with bolted-on type definitions.
 
-Evaluate complex expressions client-side with full Symfony parity, a bounded LRU cache, ESM/CJS/UMD output, and zero peer dependencies.
+Evaluate complex expressions client-side with Symfony-faithful semantics, a bounded LRU cache, ESM/CJS/UMD output, and zero peer dependencies.
 
 ![TypeScript](https://img.shields.io/badge/TS-TypeScript-3178c6?logo=typescript&logoColor=white)
 ![GitHub contributors](https://img.shields.io/github/contributors/andreasnicolaou/typescript-expression-language)
@@ -20,6 +20,8 @@ Evaluate complex expressions client-side with full Symfony parity, a bounded LRU
 [![Socket Badge](https://badge.socket.dev/npm/package/@andreasnicolaou/typescript-expression-language)](https://badge.socket.dev/npm/package/@andreasnicolaou/typescript-expression-language)
 
 ![NPM Downloads](https://img.shields.io/npm/dm/%40andreasnicolaou%2Ftypescript-expression-language)
+
+📋 **[Changelog](https://github.com/andreasnicolaou/typescript-expression-language/blob/main/CHANGELOG.md)** — read this before upgrading across a major version.
 
 <details>
   <summary>📊 Code Coverage Visualizations</summary>
@@ -60,7 +62,7 @@ You can try this library live:
 - **TypeScript-native source**: Types are generated from the implementation — never out of sync with the API.
 - **ESM-first**: Tree-shakeable ES module output alongside CJS and UMD. Use only what you import.
 - **Bounded LRU cache**: Parsed expressions are cached in a lightweight 500-entry `ArrayCache`, which can be replaced with a custom cache.
-- **Full Symfony parity**: Every operator, literal type, and access pattern from Symfony's ExpressionLanguage works identically here.
+- **Symfony-faithful semantics**: Operators, precedence, literals, and error behavior follow Symfony's ExpressionLanguage — `1 / 0` throws `Division by zero.` rather than returning `Infinity`. Values are JavaScript-native, and PHP stdlib functions are opt-in via `/providers`.
 - **Zero peer dependencies**: No packages to install alongside this one — everything is self-contained.
 - **Rich syntax**: Numbers (with underscore separators), strings, arrays, hashes, block comments, regex matching, ranges, null-safe operators, and more.
 - **Extensible**: Register custom functions or group them into reusable providers.
@@ -290,6 +292,58 @@ const expressionLanguage = new ExpressionLanguage(customCache);
 > const expressionLanguage = new ExpressionLanguage(cache);
 > ```
 
+### Built-in Providers (opt-in)
+
+Four ready-made providers ship behind the `/providers` entry point. They are not bundled into the core and use the project's existing [Locutus](https://locutus.io/) dependency for PHP-compatible behavior.
+
+| Provider         | Functions                                                                                                                                                   |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MathProvider`   | `abs`, `ceil`, `floor`, `round`, `sqrt`, `pow`                                                                                                              |
+| `StringProvider` | `strtolower`, `strtoupper`, `strlen`, `trim`, `ltrim`, `rtrim`, `ucfirst`, `lcfirst`, `ucwords`, `strrev`, `explode`, `str_replace`, `substr`               |
+| `ArrayProvider`  | `count`, `implode`, `array_keys`, `array_values`, `array_merge`, `array_reverse`, `array_unique`, `array_sum`, `in_array`, `array_intersect`, `array_slice` |
+| `DateProvider`   | `checkdate`, `date`, `date_parse`, `gmdate`, `gmmktime`, `mktime`, `strtotime`, `time`                                                                      |
+
+```typescript
+import { ExpressionLanguage } from '@andreasnicolaou/typescript-expression-language';
+import {
+  StringProvider,
+  ArrayProvider,
+  MathProvider,
+  DateProvider,
+} from '@andreasnicolaou/typescript-expression-language/providers';
+
+const el = new ExpressionLanguage(undefined, [
+  new StringProvider(),
+  new ArrayProvider(),
+  new MathProvider(),
+  new DateProvider(),
+]);
+
+console.log(el.evaluate('strtoupper(substr(name, 0, 3))', { name: 'andreas' })); // "AND"
+console.log(el.evaluate('implode(", ", array_unique([1, 1, 2, 3]))')); // "1, 2, 3"
+console.log(el.evaluate('round(pow(2, 0.5), 4)')); // 1.4142
+console.log(el.evaluate('gmdate("Y", 0)')); // "1970"
+```
+
+> **Note:** `MathProvider` intentionally omits `min`/`max` — those are already registered by default. `DateProvider` uses PHP **second** timestamps: `strtotime()` returns seconds and `date()` accepts seconds. Provider expressions compile to named calls such as `strtoupper(name)`; provide the matching Locutus function when executing compiled output outside this library.
+
+#### Browser (UMD via CDN)
+
+The providers also ship as a UMD bundle. Load the core and providers scripts, then read the providers off the `typescriptExpressionLanguageProviders` global:
+
+```html
+<!-- Use .umd.js for debugging, .umd.min.js for production -->
+<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/index.umd.min.js"></script>
+<script src="https://unpkg.com/@andreasnicolaou/typescript-expression-language/dist/providers.umd.min.js"></script>
+<script>
+  const { ExpressionLanguage } = typescriptExpressionLanguage;
+  const { StringProvider, ArrayProvider } = typescriptExpressionLanguageProviders;
+
+  const el = new ExpressionLanguage(undefined, [new StringProvider(), new ArrayProvider()]);
+  console.log(el.evaluate('strtoupper("hi") ~ "-" ~ count([1, 2, 3])')); // "HI-3"
+</script>
+```
+
 ### Custom Providers
 
 #### Add a Simple Math Provider
@@ -332,8 +386,6 @@ class UtilsProvider implements ExpressionFunctionProvider {
       ExpressionFunction.fromJs('isEven', (x: number) => x % 2 === 0),
       ExpressionFunction.fromJs('maxInArray', (arr: number[]) => Math.max(...arr)),
       ExpressionFunction.fromJs('join', (arr: string[], sep: string) => arr.join(sep)),
-      ExpressionFunction.fromJs('strtolower', (str: string) => (str + '').toLowerCase()), // PHP strtolower
-      ExpressionFunction.fromJs('strtoupper', (str: string) => (str + '').toUpperCase()), // PHP strtoupper
     ];
   }
 }
@@ -343,13 +395,85 @@ const el = new ExpressionLanguage(undefined, [new UtilsProvider()]);
 console.log(el.evaluate('isEven(10)')); // Outputs → true
 console.log(el.evaluate('maxInArray([1, 5, 3, 9])')); // Outputs → 9
 console.log(el.evaluate('join(["a", "b", "c"], ",")')); // Outputs → "a,b,c"
-console.log(el.evaluate('strtolower("HELLO")')); // Outputs → "hello"
-console.log(el.evaluate('strtoupper("world")')); // Outputs → "WORLD"
 ```
+
+> For common PHP-style helpers like `strtolower`/`strtoupper`/`substr`, use the [built-in providers](#built-in-providers-opt-in). Write a custom provider (as above) only for logic specific to your app. Both the built-in providers and `ExpressionFunction.fromJs('name', fn)` compile to bare `name(...)` calls, so the function must exist in scope when executing compiled output.
 
 ---
 
 ## 📋 Supported Syntax
+
+### By example
+
+Every line below is a real expression and the value it evaluates to (`// →`). Variables used are noted in parentheses.
+
+**Literals** — single/double quotes, underscore separators, no-leading-zero and scientific numbers, arrays, hashes, block comments
+
+<!-- prettier-ignore -->
+```js
+1_000_000                       // → 1000000
+.5 + 1.5e2                      // → 150.5
+'single' ~ " & double"          // → 'single & double'
+[1, 2, 3]                       // → [1, 2, 3]
+{"a": 1, "b": 2}                // → { a: 1, b: 2 }
+/* inline */ 6 * 7              // → 42
+```
+
+**Arithmetic, comparison & logic** — including word operators (`and`, `not`, `xor`)
+
+<!-- prettier-ignore -->
+```js
+2 ** 3 % 5                      // → 3
+(1 + 2) * 3 - 10 / 4            // → 6.5
+1 === 1 and 1 !== '1'           // → true
+true and not false              // → true
+true xor false                  // → true
+```
+
+**Strings & pattern matching**
+
+<!-- prettier-ignore -->
+```js
+'Hello, ' ~ name ~ '!'          // → 'Hello, World!'   (name = 'World')
+'it\'s a test'                  // → 'it's a test'     (escaped quote)
+'foobar' starts with 'foo'      // → true
+'foobar' contains 'oba'         // → true
+'2026-07' matches '/^\d{4}-\d{2}$/'   // → true
+```
+
+**Conditionals** — ternary, elvis (`?:`), null-coalesce (`??`), null-safe (`?.`)
+
+<!-- prettier-ignore -->
+```js
+age >= 18 ? 'adult' : 'minor'   // → 'adult'   (age = 30)
+nickname ?: 'anon'              // → 'anon'    (nickname = '')
+user.middle ?? 'n/a'            // → 'n/a'     (user.middle = null)
+user?.profile?.city             // → null      (user.profile = null)
+```
+
+**Collections, ranges & access**
+
+<!-- prettier-ignore -->
+```js
+matrix[1][0]                    // → 3         (matrix = [[1, 2], [3, 4]])
+obj.greet(user)                 // → 'hi sam'  (obj.greet = u => 'hi ' + u, user = 'sam')
+3 in [1, 2, 3]                  // → true
+'z' not in ['a', 'b']           // → true
+1..5                            // → [1, 2, 3, 4, 5]
+```
+
+**Bitwise & functions**
+
+<!-- prettier-ignore -->
+```js
+5 & 3                           // → 1
+~5                              // → -6
+1 << 4                          // → 16
+max(min(9, 4), 2)               // → 4
+constant('Math.PI')             // → 3.141592653589793
+enum('Status.ACTIVE').code      // → 1
+isset(user.email)               // → true      (user.email = 'a@b.c')
+```
 
 ### Operators
 
@@ -382,6 +506,8 @@ Add and register custom functions for flexible application logic.
 ## 🛠️ Available Functions
 
 The library provides access to a comprehensive set of JavaScript functions. Some are **enabled by default**, while others can be registered using `ExpressionFunction.fromJs()`.
+
+> This table is the **JavaScript-native** set you register one at a time with `ExpressionFunction.fromJs()` (e.g. `toLowerCase`, `split`, `trim`). If you want **PHP-named** helpers instead (`strtolower`, `substr`, `count`, `implode`, `date`…), grab them from the opt-in [built-in providers](#built-in-providers-opt-in), backed by Locutus.
 
 | Function             | Category | Enabled by Default | Description                                              | Example                                             |
 | -------------------- | -------- | :----------------: | -------------------------------------------------------- | --------------------------------------------------- |
@@ -534,11 +660,13 @@ These use cases demonstrate how the library can bring advanced, real-time logic 
 
 ## 🛡️ Symfony Compatibility
 
-This library ensures that expressions written in PHP's **Symfony Expression Language** are fully compatible with the client-side implementation. This enables seamless integration between server-side logic (written in Symfony/PHP) and client-side expression evaluation.
+This library follows Symfony's ExpressionLanguage semantics rather than JavaScript's where the two disagree. Operators, precedence, literals, and error behavior match Symfony: `1 / 0` and `10 % 0` throw instead of returning `Infinity`/`NaN`, `enum()` throws on an unknown case instead of returning `undefined`, and string literals unescape like PHP's — `'\\'` is one backslash while `'\d'` stays `\d`, so regex patterns survive.
+
+**What differs by design:** values stay JavaScript-native. Numbers are IEEE-754 doubles, not PHP ints. `~` concatenates using **JavaScript** coercion, so `"v=" ~ null` is `"v=null"` and `"v=" ~ true` is `"v=true"` where PHP would give `"v="` and `"v=1"`. `matches` uses JavaScript regular expressions rather than PCRE. And the PHP standard library is not registered by default — those functions are opt-in via the [built-in providers](#built-in-providers-opt-in).
 
 ### **Key Benefits:**
 
-- **Consistency**: Expressions behave the same way on both the client and the server.
+- **Predictable across the stack**: Expressions that rely on Symfony's operator and error semantics evaluate the same way here.
 - **Synchronization**: Ensure business logic is applied consistently across both sides of the application without discrepancies.
 - **Easy Integration**: Easily synchronize the logic between your PHP backend and TypeScript frontend, without needing separate implementations.
 

@@ -170,7 +170,7 @@ export class Parser {
               return this.parsePostfixExpression(new FunctionNode(token.value, this.parseArguments()));
             } else {
               if (!(this.flags & Parser.IGNORE_UNKNOWN_VARIABLES) && token.value !== null) {
-                const names = (Array.isArray(this.names) ? this.names : [this.names]).reduce(
+                const names = this.names.reduce(
                   (out: { original: any; mapped: string | number }[], elem: string | number | Record<string, any>) => {
                     if (typeof elem === 'object' && elem !== null) {
                       out.push(...Object.entries(elem).map(([key, value]) => ({ original: value, mapped: key }))); // Store the mapping as {original, mapped}
@@ -199,10 +199,7 @@ export class Parser {
 
                 // is the name used in the compiled code different
                 // from the name used in the expression?
-                const name = names.find((x) => x.original === token.value);
-                if (name) {
-                  token.value = name.mapped;
-                }
+                token.value = validName.mapped;
               }
               return this.parsePostfixExpression(new NameNode(token.value));
             }
@@ -399,6 +396,9 @@ export class Parser {
    * @memberof Parse
    */
   private doParse(stream: TokenStream, names: (string | number | Record<string, any>)[], flags: number): Node {
+    if (!Array.isArray(names)) {
+      throw new TypeError('The "names" argument must be an array.');
+    }
     this.flags = flags;
     this.stream = stream;
     this.names = names;

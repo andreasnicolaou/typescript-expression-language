@@ -37,6 +37,19 @@ export default [
     },
   },
   {
+    // The Pages demo is plain browser JavaScript served verbatim, so the
+    // TypeScript-oriented rules and Node globals above do not apply to it.
+    files: ['docs/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'off',
+    },
+  },
+  {
     ignores: ['dist/**'],
   },
 ];

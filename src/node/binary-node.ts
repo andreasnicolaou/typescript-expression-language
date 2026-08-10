@@ -178,7 +178,7 @@ export class BinaryNode extends Node {
    * Evaluates matches
    * @param regexp
    * @param str
-   * @returns true if matches
+   * @returns true if the expression matches.
    * @memberof BinaryNode
    */
   private evaluateMatches(regexp: string, str: string | null): boolean {

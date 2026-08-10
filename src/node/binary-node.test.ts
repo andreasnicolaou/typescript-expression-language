@@ -12,10 +12,7 @@ const generateNode = (): ArrayNode => {
 };
 
 const getEvaluateData = (): (
-  | (boolean | BinaryNode)[]
-  | (number | BinaryNode)[]
-  | (string | BinaryNode)[]
-  | (BinaryNode | number[])[]
+  (boolean | BinaryNode)[] | (number | BinaryNode)[] | (string | BinaryNode)[] | (BinaryNode | number[])[]
 )[] => {
   const array = generateNode();
   return [

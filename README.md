@@ -2,7 +2,7 @@
 
 A **TypeScript-native** implementation of the **Symfony Expression Language** — written in TypeScript from the ground up, not transpiled JavaScript with bolted-on type definitions.
 
-Evaluate complex expressions client-side with Symfony-faithful semantics, a bounded LRU cache, ESM/CJS/UMD output, and zero peer dependencies.
+Evaluate complex expressions in Node and the browser with Symfony-faithful semantics, a bounded LRU cache, ESM/CJS/UMD output, and zero dependencies.
 
 ![TypeScript](https://img.shields.io/badge/TS-TypeScript-3178c6?logo=typescript&logoColor=white)
 ![GitHub contributors](https://img.shields.io/github/contributors/andreasnicolaou/typescript-expression-language)

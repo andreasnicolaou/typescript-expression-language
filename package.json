@@ -1,7 +1,7 @@
 {
   "name": "@andreasnicolaou/typescript-expression-language",
   "version": "3.0.0",
-  "description": "TypeScript implementation of symfony/expression-language",
+  "description": "Zero-dependency TypeScript implementation of Symfony's Expression Language. Safely parse and evaluate dynamic expressions in Node and the browser.",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "browser": "dist/index.umd.js",

@@ -30,6 +30,8 @@ export class Parser {
   public static readonly IGNORE_UNKNOWN_VARIABLES = 1;
   public static readonly IGNORE_UNKNOWN_FUNCTIONS = 2;
 
+  private static readonly MAX_NESTING_LEVEL = 256;
+
   private static readonly unaryOperators: Operators = {
     not: { precedence: 50 },
     '!': { precedence: 50 },
@@ -76,6 +78,7 @@ export class Parser {
   private stream!: TokenStream;
   private names!: NameType[];
   private flags = 0;
+  private nestingLevel = 0;
 
   constructor(private readonly functions: Record<string, any>) {}
 
@@ -113,23 +116,32 @@ export class Parser {
    * @memberof Parser
    */
   public parseExpression(precedence = 0): Node {
-    let expr = this.getPrimary();
-    let token = this.stream.current;
-    while (
-      token.test(Token.OPERATOR_TYPE) &&
-      token.value !== null &&
-      Parser.binaryOperators[token.value] !== undefined &&
-      Parser.binaryOperators[token.value] !== null &&
-      Parser.binaryOperators[token.value].precedence >= precedence
-    ) {
-      const op = Parser.binaryOperators[token.value];
-      this.stream.next();
-      const expr1 = this.parseExpression(op.associativity === Parser.OPERATOR_LEFT ? op.precedence + 1 : op.precedence);
-      expr = new BinaryNode(token.value.toString(), expr, expr1);
-      token = this.stream.current;
-    }
+    const nestingLevel = this.nestingLevel;
+    this.enterNestingLevel();
+    try {
+      let expr = this.getPrimary();
+      let token = this.stream.current;
+      while (
+        token.test(Token.OPERATOR_TYPE) &&
+        token.value !== null &&
+        Parser.binaryOperators[token.value] !== undefined &&
+        Parser.binaryOperators[token.value] !== null &&
+        Parser.binaryOperators[token.value].precedence >= precedence
+      ) {
+        this.enterNestingLevel();
+        const op = Parser.binaryOperators[token.value];
+        this.stream.next();
+        const expr1 = this.parseExpression(
+          op.associativity === Parser.OPERATOR_LEFT ? op.precedence + 1 : op.precedence
+        );
+        expr = new BinaryNode(token.value.toString(), expr, expr1);
+        token = this.stream.current;
+      }
 
-    return precedence === 0 ? this.parseConditionalExpression(expr) : expr;
+      return precedence === 0 ? this.parseConditionalExpression(expr) : expr;
+    } finally {
+      this.nestingLevel = nestingLevel;
+    }
   }
 
   /**
@@ -311,6 +323,7 @@ export class Parser {
     while (token.type === Token.PUNCTUATION_TYPE) {
       if (token.value === '.' || token.value === '?.') {
         // Handle property access or optional chaining
+        this.enterNestingLevel();
         const isNullSafe = token.value === '?.';
         this.stream.next();
         token = this.stream.current;
@@ -347,6 +360,7 @@ export class Parser {
           node = new GetAttrNode(node, arg, _arguments, type, isNullSafe);
         }
       } else if (token.value === '[') {
+        this.enterNestingLevel();
         this.stream.next();
         const arg = this.parseExpression();
         this.stream.expect(Token.PUNCTUATION_TYPE, ']');
@@ -402,6 +416,7 @@ export class Parser {
     this.flags = flags;
     this.stream = stream;
     this.names = names;
+    this.nestingLevel = 0;
     const node = this.parseExpression();
     if (!this.stream.isEOF()) {
       throw new SyntaxError(
@@ -460,12 +475,14 @@ export class Parser {
    */
   private parseConditionalExpression(expr: Node): Node {
     while (this.stream.current.test(Token.PUNCTUATION_TYPE, '??')) {
+      this.enterNestingLevel();
       this.stream.next();
       const expr2 = this.parseExpression();
       expr = new NullCoalesceNode(expr, expr2);
     }
 
     while (this.stream.current.test(Token.PUNCTUATION_TYPE, '?')) {
+      this.enterNestingLevel();
       this.stream.next();
       const expr2 = this.stream.current.test(Token.PUNCTUATION_TYPE, ':') ? expr : this.parseExpression();
 
@@ -479,5 +496,23 @@ export class Parser {
     }
 
     return expr;
+  }
+
+  /**
+   * Accounts for one more node on the branch being built.
+   *
+   * The nesting level bounds the depth of the resulting node tree. Beyond a few
+   * thousand levels, walking or destroying such a tree overflows the call stack.
+   * @throws SyntaxError
+   * @memberof Parser
+   */
+  private enterNestingLevel(): void {
+    if (++this.nestingLevel > Parser.MAX_NESTING_LEVEL) {
+      throw new SyntaxError(
+        `Expression is nested too deeply, the maximum nesting level is ${Parser.MAX_NESTING_LEVEL}`,
+        this.stream.current.cursor,
+        this.stream.expression
+      );
+    }
   }
 }

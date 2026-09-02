@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2026-09-02
+
+### Security
+
+#### The parser now rejects deeply nested expressions
+
+Expressions nesting more than **256 levels** deep throw `SyntaxError: Expression is nested too deeply, the maximum nesting level is 256`. Previously there was no bound, and a short generated input could exhaust the call stack with `RangeError: Maximum call stack size exceeded` — either while parsing, or later at `evaluate()` or `compile()`.
+
+Hand-written expressions are nowhere near the limit. Generated ones can be: a chained operator costs one level per term, so `x == 1 or x == 2 or …` is rejected from 253 terms on. Match against a collection instead — `x in [1, 2, …]` is one level at any length.
+
 ## [3.0.0] - 2026-08-10
 
 ### Changed
@@ -67,5 +77,6 @@ The one real break is calling the exported `Parser` class directly with a bare s
 
 Releases up to and including 2.0.0 are documented in the [GitHub releases](https://github.com/andreasnicolaou/typescript-expression-language/releases).
 
+[3.1.0]: https://github.com/andreasnicolaou/typescript-expression-language/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/andreasnicolaou/typescript-expression-language/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/andreasnicolaou/typescript-expression-language/releases/tag/v2.0.0

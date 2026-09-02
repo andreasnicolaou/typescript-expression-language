@@ -417,4 +417,33 @@ describe('Parser', () => {
     const parser = new Parser({});
     expect(() => parser.parse(stream, ['a', 'b', 'c'])).not.toThrow();
   });
+
+  test.each([
+    ['unary operators', '!'.repeat(300) + '1'],
+    ['signs', '-'.repeat(300) + '1'],
+    ['parentheses', '('.repeat(300) + '1' + ')'.repeat(300)],
+    ['arrays', '['.repeat(300) + '1' + ']'.repeat(300)],
+    ['hashes', '{a:'.repeat(300) + '1' + '}'.repeat(300)],
+    ['binary operators', '1+'.repeat(300) + '1'],
+    ['properties', 'a' + '.b'.repeat(300)],
+    ['null-safe properties', 'a' + '?.b'.repeat(300)],
+    ['array accesses', 'a' + '[0]'.repeat(300)],
+    ['ternaries', '1?'.repeat(300) + '1' + ':1'.repeat(300)],
+    ['null coalescing', 'a' + ' ?? a'.repeat(300)],
+  ])('should reject a deeply nested expression (%s)', (_name, expression) => {
+    expect(() => parser.lint(lexer.tokenize(expression), ['a'])).toThrow(SyntaxError);
+    expect(() => parser.lint(lexer.tokenize(expression), ['a'])).toThrow(
+      'Expression is nested too deeply, the maximum nesting level is 256'
+    );
+  });
+
+  test('should accept a deep but reasonable expression', () => {
+    expect(() => parser.lint(lexer.tokenize('('.repeat(100) + 'a' + ' + 1)'.repeat(100)), ['a'])).not.toThrow();
+  });
+
+  test('should reset the nesting level between parses', () => {
+    const expression = '('.repeat(100) + 'a' + ' + 1)'.repeat(100);
+    expect(() => parser.parse(lexer.tokenize(expression), ['a'])).not.toThrow();
+    expect(() => parser.parse(lexer.tokenize(expression), ['a'])).not.toThrow();
+  });
 });

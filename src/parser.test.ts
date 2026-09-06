@@ -425,6 +425,7 @@ describe('Parser', () => {
     ['arrays', '['.repeat(300) + '1' + ']'.repeat(300)],
     ['hashes', '{a:'.repeat(300) + '1' + '}'.repeat(300)],
     ['binary operators', '1+'.repeat(300) + '1'],
+    ['right-associative operators', '2**'.repeat(300) + '2'],
     ['properties', 'a' + '.b'.repeat(300)],
     ['null-safe properties', 'a' + '?.b'.repeat(300)],
     ['array accesses', 'a' + '[0]'.repeat(300)],
@@ -439,6 +440,12 @@ describe('Parser', () => {
 
   test('should accept a deep but reasonable expression', () => {
     expect(() => parser.lint(lexer.tokenize('('.repeat(100) + 'a' + ' + 1)'.repeat(100)), ['a'])).not.toThrow();
+  });
+
+  test('should charge a chained operator the same level whichever way it associates', () => {
+    const terms = 200;
+    expect(() => parser.lint(lexer.tokenize(Array(terms).fill('2').join(' + ')), ['a'])).not.toThrow();
+    expect(() => parser.lint(lexer.tokenize(Array(terms).fill('2').join(' ** ')), ['a'])).not.toThrow();
   });
 
   test('should reset the nesting level between parses', () => {

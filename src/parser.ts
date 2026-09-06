@@ -128,8 +128,13 @@ export class Parser {
         Parser.binaryOperators[token.value] !== null &&
         Parser.binaryOperators[token.value].precedence >= precedence
       ) {
-        this.enterNestingLevel();
         const op = Parser.binaryOperators[token.value];
+        // A left-associative operand parses in a frame that returns straight
+        // away, so the chain only grows here. A right-associative one recurses
+        // for the rest of the chain and is accounted for by that frame instead.
+        if (op.associativity === Parser.OPERATOR_LEFT) {
+          this.enterNestingLevel();
+        }
         this.stream.next();
         const expr1 = this.parseExpression(
           op.associativity === Parser.OPERATOR_LEFT ? op.precedence + 1 : op.precedence
@@ -499,10 +504,15 @@ export class Parser {
   }
 
   /**
-   * Accounts for one more node on the branch being built.
+   * Accounts for one more level of nesting on the branch being parsed.
    *
-   * The nesting level bounds the depth of the resulting node tree. Beyond a few
-   * thousand levels, walking or destroying such a tree overflows the call stack.
+   * The level counts parser recursion and chained operators together, bounding
+   * both the depth reached while parsing and the depth of the resulting node
+   * tree - closely, but not exactly: parentheses recurse without building a
+   * node, while a function call builds two (a `FunctionNode` and its
+   * `ArgumentsNode`) per level. Either kind of nesting overflows the call stack
+   * a few thousand levels in, during the parse or later when walking the tree,
+   * so the limit sits well below that.
    * @throws SyntaxError
    * @memberof Parser
    */

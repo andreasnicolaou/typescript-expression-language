@@ -27,7 +27,7 @@ Any other name throws `Constant "…" is not allowed.` (or `Enum case "…" is n
 
 ### Added
 
-- `count()` function, like PHP 8's (and Symfony 8.2's): `count([1, 2])` is `2`, `count(list, 1)` counts recursively, and a value other than an array or a hash throws a `TypeError`.
+- `count()` function, like PHP 8's (and Symfony 8.2's): `count([1, 2])` is `2`, `count(list, 1)` counts recursively without counting an array again inside itself, and a value other than an array or a hash throws a `TypeError`.
 - `ExpressionFunction#deprecate()` and `ExpressionFunction#getDeprecation()`.
 
 ### Changed

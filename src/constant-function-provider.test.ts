@@ -116,6 +116,8 @@ describe('ConstantFunctionProvider', () => {
     ['Config', '"Config" is an object, use "Config.*" to allow its properties.'],
     ['Math', '"Math" is an object, use "Math.*" to allow its properties.'],
     ['Roles', '"Roles" is a class name, use "Roles::*" to allow its constants.'],
+    ['globalThis::process', '"globalThis::process" is an object, use "globalThis.process.*" to allow its properties.'],
+    ['globalThis::Date', '"globalThis::Date" is a class name, use "globalThis.Date::*" to allow its constants.'],
   ])('should reject %s, which names an object rather than a constant', (constant, message) => {
     expect(() => new ConstantFunctionProvider([constant])).toThrow(TypeError);
     expect(() => new ConstantFunctionProvider([constant])).toThrow(message);
@@ -124,11 +126,20 @@ describe('ConstantFunctionProvider', () => {
   test('should accept an enum case, an array, a name not defined yet and the constants of a class', () => {
     (globalThis as any).Config.LIST = [1, 2];
     const el = new ExpressionLanguage(null, [
-      new ConstantFunctionProvider(['Status.ACTIVE', 'Config.LIST', 'Later.VALUE', 'Roles::*', 'Config.*']),
+      new ConstantFunctionProvider([
+        'Status.ACTIVE',
+        'Status::INACTIVE',
+        'Config.LIST',
+        'Later.VALUE',
+        'Roles::*',
+        'Roles::ROLE_ADMIN',
+        'Config.*',
+      ]),
     ]);
     (globalThis as any).Later = { VALUE: 'later' };
     try {
       expect(el.evaluate('enum("Status.ACTIVE").code')).toBe(1);
+      expect(el.evaluate('enum("Status::INACTIVE").code')).toBe(0);
       expect(el.evaluate('constant("Config.LIST")')).toEqual([1, 2]);
       expect(el.evaluate('constant("Later.VALUE")')).toBe('later');
     } finally {
@@ -180,6 +191,12 @@ describe('ConstantFunctionProvider', () => {
       const code = expressionLanguage.compile('constant("Status.constructor")', []);
       expect(code).not.toContain('constant(');
       expect(() => evaluateCompiled(code, resolve)).toThrow('Constant "Status.constructor" is not allowed.');
+    });
+
+    test('should escape a refused literal in the compiled code', () => {
+      const code = expressionLanguage.compile('constant("</script><!--")', []);
+      expect(code).not.toMatch(/[<>]/);
+      expect(() => evaluateCompiled(code, resolve)).toThrow('Constant "</script><!--" is not allowed.');
     });
   });
 });

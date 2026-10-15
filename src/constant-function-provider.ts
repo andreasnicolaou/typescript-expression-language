@@ -36,14 +36,14 @@ export class ConstantFunctionProvider implements ExpressionFunctionProvider {
   /**
    * Rejects an entry that names a class or an object, since allowing it hands an expression every property of it.
    *
-   * Arrays, enum cases (objects with a `name` property), names that are not defined yet and entries with a `*` or a
-   * `::`, which name constants, are accepted.
+   * Arrays, enum cases (objects with a `name` property), names that are not defined yet and entries with a `*` are
+   * accepted.
    * @param constant
    * @throws TypeError
    * @memberof ConstantFunctionProvider
    */
   private static assertNamesConstant(constant: string): void {
-    if (constant.includes('*') || constant.includes('::')) {
+    if (constant.includes('*')) {
       return;
     }
     let value: unknown;
@@ -52,11 +52,13 @@ export class ConstantFunctionProvider implements ExpressionFunctionProvider {
     } catch {
       return;
     }
+    // "A::B" resolves like "A.B", the form the hints use since a name is not resolved any further after its "::"
+    const path = constant.replace('::', '.');
     if (typeof value === 'function') {
-      throw new TypeError(`"${constant}" is a class name, use "${constant}::*" to allow its constants.`);
+      throw new TypeError(`"${constant}" is a class name, use "${path}::*" to allow its constants.`);
     }
     if (typeof value === 'object' && value !== null && !Array.isArray(value) && !('name' in value)) {
-      throw new TypeError(`"${constant}" is an object, use "${constant}.*" to allow its properties.`);
+      throw new TypeError(`"${constant}" is an object, use "${path}.*" to allow its properties.`);
     }
   }
 
@@ -103,7 +105,7 @@ export class ConstantFunctionProvider implements ExpressionFunctionProvider {
     if (literal !== undefined) {
       return this.isAllowed(literal)
         ? compileCall(name)
-        : `(function(){throw new Error(${JSON.stringify(`${kind} "${literal}" is not allowed.`)})})()`;
+        : `(function(){throw new Error(${toCodeString(`${kind} "${literal}" is not allowed.`)})})()`;
     }
     return (
       `(function(v){if(!${this.regexp}.test(v)||${ConstantFunctionProvider.PROTOTYPE_SEGMENTS}.test(v))` +
@@ -118,6 +120,17 @@ export class ConstantFunctionProvider implements ExpressionFunctionProvider {
     return resolve(name);
   }
 }
+
+/**
+ * Encodes a string as a JavaScript string literal that is also safe to embed in an HTML script element.
+ * @param value
+ * @returns the string literal
+ */
+const toCodeString = (value: string): string =>
+  JSON.stringify(value).replace(
+    /[<>/\u2028\u2029]/g,
+    (char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`
+  );
 
 /**
  * Resolves a constant from the global object, without any restriction.

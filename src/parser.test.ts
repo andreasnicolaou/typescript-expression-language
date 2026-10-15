@@ -468,6 +468,15 @@ describe('Parser', () => {
     expect(() => parser.lint(lexer.tokenize('a and a and a ? 1 : '.repeat(64) + '0'), ['a'])).not.toThrow();
   });
 
+  test('should check a subtree shared by short ternaries in linear time', () => {
+    let expression = 'a';
+    for (let i = 0; i < 60; i++) {
+      expression = `(${expression} ?: 0)`;
+    }
+    // walking each shared condition again from both of its parents would visit 2^60 nodes
+    expect(() => parser.lint(lexer.tokenize(expression), ['a'])).not.toThrow();
+  });
+
   test('should accept a long flat expression', () => {
     expect(() => parser.lint(lexer.tokenize(`[${Array(5000).fill('a').join(', ')}]`), ['a'])).not.toThrow();
   });

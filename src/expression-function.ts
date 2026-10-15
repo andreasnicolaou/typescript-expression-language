@@ -226,14 +226,26 @@ export class ExpressionFunction {
           throw new TypeError(`count(): Argument #1 ($value) must be of type Countable|array, ${type} given`);
         }
 
+        if (mode !== 1) {
+          // counts the keys without reading the values, which could run getters
+          return Object.keys(value).length;
+        }
+
+        // a container met again inside itself adds nothing more, like PHP (which also warns "Recursion detected")
+        const path = new Set<object>();
         const countElements = (items: object): number => {
+          if (path.has(items)) {
+            return 0;
+          }
+          path.add(items);
           let total = 0;
           for (const item of Object.values(items)) {
             total++;
-            if (mode === 1 && isCountable(item)) {
+            if (isCountable(item)) {
               total += countElements(item);
             }
           }
+          path.delete(items);
           return total;
         };
         return countElements(value);

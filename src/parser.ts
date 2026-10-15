@@ -543,6 +543,9 @@ export class Parser {
    */
   private checkDepth(node: Node): void {
     const nodes: [Node, number][] = [[node, 1]];
+    // A node can have several parents ("a ?: b" reuses its condition as the true branch): walking it again from each
+    // one would take exponential time, so it is only walked again when reached deeper than before.
+    const checkedDepths = new Map<Node, number>();
 
     while (nodes.length) {
       const [current, depth] = nodes.pop() as [Node, number];
@@ -550,6 +553,10 @@ export class Parser {
       if (Parser.MAX_NESTING_LEVEL < depth) {
         throw this.nestedTooDeeply();
       }
+      if ((checkedDepths.get(current) ?? 0) >= depth) {
+        continue;
+      }
+      checkedDepths.set(current, depth);
 
       for (const child of Object.values(current.nodes)) {
         nodes.push([child, depth + 1]);

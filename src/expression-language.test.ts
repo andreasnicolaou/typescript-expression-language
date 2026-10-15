@@ -515,6 +515,26 @@ describe('ExpressionLanguage', () => {
       );
     });
 
+    test('should not count a container again inside itself, like PHP', () => {
+      const list: unknown[] = [1, 2];
+      list.push(list);
+      expect(expressionLanguage.evaluate('count(list)', { list })).toBe(3);
+      expect(expressionLanguage.evaluate('count(list, 1)', { list })).toBe(3);
+    });
+
+    test('should count a container each time it appears', () => {
+      expect(expressionLanguage.evaluate('count([a, a], 1)', { a: [1, 2] })).toBe(6);
+    });
+
+    test('should not read the values when counting non-recursively', () => {
+      const hash = {
+        get item(): never {
+          throw new Error('read');
+        },
+      };
+      expect(expressionLanguage.evaluate('count(hash)', { hash })).toBe(1);
+    });
+
     test('should compile to a count() call', () => {
       expect(expressionLanguage.compile('count(list, 1)', ['list'])).toBe('count(list, 1)');
     });

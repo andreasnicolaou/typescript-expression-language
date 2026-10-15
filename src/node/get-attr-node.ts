@@ -80,13 +80,14 @@ export class GetAttrNode extends Node {
         if (valEvaluation === null && this.isShortCircuited()) {
           return null;
         }
+        if (this.attributes.is_null_coalesce) {
+          // like the compiled `(a.b) ?? c`: a scalar has no properties in PHP, but a JS primitive does ("abc".length)
+          return valEvaluation?.[property] ?? null;
+        }
         if (typeof valEvaluation !== 'object') {
           throw new Error(
             `Unable to get property "${this.nodes.attribute.dump()}" of non-object "${this.nodes.node.dump()}".`
           );
-        }
-        if (this.attributes.is_null_coalesce) {
-          return valEvaluation[property] ?? null;
         }
         return valEvaluation[property];
       case GetAttrNode.METHOD_CALL:
@@ -111,11 +112,11 @@ export class GetAttrNode extends Node {
           this.attributes.is_short_circuited = nullSafe || this.attributes.is_short_circuited;
           return null;
         }
+        if (this.attributes.is_null_coalesce) {
+          return valEvaluation?.[this.nodes.attribute.evaluate(functions, values)] ?? null;
+        }
         if (typeof valEvaluation !== 'object' && !Array.isArray(valEvaluation)) {
           throw new Error(`Unable to get an item of non-array "${this.nodes.node.dump()}".`);
-        }
-        if (this.attributes.is_null_coalesce) {
-          return valEvaluation[this.nodes.attribute.evaluate(functions, values)] ?? null;
         }
         return valEvaluation[this.nodes.attribute.evaluate(functions, values)];
     }

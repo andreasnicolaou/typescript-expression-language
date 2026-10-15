@@ -61,7 +61,7 @@ You can try this library live:
 
 - **TypeScript-native source**: Types are generated from the implementation — never out of sync with the API.
 - **ESM-first**: Tree-shakeable ES module output alongside CJS and UMD. Use only what you import.
-- **Bounded LRU cache**: Parsed expressions are cached in a lightweight 500-entry `ArrayCache`, which can be replaced with a custom cache.
+- **Bounded LRU cache**: Parsed expressions are cached in a lightweight 1024-entry `ArrayCache`, which can be replaced with a custom cache.
 - **Symfony-faithful semantics**: Operators, precedence, literals, and error behavior follow Symfony's ExpressionLanguage — `1 / 0` throws `Division by zero.` rather than returning `Infinity`. Values are JavaScript-native, and PHP stdlib functions are opt-in via `/providers`.
 - **Zero peer dependencies**: No packages to install alongside this one — everything is self-contained.
 - **Rich syntax**: Numbers (with underscore separators), strings, arrays, hashes, block comments, regex matching, ranges, null-safe operators, and more.
@@ -261,7 +261,7 @@ console.log(result); // Outputs → `true`
 
 ### Custom Cache
 
-By default, the library uses a lightweight, 500-entry `ArrayCache` for expression parsing optimization. You can pass any cache that implements the exported `ExpressionCache` interface:
+By default, the library uses a lightweight, 1024-entry `ArrayCache` for expression parsing optimization. You can pass any cache that implements the exported `ExpressionCache` interface:
 
 ```typescript
 import { ExpressionCache, ExpressionLanguage, ParsedExpression } from '@andreasnicolaou/typescript-expression-language';
@@ -291,6 +291,26 @@ const expressionLanguage = new ExpressionLanguage(customCache);
 > const cache = new LRUCache<string, ParsedExpression>({ max: 500, ttl: 1000 * 60 });
 > const expressionLanguage = new ExpressionLanguage(cache);
 > ```
+
+### Restricting `constant()` and `enum()`
+
+The built-in `constant()` and `enum()` read any name on the global object, so an expression that comes from users can read `constant("process.env.DATABASE_URL")`. They are **deprecated**: parsing an expression that calls them reports a `DeprecationWarning` once. Register a `ConstantFunctionProvider` that lists the constants expressions may read instead — it replaces both functions:
+
+```typescript
+import { ConstantFunctionProvider, ExpressionLanguage } from '@andreasnicolaou/typescript-expression-language';
+
+const expressionLanguage = new ExpressionLanguage(null, [
+  new ConstantFunctionProvider(['Math.PI', 'Config.API_URL', 'Status.*', 'Roles::ROLE_*']),
+]);
+
+expressionLanguage.evaluate('constant("Math.PI")'); // 3.141592653589793
+expressionLanguage.evaluate('enum("Status.ACTIVE")'); // Status.ACTIVE
+expressionLanguage.evaluate('constant("process.env.HOME")'); // Error: Constant "process.env.HOME" is not allowed.
+```
+
+In an allowed name, `*` matches one segment: any sequence of characters except `.` and `:`. So `Status.*` allows `Status.ACTIVE` but not `Status.ACTIVE.code` (`Status.*.*` does), and `Roles::*` is needed for the constants of `Roles`. Names are matched case-sensitively, an empty list allows nothing, and the segments `__proto__`, `constructor` and `prototype` are never allowed, since every object has them.
+
+An entry that names a whole class or object, such as `Roles` or `Config`, throws when the provider is created, since `constant("Config")` would hand an expression every property of it: list `Roles::*` or `Config.*` instead. Arrays and enum cases, objects with a `name` property, are accepted.
 
 ### Built-in Providers (opt-in)
 
@@ -325,7 +345,7 @@ console.log(el.evaluate('round(pow(2, 0.5), 4)')); // 1.4142
 console.log(el.evaluate('gmdate("Y", 0)')); // "1970"
 ```
 
-> **Note:** `MathProvider` intentionally omits `min`/`max` — those are already registered by default. `DateProvider` uses PHP **second** timestamps: `strtotime()` returns seconds and `date()` accepts seconds. Provider expressions compile to named calls such as `strtoupper(name)`; provide the matching Locutus function when executing compiled output outside this library.
+> **Note:** `MathProvider` intentionally omits `min`/`max` — those are already registered by default. `ArrayProvider`'s `count` replaces the built-in one with Locutus' PHP 7 behavior, which counts a scalar as `1` instead of throwing. `DateProvider` uses PHP **second** timestamps: `strtotime()` returns seconds and `date()` accepts seconds. Provider expressions compile to named calls such as `strtoupper(name)`; provide the matching Locutus function when executing compiled output outside this library.
 
 #### Browser (UMD via CDN)
 
@@ -507,12 +527,13 @@ Add and register custom functions for flexible application logic.
 
 The library provides access to a comprehensive set of JavaScript functions. Some are **enabled by default**, while others can be registered using `ExpressionFunction.fromJs()`.
 
-> This table is the **JavaScript-native** set you register one at a time with `ExpressionFunction.fromJs()` (e.g. `toLowerCase`, `split`, `trim`). If you want **PHP-named** helpers instead (`strtolower`, `substr`, `count`, `implode`, `date`…), grab them from the opt-in [built-in providers](#built-in-providers-opt-in), backed by Locutus.
+> This table is the **JavaScript-native** set you register one at a time with `ExpressionFunction.fromJs()` (e.g. `toLowerCase`, `split`, `trim`). If you want **PHP-named** helpers instead (`strtolower`, `substr`, `implode`, `date`…), grab them from the opt-in [built-in providers](#built-in-providers-opt-in), backed by Locutus.
 
 | Function             | Category | Enabled by Default | Description                                              | Example                                             |
 | -------------------- | -------- | :----------------: | -------------------------------------------------------- | --------------------------------------------------- |
-| `constant`           | Core     |         ✅         | Access global constants and nested properties            | `constant("CONFIG.API_URL")`                        |
-| `enum`               | Core     |         ✅         | Access PHP-style and TypeScript-style enums              | `enum("Status.ACTIVE")`                             |
+| `constant`           | Core     |         ✅         | Access global constants (deprecated, see above)          | `constant("CONFIG.API_URL")`                        |
+| `enum`               | Core     |         ✅         | Access enum cases (deprecated, see above)                | `enum("Status.ACTIVE")`                             |
+| `count`              | Core     |         ✅         | Counts the elements of an array or hash, like PHP 8      | `count([1, 2, 3])` → `3`                            |
 | `isset`              | Core     |         ✅         | Returns `true` if the value is not `null` or `undefined` | `isset(user.email)` → `true`                        |
 | `min`                | Math     |         ✅         | Returns the smallest of zero or more numbers             | `min(1, 2, 3)` → `1`                                |
 | `max`                | Math     |         ✅         | Returns the largest of zero or more numbers              | `max(1, 2, 3)` → `3`                                |

@@ -1,7 +1,7 @@
 export class ArrayCache<K, V> {
   private readonly values = new Map<K, V>();
 
-  public constructor(private readonly maxItems = 500) {
+  public constructor(private readonly maxItems = 1024) {
     if (!Number.isInteger(maxItems) || maxItems <= 0) {
       throw new RangeError('The maximum number of cache items must be a positive integer.');
     }

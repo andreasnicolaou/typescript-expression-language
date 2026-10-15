@@ -16,6 +16,17 @@ describe('ArrayCache', () => {
     expect(cache.size).toBe(2);
   });
 
+  test('keeps the last 1024 items by default', () => {
+    const cache = new ArrayCache<number, number>();
+    for (let i = 0; i <= 1024; i++) {
+      cache.set(i, i);
+    }
+
+    expect(cache.size).toBe(1024);
+    expect(cache.get(0)).toBeUndefined();
+    expect(cache.get(1)).toBe(1);
+  });
+
   test.each([0, -1, 1.5])('rejects an invalid maximum item count of %s', (maxItems) => {
     expect(() => new ArrayCache(maxItems)).toThrow('The maximum number of cache items must be a positive integer.');
   });

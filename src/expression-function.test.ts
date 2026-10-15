@@ -186,6 +186,18 @@ describe('ExpressionFunction', () => {
     expect(evaluatedParse).toEqual({ name: 'Alice', age: 25 });
   });
 
+  test('should create the PHP 8-style count function', () => {
+    const countFunction = ExpressionFunction.fromJs('count');
+
+    expect(countFunction.getName()).toBe('count');
+    expect(countFunction.getCompiler()('list', '1')).toBe('count(list, 1)');
+    expect(countFunction.getEvaluator()(null, { a: 1, b: [2, 3] })).toBe(2);
+    expect(countFunction.getEvaluator()(null, { a: 1, b: [2, 3] }, 1)).toBe(4);
+    expect(() => countFunction.getEvaluator()(null, 'abc')).toThrow(
+      'count(): Argument #1 ($value) must be of type Countable|array, string given'
+    );
+  });
+
   test('should resolve Array functions like Array.isArray', () => {
     const isArrayFunction = ExpressionFunction.fromJs('isArray');
 

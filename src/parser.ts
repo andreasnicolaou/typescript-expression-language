@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { triggerDeprecation } from './deprecation';
 import { ArgumentsNode } from './node/arguments-node';
 import { ArrayNode } from './node/array-node';
 import { BinaryNode } from './node/binary-node';
@@ -143,7 +144,12 @@ export class Parser {
         token = this.stream.current;
       }
 
-      return precedence === 0 ? this.parseConditionalExpression(expr) : expr;
+      if (precedence === 0) {
+        // the levels of the operators chained above end with them: a ternary sits one level below this frame
+        this.nestingLevel = nestingLevel + 1;
+        return this.parseConditionalExpression(expr);
+      }
+      return expr;
     } finally {
       this.nestingLevel = nestingLevel;
     }
@@ -183,6 +189,10 @@ export class Parser {
                   token.value,
                   Object.keys(this.functions)
                 );
+              }
+              const deprecation = token.value !== null ? this.functions[token.value]?.getDeprecation?.() : null;
+              if (deprecation) {
+                triggerDeprecation(deprecation);
               }
               return this.parsePostfixExpression(new FunctionNode(token.value, this.parseArguments()));
             } else {
@@ -432,6 +442,11 @@ export class Parser {
       );
     }
 
+    // a node tree is at most one level deeper than its number of tokens
+    if (Parser.MAX_NESTING_LEVEL <= this.stream.expression.length) {
+      this.checkDepth(node);
+    }
+
     this.stream = undefined as unknown as TokenStream;
     this.names = [];
     return node;
@@ -506,23 +521,47 @@ export class Parser {
   /**
    * Accounts for one more level of nesting on the branch being parsed.
    *
-   * The level counts parser recursion and chained operators together, bounding
-   * both the depth reached while parsing and the depth of the resulting node
-   * tree - closely, but not exactly: parentheses recurse without building a
-   * node, while a function call builds two (a `FunctionNode` and its
-   * `ArgumentsNode`) per level. Either kind of nesting overflows the call stack
-   * a few thousand levels in, during the parse or later when walking the tree,
-   * so the limit sits well below that.
+   * The nesting level bounds the recursion of the parser.
    * @throws SyntaxError
    * @memberof Parser
    */
   private enterNestingLevel(): void {
     if (++this.nestingLevel > Parser.MAX_NESTING_LEVEL) {
-      throw new SyntaxError(
-        `Expression is nested too deeply, the maximum nesting level is ${Parser.MAX_NESTING_LEVEL}`,
-        this.stream.current.cursor,
-        this.stream.expression
-      );
+      throw this.nestedTooDeeply();
     }
+  }
+
+  /**
+   * Bounds the depth of the resulting node tree.
+   *
+   * Beyond a few thousand levels, evaluating, compiling or serializing such a tree overflows the call stack.
+   * The nesting level is not enough: it misses the levels that a chain of binary operators or of property
+   * accesses adds above its first operand, as in "((a + b + c) + d + e)".
+   * @param node
+   * @throws SyntaxError
+   * @memberof Parser
+   */
+  private checkDepth(node: Node): void {
+    const nodes: [Node, number][] = [[node, 1]];
+
+    while (nodes.length) {
+      const [current, depth] = nodes.pop() as [Node, number];
+
+      if (Parser.MAX_NESTING_LEVEL < depth) {
+        throw this.nestedTooDeeply();
+      }
+
+      for (const child of Object.values(current.nodes)) {
+        nodes.push([child, depth + 1]);
+      }
+    }
+  }
+
+  private nestedTooDeeply(): SyntaxError {
+    return new SyntaxError(
+      `Expression is nested too deeply, the maximum nesting level is ${Parser.MAX_NESTING_LEVEL}`,
+      this.stream.current.cursor,
+      this.stream.expression
+    );
   }
 }

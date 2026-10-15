@@ -448,6 +448,30 @@ describe('Parser', () => {
     expect(() => parser.lint(lexer.tokenize(Array(terms).fill('2').join(' ** ')), ['a'])).not.toThrow();
   });
 
+  test.each([
+    ['binary operators', 100, (e: string): string => `(${e}${' + 1'.repeat(100)})`],
+    ['properties', 100, (e: string): string => `(${e})${'.b'.repeat(100)}`],
+  ])(
+    'should reject a node tree that chained %s inside parentheses make too deep',
+    (_name, levels, wrap: (e: string) => string) => {
+      let expression = 'a';
+      for (let i = 0; i < levels; i++) {
+        expression = wrap(expression);
+      }
+      expect(() => parser.lint(lexer.tokenize(expression), ['a'])).toThrow(
+        'Expression is nested too deeply, the maximum nesting level is 256'
+      );
+    }
+  );
+
+  test('should accept chained ternaries with binary conditions', () => {
+    expect(() => parser.lint(lexer.tokenize('a and a and a ? 1 : '.repeat(64) + '0'), ['a'])).not.toThrow();
+  });
+
+  test('should accept a long flat expression', () => {
+    expect(() => parser.lint(lexer.tokenize(`[${Array(5000).fill('a').join(', ')}]`), ['a'])).not.toThrow();
+  });
+
   test('should reset the nesting level between parses', () => {
     const expression = '('.repeat(100) + 'a' + ' + 1)'.repeat(100);
     expect(() => parser.parse(lexer.tokenize(expression), ['a'])).not.toThrow();

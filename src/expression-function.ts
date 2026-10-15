@@ -10,6 +10,7 @@ type Callable = (...args: any[]) => any;
 export class ExpressionFunction {
   private readonly compiler: Callable;
   private readonly evaluator: Callable;
+  private deprecation: string | null = null;
 
   // Static function map - computed once at class load time
   private static readonly JS_FUNCTION_MAP = ExpressionFunction.createJsFunctionMap();
@@ -80,6 +81,26 @@ export class ExpressionFunction {
    */
   public getEvaluator(): Callable {
     return this.evaluator;
+  }
+
+  /**
+   * Marks the function as deprecated: parsing an expression that calls it reports the message once.
+   * @param message
+   * @returns this
+   * @memberof ExpressionFunction
+   */
+  public deprecate(message: string): this {
+    this.deprecation = message;
+    return this;
+  }
+
+  /**
+   * Gets the deprecation message
+   * @returns deprecation message, or null when the function is not deprecated
+   * @memberof ExpressionFunction
+   */
+  public getDeprecation(): string | null {
+    return this.deprecation;
   }
 
   /**
@@ -182,6 +203,40 @@ export class ExpressionFunction {
         }
 
         throw new Error(errorMessage);
+      },
+
+      // PHP 8-style count function: pass 1 as mode to count recursively.
+      // Unlike Locutus' count() (PHP 7's), which the ArrayProvider registers, a value other than an array or a hash
+      // (an object without a class) throws instead of counting as 0 or 1.
+      count: (value: unknown, mode: unknown = 0): number => {
+        const isCountable = (item: unknown): item is object => {
+          if (Array.isArray(item)) {
+            return true;
+          }
+          if (item === null || typeof item !== 'object') {
+            return false;
+          }
+          const prototype = Object.getPrototypeOf(item);
+          return prototype === Object.prototype || prototype === null;
+        };
+
+        if (!isCountable(value)) {
+          const type =
+            value === null ? 'null' : typeof value === 'object' ? (value.constructor?.name ?? 'object') : typeof value;
+          throw new TypeError(`count(): Argument #1 ($value) must be of type Countable|array, ${type} given`);
+        }
+
+        const countElements = (items: object): number => {
+          let total = 0;
+          for (const item of Object.values(items)) {
+            total++;
+            if (mode === 1 && isCountable(item)) {
+              total += countElements(item);
+            }
+          }
+          return total;
+        };
+        return countElements(value);
       },
     };
 

@@ -42,6 +42,8 @@ export class UnaryNode extends Node {
       case 'not':
       case '!':
         return !value;
+      case '+':
+        return +value;
       case '-':
         return -value;
       case '~':

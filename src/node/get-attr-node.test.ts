@@ -252,6 +252,37 @@ describe('GetAttrNode', () => {
     expect(() => node.evaluate({}, { foo: 42 })).toThrow('Unable to get an item of non-array "foo".');
   });
 
+  test.each([
+    ['a number', 42, null],
+    ['a string', 'abc', 3],
+    ['a boolean', true, null],
+    ['undefined', undefined, null],
+  ])('should not throw for PROPERTY_CALL on %s with is_null_coalesce', (_name, value, expected) => {
+    const node = new GetAttrNode(
+      new ConstantNode(value),
+      new ConstantNode('length'),
+      new ArgumentsNode(),
+      GetAttrNode.PROPERTY_CALL
+    );
+    node.attributes.is_null_coalesce = true;
+    expect(node.evaluate({}, {})).toBe(expected);
+  });
+
+  test.each([
+    ['a number', 42, null],
+    ['a string', 'abc', 'a'],
+    ['undefined', undefined, null],
+  ])('should not throw for ARRAY_CALL on %s with is_null_coalesce', (_name, value, expected) => {
+    const node = new GetAttrNode(
+      new ConstantNode(value),
+      new ConstantNode(0),
+      new ArgumentsNode(),
+      GetAttrNode.ARRAY_CALL
+    );
+    node.attributes.is_null_coalesce = true;
+    expect(node.evaluate({}, {})).toBe(expected);
+  });
+
   test('should return null for ARRAY_CALL with is_null_coalesce and missing key', () => {
     const arr = { a: 1 };
     const node = new GetAttrNode(

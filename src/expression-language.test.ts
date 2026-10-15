@@ -508,6 +508,7 @@ describe('ExpressionLanguage', () => {
       ['count(1)', {}, 'number'],
       ['count("abc")', {}, 'string'],
       ['count(date)', { date: new Date() }, 'Date'],
+      ['count(orphan)', { orphan: Object.create(Object.create(null)) }, 'object'],
     ])('should throw like PHP 8 for %s', (expression, values, type) => {
       expect(() => expressionLanguage.evaluate(expression, values)).toThrow(TypeError);
       expect(() => expressionLanguage.evaluate(expression, values)).toThrow(
@@ -566,6 +567,24 @@ describe('ExpressionLanguage', () => {
     ])('should evaluate %s', (expression, values, expected) => {
       expect(expressionLanguage.evaluate(expression, values)).toBe(expected);
     });
+
+    test.each([
+      ['foo.bar ?? "d"', { foo: 5 }],
+      ['foo.bar.baz ?? "d"', { foo: 5 }],
+      ['foo.bar.baz ?? "d"', { foo: {} }],
+      ['foo.bar.baz ?? "d"', { foo: { bar: { baz: 'x' } } }],
+      ['foo.length ?? 0', { foo: 'abc' }],
+      ['foo[0] ?? "d"', { foo: undefined }],
+      ['foo[0][1] ?? "d"', { foo: [] }],
+    ] as [string, Record<string, unknown>][])(
+      'should compile %s to code that gives what evaluate() gives',
+      (expression, values) => {
+        const names = Object.keys(values);
+        const code = expressionLanguage.compile(expression, names);
+        const compiled = new Function(...names, `return ${code};`)(...Object.values(values));
+        expect(compiled).toEqual(expressionLanguage.evaluate(expression, values));
+      }
+    );
 
     test('should still throw without ??', () => {
       expect(() => expressionLanguage.evaluate('foo.bar', { foo: 5 })).toThrow(

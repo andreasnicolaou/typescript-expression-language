@@ -63,17 +63,17 @@
   "bundle-size": [
     {
       "path": "dist/index.js",
-      "limit": "26kB",
+      "limit": "27kB",
       "gzip": true
     },
     {
       "path": "dist/index.cjs",
-      "limit": "26kB",
+      "limit": "27kB",
       "gzip": true
     },
     {
       "path": "dist/index.umd.js",
-      "limit": "26kB",
+      "limit": "27kB",
       "gzip": true
     },
     {

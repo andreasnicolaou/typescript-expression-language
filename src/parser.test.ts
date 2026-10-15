@@ -477,6 +477,17 @@ describe('Parser', () => {
     expect(() => parser.lint(lexer.tokenize(expression), ['a'])).not.toThrow();
   });
 
+  test('should check the depth of a TokenStream without source text', () => {
+    let expression = 'a';
+    for (let i = 0; i < 100; i++) {
+      expression = `(${expression}${' + 1'.repeat(100)})`;
+    }
+    const stream = new TokenStream(lexer.tokenize(expression).tokens);
+    expect(() => parser.parse(stream, ['a'])).toThrow(
+      'Expression is nested too deeply, the maximum nesting level is 256'
+    );
+  });
+
   test('should accept a long flat expression', () => {
     expect(() => parser.lint(lexer.tokenize(`[${Array(5000).fill('a').join(', ')}]`), ['a'])).not.toThrow();
   });

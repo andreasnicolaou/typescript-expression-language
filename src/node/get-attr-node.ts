@@ -30,11 +30,13 @@ export class GetAttrNode extends Node {
   public compile(compiler: Compiler): void {
     const nullSafe =
       (this.nodes.attribute instanceof ConstantNode && this.nodes.attribute.isNullSafe) || this.attributes.is_null_safe;
+    // inside "??", a missing or scalar link must not throw, as in evaluate() and in PHP
+    const optional = nullSafe || this.attributes.is_null_coalesce;
     switch (this.attributes.type) {
       case GetAttrNode.PROPERTY_CALL:
         compiler
           .compile(this.nodes.node)
-          .raw(nullSafe ? '?.' : '.')
+          .raw(optional ? '?.' : '.')
           .raw(this.nodes.attribute.attributes.value);
         break;
       case GetAttrNode.METHOD_CALL:
@@ -47,7 +49,7 @@ export class GetAttrNode extends Node {
           .raw(')');
         break;
       case GetAttrNode.ARRAY_CALL:
-        if (nullSafe) {
+        if (optional) {
           compiler.compile(this.nodes.node).raw('?.[').compile(this.nodes.attribute).raw(']');
         } else {
           compiler.compile(this.nodes.node).raw('[').compile(this.nodes.attribute).raw(']');

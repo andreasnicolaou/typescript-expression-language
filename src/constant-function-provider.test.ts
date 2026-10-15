@@ -253,4 +253,18 @@ describe('built-in constant() and enum() deprecation', () => {
       warn.mockRestore();
     }
   });
+
+  test('should not fail without process.emitWarning nor console', () => {
+    const { ExpressionLanguage: FreshExpressionLanguage } = load();
+    const originalEmitWarning = process.emitWarning;
+    const originalConsole = globalThis.console;
+    (process as any).emitWarning = undefined;
+    (globalThis as any).console = undefined;
+    try {
+      expect(() => new FreshExpressionLanguage().lint('enum("Math.PI")', [])).not.toThrow();
+    } finally {
+      process.emitWarning = originalEmitWarning;
+      globalThis.console = originalConsole;
+    }
+  });
 });

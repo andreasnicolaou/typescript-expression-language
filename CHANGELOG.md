@@ -38,7 +38,7 @@ Any other name throws `Constant "…" is not allowed.` (or `Enum case "…" is n
 
 - Chained ternaries with binary conditions no longer count the levels of those conditions against the nesting limit: `a and a and a ? 1 : ` repeated 64 times was wrongly rejected as nested too deeply.
 - Unary `+` converts its operand to a number when evaluated, like the compiled code already did: `+"5"` is `5` (it was `"5"`).
-- `??` no longer throws for an attribute of a scalar, and gives what the compiled code gives: `foo.bar ?? "d"` is `"d"` when `foo` is `5`, `foo.length ?? 0` is `3` when `foo` is `"abc"`, and `foo[0] ?? "d"` is `"a"`.
+- `??` no longer throws for a missing or scalar link in a chain of property or index accesses, in `evaluate()` and in compiled code, as in Symfony: `foo.bar.baz ?? "d"` is `"d"` when `foo` is `5` or `{}`, `foo.length ?? 0` is `3` when `foo` is `"abc"`, and `foo[0] ?? "d"` is `"d"` when `foo` is undefined.
 
 ## [3.1.0] - 2026-09-02
 

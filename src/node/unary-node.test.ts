@@ -41,6 +41,10 @@ describe('UnaryNode', () => {
     });
   });
 
+  test('should return the operand of an unknown operator unchanged', () => {
+    expect(new UnaryNode('?', new ConstantNode(1)).evaluate({}, {})).toBe(1);
+  });
+
   test('should compile correctly', () => {
     getCompileData().forEach(([expected, node]) => {
       const compiler = new Compiler({});

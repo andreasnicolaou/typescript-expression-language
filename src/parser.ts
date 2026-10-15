@@ -190,7 +190,7 @@ export class Parser {
                   Object.keys(this.functions)
                 );
               }
-              const deprecation = token.value !== null ? this.functions[token.value]?.getDeprecation?.() : null;
+              const deprecation = this.functions[token.value as string]?.getDeprecation?.();
               if (deprecation) {
                 triggerDeprecation(deprecation);
               }
@@ -442,8 +442,8 @@ export class Parser {
       );
     }
 
-    // a node tree is at most one level deeper than its number of tokens
-    if (Parser.MAX_NESTING_LEVEL <= this.stream.expression.length) {
+    // a node tree is at most one level deeper than its number of tokens (the source text of a stream is optional)
+    if (Parser.MAX_NESTING_LEVEL <= this.stream.tokens.length) {
       this.checkDepth(node);
     }
 

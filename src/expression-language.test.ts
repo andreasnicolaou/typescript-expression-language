@@ -491,6 +491,113 @@ describe('ExpressionLanguage', () => {
     expect(parsed1).toBe(parsed2);
   });
 
+  describe('count() function', () => {
+    test.each([
+      ['count([])', {}, 0],
+      ['count([1, 2, 3])', {}, 3],
+      ['count({a: 1, b: 2})', {}, 2],
+      ['count(list)', { list: Object.assign(Object.create(null), { a: 1 }) }, 1],
+      ['count([[1, 2], {a: [3]}, 4])', {}, 3],
+      ['count([[1, 2], {a: [3]}, 4], 1)', {}, 7],
+    ])('should evaluate %s', (expression, values, expected) => {
+      expect(expressionLanguage.evaluate(expression, values)).toBe(expected);
+    });
+
+    test.each([
+      ['count(null)', {}, 'null'],
+      ['count(1)', {}, 'number'],
+      ['count("abc")', {}, 'string'],
+      ['count(date)', { date: new Date() }, 'Date'],
+      ['count(orphan)', { orphan: Object.create(Object.create(null)) }, 'object'],
+    ])('should throw like PHP 8 for %s', (expression, values, type) => {
+      expect(() => expressionLanguage.evaluate(expression, values)).toThrow(TypeError);
+      expect(() => expressionLanguage.evaluate(expression, values)).toThrow(
+        `count(): Argument #1 ($value) must be of type Countable|array, ${type} given`
+      );
+    });
+
+    test('should not count a container again inside itself, like PHP', () => {
+      const list: unknown[] = [1, 2];
+      list.push(list);
+      expect(expressionLanguage.evaluate('count(list)', { list })).toBe(3);
+      expect(expressionLanguage.evaluate('count(list, 1)', { list })).toBe(3);
+    });
+
+    test('should count a container each time it appears', () => {
+      expect(expressionLanguage.evaluate('count([a, a], 1)', { a: [1, 2] })).toBe(6);
+    });
+
+    test('should not read the values when counting non-recursively', () => {
+      const hash = {
+        get item(): never {
+          throw new Error('read');
+        },
+      };
+      expect(expressionLanguage.evaluate('count(hash)', { hash })).toBe(1);
+    });
+
+    test('should compile to a count() call', () => {
+      expect(expressionLanguage.compile('count(list, 1)', ['list'])).toBe('count(list, 1)');
+    });
+
+    test('should be overridden by a provider', () => {
+      const el = new ExpressionLanguage(null, [
+        {
+          getFunctions: (): ExpressionFunction[] => [
+            new ExpressionFunction(
+              'count',
+              () => '42',
+              () => 42
+            ),
+          ],
+        },
+      ]);
+      expect(el.evaluate('count([1])')).toBe(42);
+    });
+  });
+
+  describe('null-coalescing an attribute of a scalar', () => {
+    test.each([
+      ['foo.bar ?? "default"', { foo: 5 }, 'default'],
+      ['foo.length ?? "default"', { foo: 'abc' }, 3],
+      ['foo.bar ?? "default"', { foo: 'abc' }, 'default'],
+      ['foo.bar.baz ?? "default"', { foo: { bar: 5 } }, 'default'],
+      ['foo[0] ?? "default"', { foo: 5 }, 'default'],
+      ['foo[0] ?? "default"', { foo: 'abc' }, 'a'],
+    ])('should evaluate %s', (expression, values, expected) => {
+      expect(expressionLanguage.evaluate(expression, values)).toBe(expected);
+    });
+
+    test.each([
+      ['foo.bar ?? "d"', { foo: 5 }],
+      ['foo.bar.baz ?? "d"', { foo: 5 }],
+      ['foo.bar.baz ?? "d"', { foo: {} }],
+      ['foo.bar.baz ?? "d"', { foo: { bar: { baz: 'x' } } }],
+      ['foo.length ?? 0', { foo: 'abc' }],
+      ['foo[0] ?? "d"', { foo: undefined }],
+      ['foo[0][1] ?? "d"', { foo: [] }],
+    ] as [string, Record<string, unknown>][])(
+      'should compile %s to code that gives what evaluate() gives',
+      (expression, values) => {
+        const names = Object.keys(values);
+        const code = expressionLanguage.compile(expression, names);
+        const compiled = new Function(...names, `return ${code};`)(...Object.values(values));
+        expect(compiled).toEqual(expressionLanguage.evaluate(expression, values));
+      }
+    );
+
+    test('should still throw without ??', () => {
+      expect(() => expressionLanguage.evaluate('foo.bar', { foo: 5 })).toThrow(
+        'Unable to get property "bar" of non-object "foo".'
+      );
+    });
+  });
+
+  test('should convert the operand of a unary + to a number, like the compiled code', () => {
+    expect(expressionLanguage.evaluate('+x', { x: '5' })).toBe(5);
+    expect(new Function('x', `return ${expressionLanguage.compile('+x', ['x'])};`)('5')).toBe(5);
+  });
+
   describe('enum() function', () => {
     beforeEach(() => {
       (globalThis as any).GenericEnum = {

@@ -19,6 +19,10 @@ export class NullCoalesceNode extends Node {
    * @memberof NullCoalesceNode
    */
   public compile(compiler: Compiler): void {
+    // JavaScript has no PHP-like "??" over a whole chain: the accesses compile to optional ones instead
+    if (this.nodes.expr1 instanceof GetAttrNode) {
+      this.addNullCoalesceAttributeToGetAttrNodes(this.nodes.expr1);
+    }
     compiler.raw('((').compile(this.nodes.expr1).raw(') ?? (').compile(this.nodes.expr2).raw('))');
   }
 

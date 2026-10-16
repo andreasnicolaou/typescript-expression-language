@@ -56,7 +56,7 @@ describe('NullCoalesceNode', () => {
     const node = getNodeForAttr();
     const compiler = new Compiler({});
     node.compile(compiler);
-    expect(compiler.getSource()).toBe('((foo.bar) ?? ("default"))');
+    expect(compiler.getSource()).toBe('((foo?.bar) ?? ("default"))');
     expect(node.evaluate({}, { foo: { bar: null } })).toBe('default');
   });
 

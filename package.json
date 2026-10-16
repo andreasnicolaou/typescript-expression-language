@@ -1,6 +1,6 @@
 {
   "name": "@andreasnicolaou/typescript-expression-language",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Zero-dependency TypeScript implementation of Symfony's Expression Language. Safely parse and evaluate dynamic expressions in Node and the browser.",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -63,17 +63,17 @@
   "bundle-size": [
     {
       "path": "dist/index.js",
-      "limit": "25kB",
+      "limit": "27kB",
       "gzip": true
     },
     {
       "path": "dist/index.cjs",
-      "limit": "25kB",
+      "limit": "27kB",
       "gzip": true
     },
     {
       "path": "dist/index.umd.js",
-      "limit": "25kB",
+      "limit": "27kB",
       "gzip": true
     },
     {

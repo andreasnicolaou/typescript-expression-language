@@ -2,6 +2,7 @@
 import { rawurlencode } from 'locutus/php/url/rawurlencode';
 import { ArrayCache } from './array-cache';
 import { Compiler } from './compiler';
+import { compileEnumCase, evaluateEnumCase } from './constant-function-provider';
 import { Expression } from './expression';
 import { ExpressionFunction } from './expression-function';
 import { Lexer } from './lexer';
@@ -157,6 +158,7 @@ export class ExpressionLanguage {
     this.addFunction(ExpressionFunction.fromJs('min'));
     this.addFunction(ExpressionFunction.fromJs('max'));
     this.addFunction(ExpressionFunction.fromJs('now'));
+    this.addFunction(ExpressionFunction.fromJs('count'));
     this.addFunction(
       new ExpressionFunction(
         'isset',
@@ -168,48 +170,16 @@ export class ExpressionLanguage {
     this.addFunction(
       new ExpressionFunction(
         'enum',
-        (str: string): string => {
-          return (
-            `(function(v){return constant(v)` +
-            `&&typeof constant(v)==='object'&&'name'` +
-            `in constant(v)?constant(v):(function(){` +
-            `throw new TypeError('The string "'+v+'" is not ` +
-            `the name of a valid enum case.')})()})(${str})`
-          );
-        },
-        (_values: unknown, val: string): any => {
-          if (typeof val !== 'string' || !val) {
-            throw new TypeError('enum() expects parameter 1 to be string');
-          }
-          const constantFunc = ExpressionFunction.fromJs('constant');
-          const typeErrorMessage = `The string "${val}" is not the name of a valid enum case.`;
-          let value!: any;
-          try {
-            value = constantFunc.getEvaluator()(Object.create(null), val);
-          } catch {
-            throw new TypeError(typeErrorMessage);
-          }
-
-          // Support both PHP-style enums (objects with 'name' property) and TypeScript-style enums (simple values)
-          if (value === null || value === undefined) {
-            throw new TypeError(typeErrorMessage);
-          }
-
-          // Valid enum: either PHP-style (object with 'name' property) or TypeScript-style (primitive values)
-          if (
-            (typeof value === 'object' && 'name' in value) ||
-            typeof value === 'string' ||
-            typeof value === 'number' ||
-            typeof value === 'boolean'
-          ) {
-            return value;
-          }
-
-          // If it's an object without 'name' property or other invalid type, it's not a valid enum
-          throw new TypeError(typeErrorMessage);
-        }
+        (str: string): string => compileEnumCase(str),
+        (_values: unknown, val: unknown): any => evaluateEnumCase(val)
       )
     );
+
+    for (const name of ['constant', 'enum']) {
+      this.functions[name].deprecate(
+        `Using the built-in "${name}()" expression function is deprecated, register a "ConstantFunctionProvider" listing the allowed constants instead.`
+      );
+    }
   }
 
   /**

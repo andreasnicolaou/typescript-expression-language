@@ -6,6 +6,8 @@ const getEvaluateData = (): ((number | UnaryNode)[] | (boolean | UnaryNode)[])[]
   return [
     [-1, new UnaryNode('-', new ConstantNode(1))],
     [3, new UnaryNode('+', new ConstantNode(3))],
+    [5, new UnaryNode('+', new ConstantNode('5'))],
+    [1, new UnaryNode('+', new ConstantNode(true))],
     [false, new UnaryNode('!', new ConstantNode(true))],
     [false, new UnaryNode('not', new ConstantNode(true))],
     [-6, new UnaryNode('~', new ConstantNode(5))],
@@ -37,6 +39,10 @@ describe('UnaryNode', () => {
     getEvaluateData().forEach(([expected, node]) => {
       expect((node as UnaryNode).evaluate({}, {})).toEqual(expected);
     });
+  });
+
+  test('should return the operand of an unknown operator unchanged', () => {
+    expect(new UnaryNode('?', new ConstantNode(1)).evaluate({}, {})).toBe(1);
   });
 
   test('should compile correctly', () => {

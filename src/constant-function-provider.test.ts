@@ -107,6 +107,13 @@ describe('ConstantFunctionProvider', () => {
     expect(() => el.evaluate('enum(1)')).toThrow('enum() expects parameter 1 to be string');
   });
 
+  test('should reject a single string instead of a list', () => {
+    expect(() => new ConstantFunctionProvider('Math.PI' as any)).toThrow(TypeError);
+    expect(() => new ConstantFunctionProvider('Math.PI' as any)).toThrow(
+      'The allowed constants must be a list of names, not a string.'
+    );
+  });
+
   test('should reject an allowed constant that is not a non-empty string', () => {
     expect(() => new ConstantFunctionProvider([''])).toThrow('An allowed constant must be a non-empty string.');
     expect(() => new ConstantFunctionProvider([1 as any])).toThrow('An allowed constant must be a non-empty string.');

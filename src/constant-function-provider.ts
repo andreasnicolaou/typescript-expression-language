@@ -21,7 +21,10 @@ export class ConstantFunctionProvider implements ExpressionFunctionProvider {
 
   private readonly regexp: RegExp;
 
-  constructor(allowedConstants: Iterable<string>) {
+  constructor(allowedConstants: readonly string[]) {
+    if (typeof allowedConstants === 'string') {
+      throw new TypeError('The allowed constants must be a list of names, not a string.');
+    }
     const patterns: string[] = [];
     for (const constant of allowedConstants) {
       if (typeof constant !== 'string' || constant === '') {

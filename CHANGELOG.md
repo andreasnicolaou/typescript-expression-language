@@ -5,6 +5,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.1] - 2026-10-20
+
+### Fixed
+
+- A null-safe access that short-circuited (`foo?.bar.baz` with `foo` null) was remembered by the cached expression, so a later evaluation with `foo.bar` null returned `null` instead of throwing `Unable to get property "baz" of non-object "foo?.bar".` The flag now lives in the evaluation, like Symfony 8.2's `GetAttrNode::evaluateChain()`.
+- `..` and `in` follow PHP's `range()` and `in_array()`, which Symfony's compiled code calls: `3..1` is `[3, 2, 1]`, `"1".."3"` is `[1, 2, 3]`, `"a".."c"` is `["a", "b", "c"]`, and `1 in {a: 1}` is `true` (own values only) instead of a `TypeError`. Endpoints that are not both numbers or both non-empty strings, or not finite, throw a `TypeError`. A range of more than `BinaryNode.MAX_RANGE_LENGTH` (1,000,000) elements throws a `RangeError` instead of being allocated.
+- `in` and `not in` throw a `TypeError` on anything but an array or a hash, like PHP's `in_array()`. Before, `"a" in "abc"` was `true` because the right operand's `includes()` was called whatever its type, so a string got a substring check that Symfony does not do. Use `"abc" contains "a"` for that.
+- `min()` and `max()` no longer overflow the call stack on large arrays such as `min(1..200000)`.
+- `min()` and `max()` accept one array of values, like PHP's: `min([3, 1])` is `1` instead of `NaN`.
+- A hash with a `"__proto__"` key keeps it as an own property: `{"__proto__": {marker: 7}, safe: 1}` no longer sets the prototype of the result, in `evaluate()` or in compiled code, and `{"__proto__": 1}` no longer evaluates to an array.
+- `evaluate()` is declared to return the value of the expression (`evaluate<T = any>(): T`), not a `ParsedExpression`, so `const n: number = el.evaluate('1 + 2')` type-checks.
+- `parse()` no longer sorts the `names` array it is given in place.
+- CommonJS consumers under `moduleResolution: node16`/`nodenext` got `TS1479` because both entries resolved to ESM declarations. The package now ships `dist/index.d.cts` and `dist/providers.d.cts`, and `exports` lists the `types` per condition.
+- README: `Parser` is imported from the package root, not from `dist/parser`, which `exports` does not expose.
+
 ## [3.2.0] - 2026-10-16
 
 This release ports most of Symfony 8.2's changes to the ExpressionLanguage component. Its `CompiledExpressionLanguage` and the `ExceptionInterface` shared by its exceptions are not ported.
@@ -112,6 +127,7 @@ The one real break is calling the exported `Parser` class directly with a bare s
 
 Releases up to and including 2.0.0 are documented in the [GitHub releases](https://github.com/andreasnicolaou/typescript-expression-language/releases).
 
+[3.2.1]: https://github.com/andreasnicolaou/typescript-expression-language/compare/v3.2.0...v3.2.1
 [3.2.0]: https://github.com/andreasnicolaou/typescript-expression-language/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/andreasnicolaou/typescript-expression-language/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/andreasnicolaou/typescript-expression-language/compare/v2.0.0...v3.0.0

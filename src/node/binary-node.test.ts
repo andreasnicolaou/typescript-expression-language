@@ -254,3 +254,93 @@ describe('BinaryNode', () => {
     expect(endsWith.evaluate({}, {})).toBe(true);
   });
 });
+
+describe('BinaryNode range operator', () => {
+  const range = (start: unknown, end: unknown): unknown =>
+    new BinaryNode('..', new ConstantNode(start), new ConstantNode(end)).evaluate({}, {});
+
+  test.each([
+    [1, 3, [1, 2, 3]],
+    [3, 1, [3, 2, 1]],
+    ['1', '3', [1, 2, 3]],
+    ['3', '1', [3, 2, 1]],
+    ['a', 'c', ['a', 'b', 'c']],
+    ['c', 'a', ['c', 'b', 'a']],
+    ['abc', 'c', ['a', 'b', 'c']],
+    [0, 0, [0]],
+    [1.5, 4, [1.5, 2.5, 3.5]],
+    [-1, 1, [-1, 0, 1]],
+    [0, 12, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]],
+    ['a', 'i', ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']],
+    ['c', 'a', ['c', 'b', 'a']],
+  ])('should build %p..%p like PHP range()', (start, end, expected) => {
+    expect(range(start, end)).toEqual(expected);
+  });
+
+  test('should refuse a range larger than MAX_RANGE_LENGTH instead of allocating it', () => {
+    expect(() => range(0, BinaryNode.MAX_RANGE_LENGTH)).toThrow(RangeError);
+    expect(() => range('a', BinaryNode.MAX_RANGE_LENGTH)).toThrow(TypeError);
+    expect(range(1, BinaryNode.MAX_RANGE_LENGTH)).toHaveLength(BinaryNode.MAX_RANGE_LENGTH);
+  });
+
+  test('should terminate for endpoints that a unit step cannot advance', () => {
+    expect(range(1e20, 1e20)).toEqual([1e20]);
+    expect(range(1e20, 1e20 + 1)).toEqual([1e20]);
+  });
+
+  test.each([
+    [Infinity, Infinity],
+    [1, Infinity],
+    [NaN, 1],
+    [null, 3],
+    [1, true],
+    [1, 'a'],
+    ['', 'c'],
+    [1, [1]],
+  ])('should throw a TypeError for %p..%p', (start, end) => {
+    expect(() => range(start, end)).toThrow(TypeError);
+  });
+});
+
+describe('BinaryNode in operator', () => {
+  const hash = (): ArrayNode => {
+    const node = new ArrayNode();
+    node.addElement(new ConstantNode(1), new ConstantNode('a'));
+    node.addElement(new ConstantNode(2), new ConstantNode('b'));
+    return node;
+  };
+
+  test('should look through the values of a hash like PHP in_array()', () => {
+    expect(new BinaryNode('in', new ConstantNode(1), hash()).evaluate({}, {})).toBe(true);
+    expect(new BinaryNode('in', new ConstantNode('a'), hash()).evaluate({}, {})).toBe(false);
+    expect(new BinaryNode('not in', new ConstantNode(3), hash()).evaluate({}, {})).toBe(true);
+  });
+
+  // the examples of https://locutus.io/php/in_array/; Symfony always passes strict = true, so the loose example
+  // in_array(1, ['1', '2', '3']) is not reachable and its strict counterpart gives false
+  test.each([
+    ['van', ['Kevin', 'van', 'Zonneveld'], true],
+    ['vlado', { 0: 'Kevin', vlado: 'van', 1: 'Zonneveld' }, false],
+    [1, ['1', '2', '3'], false],
+  ])('should evaluate %p in %p as PHP in_array($needle, $haystack, true)', (needle, haystack, expected) => {
+    expect(new BinaryNode('in', new ConstantNode(needle), new ConstantNode(haystack)).evaluate({}, {})).toBe(expected);
+    expect(new BinaryNode('not in', new ConstantNode(needle), new ConstantNode(haystack)).evaluate({}, {})).toBe(
+      !expected
+    );
+  });
+
+  test('should search own values only', () => {
+    const inherited = Object.assign(Object.create({ inherited: 7 }), { own: 1 });
+    expect(new BinaryNode('in', new ConstantNode(7), new ConstantNode(inherited)).evaluate({}, {})).toBe(false);
+    expect(new BinaryNode('in', new ConstantNode(1), new ConstantNode(inherited)).evaluate({}, {})).toBe(true);
+  });
+
+  test.each([null, 'abc', 5, true])('should throw a TypeError for "in" and "not in" on %p', (haystack) => {
+    expect(() => new BinaryNode('in', new ConstantNode(1), new ConstantNode(haystack)).evaluate({}, {})).toThrow(
+      TypeError
+    );
+    expect(() => new BinaryNode('not in', new ConstantNode(1), new ConstantNode(haystack)).evaluate({}, {})).toThrow(
+      TypeError
+    );
+  });
+});

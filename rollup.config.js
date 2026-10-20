@@ -8,19 +8,21 @@ import dts from 'rollup-plugin-dts';
 /**
  * Keeps the core types out of `dist/providers.d.ts` by rewriting the relative
  * imports the provider sources use into an external import from `./index`.
- * @type {import('rollup').Plugin}
+ * @param {string} mainEntry `./index.js` for the ESM declarations, `./index.cjs` for the CommonJS ones
+ * @returns {import('rollup').Plugin}
  */
-const importCoreTypesFromMainEntry = {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- rollup plugin factory in a .js config
+const importCoreTypesFromMainEntry = (mainEntry) => ({
   name: 'import-core-types-from-main-entry',
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- rollup hook, and a .js config cannot carry a TS annotation
   resolveId(source) {
-    // The `.js` extension is required by `moduleResolution: node16`/`nodenext`;
-    // TypeScript maps it back to `index.d.ts` under every resolution mode.
+    // The extension is required by `moduleResolution: node16`/`nodenext`;
+    // TypeScript maps `.js` back to `index.d.ts` and `.cjs` to `index.d.cts`.
     return source === '../expression-function' || source === '../expression-language'
-      ? { id: './index.js', external: true }
+      ? { id: mainEntry, external: true }
       : null;
   },
-};
+});
 
 export default [
   // ESM build
@@ -206,26 +208,30 @@ export default [
       terser(),
     ],
   },
-  // Type definitions
-  {
+  // Type definitions (ESM and CommonJS: under `moduleResolution: node16`/`nodenext`, a `require()` of the
+  // package must find `.d.cts` declarations, or TypeScript reports TS1479)
+  ...['dist/index.d.ts', 'dist/index.d.cts'].map((file) => ({
     input: 'src/index.ts',
     output: {
-      file: 'dist/index.d.ts',
+      file,
       format: 'es',
     },
     plugins: [dts()],
-  },
+  })),
   // Providers type definitions
-  {
+  ...[
+    ['dist/providers.d.ts', './index.js'],
+    ['dist/providers.d.cts', './index.cjs'],
+  ].map(([file, mainEntry]) => ({
     input: 'src/providers/index.ts',
     output: {
-      file: 'dist/providers.d.ts',
+      file,
       format: 'es',
     },
     // Re-declaring ExpressionFunction here would make it a *different* type to
     // consumers: TypeScript compares classes with private members nominally, so
     // `new ExpressionLanguage(undefined, [new StringProvider()])` would fail to
     // compile. Point the core types at the main entry instead of inlining them.
-    plugins: [importCoreTypesFromMainEntry, dts()],
-  },
+    plugins: [importCoreTypesFromMainEntry(mainEntry), dts()],
+  })),
 ];

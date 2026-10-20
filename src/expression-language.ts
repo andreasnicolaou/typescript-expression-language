@@ -54,13 +54,13 @@ export class ExpressionLanguage {
    * Evaluates an expression.
    * @param expression
    * @param values
-   * @returns evaluate
+   * @returns The value of the expression
    * @memberof ExpressionLanguage
    */
-  public evaluate(
+  public evaluate<T = any>(
     expression: Expression | string,
     values: Record<string, any> = Object.create(Object.prototype)
-  ): ParsedExpression {
+  ): T {
     return this.parse(expression, Object.keys(values)).getNodes().evaluate(this.functions, values);
   }
 
@@ -77,7 +77,7 @@ export class ExpressionLanguage {
       return expression;
     }
     // Sort names for consistent cache keys (supports both string names and objects with key-value pairs; replaces PHP asort)
-    names.sort((a, b) => {
+    names = [...names].sort((a, b) => {
       const aVal = typeof a === 'object' && a !== null ? (Object.values(a)[0] ?? '') : a;
       const bVal = typeof b === 'object' && b !== null ? (Object.values(b)[0] ?? '') : b;
 

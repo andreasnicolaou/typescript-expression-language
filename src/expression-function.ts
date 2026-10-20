@@ -260,6 +260,16 @@ export class ExpressionFunction {
       }
     });
 
+    const minMax =
+      (pick: (a: number, b: number) => number, initial: number) =>
+      (...args: any[]): number =>
+        (args.length === 1 && Array.isArray(args[0]) ? args[0] : args).reduce(
+          (result: number, value: number) => pick(result, value),
+          initial
+        );
+    functionMap['min'] = minMax(Math.min, Infinity);
+    functionMap['max'] = minMax(Math.max, -Infinity);
+
     return functionMap;
   }
 

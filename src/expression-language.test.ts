@@ -705,4 +705,107 @@ describe('ExpressionLanguage', () => {
       expect(expressionLanguage.evaluate('notable', { notable: true })).toBe(true);
     });
   });
+
+  describe('cached null-safe chains', () => {
+    test('should not carry a short-circuit over to the next evaluation of the same expression', () => {
+      expect(expressionLanguage.evaluate('foo?.bar.baz', { foo: null })).toBeNull();
+      expect(() => expressionLanguage.evaluate('foo?.bar.baz', { foo: { bar: null } })).toThrow(
+        'Unable to get property "baz" of non-object "foo?.bar".'
+      );
+      expect(expressionLanguage.evaluate('foo?.bar.baz', { foo: { bar: { baz: 1 } } })).toBe(1);
+      expect(expressionLanguage.evaluate('foo?.bar.baz', { foo: null })).toBeNull();
+    });
+
+    test.each([
+      ['foo?.bar.baz', { bar: null }, 'Unable to get property "baz" of non-object "foo?.bar".'],
+      ['foo?.bar["baz"]', { bar: null }, 'Unable to get an item of non-array "foo?.bar".'],
+      [
+        'foo?.bar["baz"].qux.quux',
+        { bar: { baz: null } },
+        'Unable to get property "qux" of non-object "foo?.bar["baz"]".',
+      ],
+      ['foo?.[0].bar', [null], 'Unable to get property "bar" of non-object "foo?.[0]".'],
+      ['foo?.bar.baz()', { bar: null }, 'Unable to call method "baz" of non-object "foo?.bar".'],
+    ] as [string, unknown, string][])('should throw for %s when a later link is null', (expression, foo, message) => {
+      expect(expressionLanguage.evaluate(expression, { foo: null })).toBeNull();
+      expect(() => expressionLanguage.evaluate(expression, { foo })).toThrow(message);
+    });
+  });
+
+  describe('hash keys', () => {
+    test('should keep "__proto__" as an ordinary key', () => {
+      const hash = expressionLanguage.evaluate('{"__proto__": {marker: 7}, safe: 1}');
+      expect(Object.getPrototypeOf(hash)).toBe(Object.prototype);
+      expect(Object.keys(hash)).toEqual(['__proto__', 'safe']);
+      expect(Object.getOwnPropertyDescriptor(hash, '__proto__')?.value).toEqual({ marker: 7 });
+      expect(hash.marker).toBeUndefined();
+      expect(({} as Record<string, unknown>).marker).toBeUndefined();
+    });
+
+    test('should compile "__proto__" to an own property too', () => {
+      const compiled = expressionLanguage.compile('{"__proto__": {marker: 7}, safe: 1}', []);
+      expect(compiled).toBe('{["__proto__"]: {"marker": 7}, "safe": 1}');
+      const hash = new Function(`return ${compiled}`)();
+      expect(Object.getPrototypeOf(hash)).toBe(Object.prototype);
+      expect(Object.getOwnPropertyDescriptor(hash, '__proto__')?.value).toEqual({ marker: 7 });
+    });
+  });
+
+  describe('min() and max()', () => {
+    test.each([
+      ['min([3, 1, 2])', 1],
+      ['max([3, 1, 2])', 3],
+      ['min(3, 1, 2)', 1],
+      ['max(3, 1, 2)', 3],
+      ['min(list)', 1],
+      ['max(list)', 3],
+    ])('should accept an array of values like PHP: %s', (expression, expected) => {
+      expect(expressionLanguage.evaluate(expression, { list: [3, 1, 2] })).toBe(expected);
+    });
+
+    test('should handle arrays too large to spread into Math.min()/Math.max()', () => {
+      expect(expressionLanguage.evaluate('min(1..200000)')).toBe(1);
+      expect(expressionLanguage.evaluate('max(1..200000)')).toBe(200000);
+    });
+
+    test.each([
+      ['min()', TypeError, 'min() expects at least 1 argument, 0 given'],
+      ['max()', TypeError, 'max() expects at least 1 argument, 0 given'],
+      ['min([])', RangeError, 'min(): Argument #1 ($value) must contain at least one element'],
+      ['max([])', RangeError, 'max(): Argument #1 ($value) must contain at least one element'],
+      ['min(list)', RangeError, 'min(): Argument #1 ($value) must contain at least one element'],
+    ])('should reject %s like PHP instead of returning an infinity', (expression, error, message) => {
+      expect(() => expressionLanguage.evaluate(expression, { list: [] })).toThrow(error);
+      expect(() => expressionLanguage.evaluate(expression, { list: [] })).toThrow(message);
+    });
+  });
+
+  describe('range and in operators', () => {
+    test.each([
+      ['1..3', [1, 2, 3]],
+      ['3..1', [3, 2, 1]],
+      ['"1".."3"', [1, 2, 3]],
+      ['"a".."c"', ['a', 'b', 'c']],
+      ['1 in {a: 1}', true],
+      ['2 not in {a: 1}', true],
+      ['1 in [1, 2]', true],
+    ])('should evaluate %s like PHP', (expression, expected) => {
+      expect(expressionLanguage.evaluate(expression)).toEqual(expected);
+    });
+  });
+
+  test('should not reorder the names array given to parse()', () => {
+    const names = ['b', 'a'];
+    expressionLanguage.parse('a + b', names);
+    expect(names).toEqual(['b', 'a']);
+  });
+
+  test('should type the result of evaluate() as the evaluated value', () => {
+    const sum: number = expressionLanguage.evaluate('1 + 2');
+    const text: string = expressionLanguage.evaluate('"a" ~ "b"');
+    const flag = expressionLanguage.evaluate<boolean>('a > 1', { a: 2 });
+    expect(sum).toBe(3);
+    expect(text).toBe('ab');
+    expect(flag).toBe(true);
+  });
 });

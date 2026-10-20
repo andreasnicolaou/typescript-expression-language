@@ -73,3 +73,24 @@ describe('ArrayNode', () => {
     ]);
   });
 });
+
+describe('ArrayNode hash keys', () => {
+  test('should evaluate "__proto__" to an own property, like any other key', () => {
+    const node = new ArrayNode();
+    node.addElement(new ConstantNode(7), new ConstantNode('__proto__'));
+    node.addElement(new ConstantNode(1), new ConstantNode('safe'));
+    const hash = node.evaluate({}, {}) as Record<string, unknown>;
+    expect(Array.isArray(hash)).toBe(false);
+    expect(Object.getPrototypeOf(hash)).toBe(Object.prototype);
+    expect(Object.getOwnPropertyDescriptor(hash, '__proto__')?.value).toBe(7);
+    expect(hash.safe).toBe(1);
+  });
+
+  test('should build a hash, not an array, from a lone "__proto__" key', () => {
+    const node = new ArrayNode();
+    node.addElement(new ConstantNode(1), new ConstantNode('__proto__'));
+    const hash = node.evaluate({}, {});
+    expect(Array.isArray(hash)).toBe(false);
+    expect(Object.getOwnPropertyDescriptor(hash, '__proto__')?.value).toBe(1);
+  });
+});

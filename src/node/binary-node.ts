@@ -10,6 +10,12 @@ import { ConstantNode } from './constant-node';
  * @author Andreas Nicolaou <anicolaou66@gmail.com>
  */
 export class BinaryNode extends Node {
+  public static readonly MAX_RANGE_LENGTH = 1_000_000;
+
+  // PHP's numeric-string grammar: surrounding whitespace, a sign, decimal digits with an optional fraction and
+  // exponent. `Number()` would also take "0x1", "0b1", "0o7" and "Infinity", which PHP's range() treats as text.
+  private static readonly NUMERIC_STRING = /^[ \t\n\r\v\f]*[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?[ \t\n\r\v\f]*$/;
+
   private static readonly OPERATORS: Record<string, string> = {
     '~': '.',
     and: '&&',
@@ -197,16 +203,39 @@ export class BinaryNode extends Node {
     return Math.pow(x, y);
   }
 
-  private range(start: number, end: number): number[] {
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  private range(start: unknown, end: unknown): (number | string)[] {
+    const isNumeric = (value: unknown): boolean =>
+      typeof value === 'number' || (typeof value === 'string' && BinaryNode.NUMERIC_STRING.test(value));
+    const chars = typeof start === 'string' && typeof end === 'string' && !(isNumeric(start) && isNumeric(end));
+    if (!chars && !(isNumeric(start) && isNumeric(end))) {
+      throw new TypeError('range(): Argument #1 ($start) and #2 ($end) must both be numbers or both be strings.');
+    }
+    const first = chars ? (start as string).codePointAt(0) : Number(start);
+    const last = chars ? (end as string).codePointAt(0) : Number(end);
+    if (first === undefined || last === undefined || !Number.isFinite(first) || !Number.isFinite(last)) {
+      throw new TypeError('range(): Argument #1 ($start) and #2 ($end) must be finite and not empty.');
+    }
+    const length = Math.floor(Math.abs(last - first)) + 1;
+    if (length > BinaryNode.MAX_RANGE_LENGTH) {
+      throw new RangeError(
+        `range(): The range would have ${length} elements, the maximum is ${BinaryNode.MAX_RANGE_LENGTH}.`
+      );
+    }
+    const step = first <= last ? 1 : -1;
+    return Array.from({ length }, (_, i) => (chars ? String.fromCodePoint(first + i * step) : first + i * step));
   }
 
-  private inArray(item: any, array: any[]): boolean {
-    return array.includes(item);
+  private inArray(item: any, array: any[] | Record<string, any>): boolean {
+    if (array === null || typeof array !== 'object') {
+      throw new TypeError(
+        `in_array(): Argument #2 ($haystack) must be of type array, ${array === null ? 'null' : typeof array} given`
+      );
+    }
+    return (Array.isArray(array) ? array : Object.values(array)).includes(item);
   }
 
-  private notInArray(item: any, array: any[]): boolean {
-    return !array.includes(item);
+  private notInArray(item: any, array: any[] | Record<string, any>): boolean {
+    return !this.inArray(item, array);
   }
 
   private strContains(str: string, substr: string): boolean {

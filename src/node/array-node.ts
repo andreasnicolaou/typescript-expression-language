@@ -55,7 +55,12 @@ export class ArrayNode extends Node {
     if (isObject) {
       const result: Record<string, unknown> = Object.create(Object.prototype);
       for (const pair of this.getKeyValuePairs()) {
-        result[pair.key.evaluate(functions, values)] = pair.value.evaluate(functions, values);
+        Object.defineProperty(result, pair.key.evaluate(functions, values), {
+          value: pair.value.evaluate(functions, values),
+          enumerable: true,
+          writable: true,
+          configurable: true,
+        });
       }
       return result;
     } else {
@@ -119,7 +124,10 @@ export class ArrayNode extends Node {
       if (index > 0) {
         compiler.raw(', ');
       }
-      if (withKeys) {
+      if (withKeys && pair.key.attributes.value === '__proto__') {
+        // a literal `"__proto__":` key sets the prototype in JavaScript; a computed one is an own property
+        compiler.raw('[').compile(pair.key).raw(']: ');
+      } else if (withKeys) {
         compiler.compile(pair.key).raw(': ');
       }
       compiler.compile(pair.value);
@@ -133,7 +141,7 @@ export class ArrayNode extends Node {
    * @memberof ArrayNode
    */
   protected toKeyValueObject(): Record<string, Node> {
-    const value: Record<string, Node> = Object.create(Object.prototype);
+    const value: Record<string, Node> = Object.create(null);
     for (const pair of this.getKeyValuePairs()) {
       value[pair.key.attributes.value] = pair.value;
     }

@@ -597,8 +597,7 @@ When linting or parsing expressions, you may want to ignore errors about unknown
 Import the `Parser` and use the flags as the third argument to `lint` or `parse`:
 
 ```typescript
-import { ExpressionLanguage } from '@andreasnicolaou/typescript-expression-language';
-import { Parser } from '@andreasnicolaou/typescript-expression-language/dist/parser';
+import { ExpressionLanguage, Parser } from '@andreasnicolaou/typescript-expression-language';
 
 const el = new ExpressionLanguage();
 
@@ -683,7 +682,7 @@ These use cases demonstrate how the library can bring advanced, real-time logic 
 
 This library follows Symfony's ExpressionLanguage semantics rather than JavaScript's where the two disagree. Operators, precedence, literals, and error behavior match Symfony: `1 / 0` and `10 % 0` throw instead of returning `Infinity`/`NaN`, `enum()` throws on an unknown case instead of returning `undefined`, and string literals unescape like PHP's — `'\\'` is one backslash while `'\d'` stays `\d`, so regex patterns survive.
 
-**What differs by design:** values stay JavaScript-native. Numbers are IEEE-754 doubles, not PHP ints. `~` concatenates using **JavaScript** coercion, so `"v=" ~ null` is `"v=null"` and `"v=" ~ true` is `"v=true"` where PHP would give `"v="` and `"v=1"`. `matches` uses JavaScript regular expressions rather than PCRE. And the PHP standard library is not registered by default — those functions are opt-in via the [built-in providers](#built-in-providers-opt-in).
+**What differs by design:** values stay JavaScript-native. Numbers are IEEE-754 doubles, not PHP ints. `~` concatenates using **JavaScript** coercion, so `"v=" ~ null` is `"v=null"` and `"v=" ~ true` is `"v=true"` where PHP would give `"v="` and `"v=1"`. `and`, `or`, `&&` and `||` return the deciding operand like JavaScript's, so `"a" or "b"` is `"a"` where PHP gives `true`; in a condition both behave the same. `matches` uses JavaScript regular expressions rather than PCRE. And the PHP standard library is not registered by default — those functions are opt-in via the [built-in providers](#built-in-providers-opt-in).
 
 ### **Key Benefits:**
 
@@ -721,7 +720,7 @@ The build process generates multiple optimized bundles:
 - `dist/index.cjs` - **CommonJS bundle** for Node.js
 - `dist/index.umd.js` - **UMD bundle (unminified)** for browsers (debugging)
 - `dist/index.umd.min.js` - **UMD bundle (minified)** for browsers (production)
-- `dist/index.d.ts` - **TypeScript declarations** for full type support
+- `dist/index.d.ts` / `dist/index.d.cts` - **TypeScript declarations** for ESM and CommonJS consumers
 
 ### Available Scripts
 

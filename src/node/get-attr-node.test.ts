@@ -126,38 +126,77 @@ describe('GetAttrNode', () => {
     expect(node.toArray()).toEqual([]);
   });
 
-  test('should return null for PROPERTY_CALL with null and isShortCircuited', () => {
+  const shortCircuitedChain = (): GetAttrNode =>
+    new GetAttrNode(
+      new NameNode('a'),
+      new ConstantNode('b', true, true),
+      new ArgumentsNode(),
+      GetAttrNode.PROPERTY_CALL
+    );
+
+  test('should return null for PROPERTY_CALL after a short-circuited link', () => {
     const node = new GetAttrNode(
-      new ConstantNode(null),
+      shortCircuitedChain(),
       new ConstantNode('foo'),
       new ArgumentsNode(),
       GetAttrNode.PROPERTY_CALL
     );
-    node.attributes.is_short_circuited = true;
-    expect(node.evaluate({}, {})).toBeNull();
+    expect(node.evaluate({}, { a: null })).toBeNull();
   });
 
-  test('should return null for METHOD_CALL with null and isShortCircuited', () => {
+  test('should return null for METHOD_CALL after a short-circuited link', () => {
     const node = new GetAttrNode(
-      new ConstantNode(null),
+      shortCircuitedChain(),
       new ConstantNode('fooMethod'),
       new ArgumentsNode(),
       GetAttrNode.METHOD_CALL
     );
-    node.attributes.is_short_circuited = true;
-    expect(node.evaluate({}, {})).toBeNull();
+    expect(node.evaluate({}, { a: null })).toBeNull();
   });
 
-  test('should return null for ARRAY_CALL with null and isShortCircuited', () => {
+  test('should return null for ARRAY_CALL after a short-circuited link', () => {
     const node = new GetAttrNode(
-      new ConstantNode(null),
+      shortCircuitedChain(),
       new ConstantNode('foo'),
       new ArgumentsNode(),
       GetAttrNode.ARRAY_CALL
     );
-    node.attributes.is_short_circuited = true;
-    expect(node.evaluate({}, {})).toBeNull();
+    expect(node.evaluate({}, { a: null })).toBeNull();
   });
+
+  test('should not remember a short-circuit from an earlier evaluation', () => {
+    const node = new GetAttrNode(
+      shortCircuitedChain(),
+      new ConstantNode('c', true),
+      new ArgumentsNode(),
+      GetAttrNode.PROPERTY_CALL
+    );
+    expect(node.evaluate({}, { a: null })).toBeNull();
+    expect(() => node.evaluate({}, { a: { b: null } })).toThrow('Unable to get property "c" of non-object "a?.b".');
+    expect(node.evaluate({}, { a: { b: { c: 'x' } } })).toBe('x');
+    expect(node.attributes.is_short_circuited).toBe(false);
+  });
+
+  test('should throw for PROPERTY_CALL on null without a null-safe link', () => {
+    const node = new GetAttrNode(
+      new NameNode('a'),
+      new ConstantNode('b', true),
+      new ArgumentsNode(),
+      GetAttrNode.PROPERTY_CALL
+    );
+    expect(() => node.evaluate({}, { a: null })).toThrow('Unable to get property "b" of non-object "a".');
+  });
+
+  test('should throw for METHOD_CALL on null without a null-safe link', () => {
+    const node = new GetAttrNode(
+      new NameNode('a'),
+      new ConstantNode('b', true),
+      new ArgumentsNode(),
+      GetAttrNode.METHOD_CALL
+    );
+    expect(() => node.evaluate({}, { a: null })).toThrow('Unable to call method "b" of non-object "a".');
+  });
+
   test('should return null for PROPERTY_CALL with null and nullSafe', () => {
     const node = new GetAttrNode(
       new ConstantNode(null),
@@ -220,15 +259,9 @@ describe('GetAttrNode', () => {
     expect(() => node.evaluate({}, {})).toThrow(/Unable to call method/);
   });
 
-  test('should return null for ARRAY_CALL with null and isShortCircuited', () => {
-    const node = new GetAttrNode(
-      new ConstantNode(null),
-      new ConstantNode('foo'),
-      new ArgumentsNode(),
-      GetAttrNode.ARRAY_CALL
-    );
-    node.attributes.is_short_circuited = true;
-    expect(node.evaluate({}, {})).toBeNull();
+  test('should throw for ARRAY_CALL on null without a null-safe link', () => {
+    const node = new GetAttrNode(new NameNode('a'), new ConstantNode(0), new ArgumentsNode(), GetAttrNode.ARRAY_CALL);
+    expect(() => node.evaluate({}, { a: null })).toThrow('Unable to get an item of non-array "a".');
   });
 
   test('should throw for ARRAY_CALL with non-array', () => {

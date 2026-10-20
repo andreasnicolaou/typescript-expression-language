@@ -767,6 +767,17 @@ describe('ExpressionLanguage', () => {
       expect(expressionLanguage.evaluate('min(1..200000)')).toBe(1);
       expect(expressionLanguage.evaluate('max(1..200000)')).toBe(200000);
     });
+
+    test.each([
+      ['min()', TypeError, 'min() expects at least 1 argument, 0 given'],
+      ['max()', TypeError, 'max() expects at least 1 argument, 0 given'],
+      ['min([])', RangeError, 'min(): Argument #1 ($value) must contain at least one element'],
+      ['max([])', RangeError, 'max(): Argument #1 ($value) must contain at least one element'],
+      ['min(list)', RangeError, 'min(): Argument #1 ($value) must contain at least one element'],
+    ])('should reject %s like PHP instead of returning an infinity', (expression, error, message) => {
+      expect(() => expressionLanguage.evaluate(expression, { list: [] })).toThrow(error);
+      expect(() => expressionLanguage.evaluate(expression, { list: [] })).toThrow(message);
+    });
   });
 
   describe('range and in operators', () => {

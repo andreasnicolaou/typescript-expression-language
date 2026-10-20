@@ -273,7 +273,23 @@ describe('BinaryNode range operator', () => {
     [0, 12, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]],
     ['a', 'i', ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']],
     ['c', 'a', ['c', 'b', 'a']],
+    [' 1', '3 ', [1, 2, 3]],
+    ['+1', '-1', [1, 0, -1]],
+    ['.5', '2.', [0.5, 1.5]],
+    ['1e1', '12', [10, 11, 12]],
   ])('should build %p..%p like PHP range()', (start, end, expected) => {
+    expect(range(start, end)).toEqual(expected);
+  });
+
+  // PHP does not read these as numeric strings, so they are character ranges over the first character
+  test.each([
+    ['0x1', '0x3', ['0']],
+    ['0b1', '0b11', ['0']],
+    ['0o7', '0o1', ['0']],
+    ['1e', '3', ['1', '2', '3']],
+    ['Infinity', 'K', ['I', 'J', 'K']],
+    ['1_0', '3', ['1', '2', '3']],
+  ])('should treat %p..%p as characters, not numbers', (start, end, expected) => {
     expect(range(start, end)).toEqual(expected);
   });
 

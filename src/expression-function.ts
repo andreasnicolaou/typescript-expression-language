@@ -260,15 +260,21 @@ export class ExpressionFunction {
       }
     });
 
+    // like PHP's min()/max(): either one array of values or the values themselves, never nothing
     const minMax =
-      (pick: (a: number, b: number) => number, initial: number) =>
-      (...args: any[]): number =>
-        (args.length === 1 && Array.isArray(args[0]) ? args[0] : args).reduce(
-          (result: number, value: number) => pick(result, value),
-          initial
-        );
-    functionMap['min'] = minMax(Math.min, Infinity);
-    functionMap['max'] = minMax(Math.max, -Infinity);
+      (name: string, pick: (a: number, b: number) => number) =>
+      (...args: any[]): number => {
+        if (args.length === 0) {
+          throw new TypeError(`${name}() expects at least 1 argument, 0 given`);
+        }
+        const values: any[] = args.length === 1 && Array.isArray(args[0]) ? args[0] : args;
+        if (values.length === 0) {
+          throw new RangeError(`${name}(): Argument #1 ($value) must contain at least one element`);
+        }
+        return values.reduce((result: number, value: number) => pick(result, value));
+      };
+    functionMap['min'] = minMax('min', Math.min);
+    functionMap['max'] = minMax('max', Math.max);
 
     return functionMap;
   }

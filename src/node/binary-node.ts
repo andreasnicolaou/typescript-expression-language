@@ -12,6 +12,10 @@ import { ConstantNode } from './constant-node';
 export class BinaryNode extends Node {
   public static readonly MAX_RANGE_LENGTH = 1_000_000;
 
+  // PHP's numeric-string grammar: surrounding whitespace, a sign, decimal digits with an optional fraction and
+  // exponent. `Number()` would also take "0x1", "0b1", "0o7" and "Infinity", which PHP's range() treats as text.
+  private static readonly NUMERIC_STRING = /^[ \t\n\r\v\f]*[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?[ \t\n\r\v\f]*$/;
+
   private static readonly OPERATORS: Record<string, string> = {
     '~': '.',
     and: '&&',
@@ -201,7 +205,7 @@ export class BinaryNode extends Node {
 
   private range(start: unknown, end: unknown): (number | string)[] {
     const isNumeric = (value: unknown): boolean =>
-      typeof value === 'number' || (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value)));
+      typeof value === 'number' || (typeof value === 'string' && BinaryNode.NUMERIC_STRING.test(value));
     const chars = typeof start === 'string' && typeof end === 'string' && !(isNumeric(start) && isNumeric(end));
     if (!chars && !(isNumeric(start) && isNumeric(end))) {
       throw new TypeError('range(): Argument #1 ($start) and #2 ($end) must both be numbers or both be strings.');
